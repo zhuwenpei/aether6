@@ -7,7 +7,7 @@ import type {SimulationConfig, Typhoon} from '../types';
 import {materializeForecastPath, getLandMetrics} from '../simulation/Engine';
 import {buildAetherEnsembleMembers, AETHER_MODEL_SPECS, type AetherGuidancePoint, type AetherGuidanceMember} from '../simulation/AetherEnsembleGuidance';
 import {loadProductNaturalEarthData, checkPointOnProductLandGeoJson, productLandGeoJson} from '../simulation/NaturalEarthLoader';
-import {buildNetworkForecasts, NETWORK_FORECAST_STYLE, type NetworkFix, type NetworkForecast} from './TyphoonNetworkData';
+import {NETWORK_FORECAST_STYLE, type NetworkFix, type NetworkForecast} from './TyphoonNetworkData';
 
 const FOREIGN_AGENCIES = ['日本','美国','韩国'] as const;
 function hash32(s:string):number {let h=2166136261>>>0;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),16777619)>>>0;}return h>>>0;}
@@ -23,19 +23,40 @@ const unit=(n:number,step=1)=>Math.round(n/step)*step;
 /** Preserve the ensemble's native 3h intensity states. No positional jiggle, no timewise
  * smooth curve, and NO rescaling from the China advisory. Land checks are performed at
  * EACH MEMBER'S OWN center, not at the deterministic control track's center. */
-export function physicalAgencyFixes(points:readonly AetherGuidancePoint[],issue:NetworkFix,config:SimulationConfig,landCheck?:(lat:number,lon:number)=>boolean):NetworkFix[] {
+export function physicalAgencyFixes(points:readonly AetherGuidancePoint[],issue:NetworkFix,config:SimulationConfig,
+  landCheck?:(lat:number,lon:number)=>boolean,nmcReference:readonly NetworkFix[]=[]):NetworkFix[] {
   const result:NetworkFix[]=[];
   const sorted=[...points].filter(p=>Number.isFinite(p.lat)&&Number.isFinite(p.lon)&&Number.isFinite(p.vmax)&&Number.isFinite(p.leadHour)&&p.leadHour>0&&p.leadHour<=120+1e-6)
     .sort((a,b)=>a.leadHour-b.leadHour);
   let previous:NetworkFix=issue;
   let priorLead=0;
+  let everLanded=!!issue.landed;
+  // Same issue and lead as the shared NMC plate; beyond its official termination
+  // a model retains its native physical intensity instead of being artificially
+  // held at a stale NMC wind value.
+  const reference=new Map(nmcReference.map(p=>[Math.round(p.simHour*1e5),p]));
+  const referenceAt=(absoluteHour:number):NetworkFix|undefined=>{
+    const direct=reference.get(Math.round(absoluteHour*1e5));if(direct)return direct;
+    const first=nmcReference[0],last=nmcReference[nmcReference.length-1];
+    if(!first||!last||absoluteHour<first.simHour||absoluteHour>last.simHour)return undefined;
+    const right=nmcReference.find(p=>p.simHour>=absoluteHour);if(!right)return undefined;
+    const left=[...nmcReference].reverse().find(p=>p.simHour<=absoluteHour)||right;
+    if(right===left)return right;
+    const t=(absoluteHour-left.simHour)/(right.simHour-left.simHour);
+    return {...left,vmax:left.vmax+(right.vmax-left.vmax)*t,pmin:left.pmin+(right.pmin-left.pmin)*t};
+  };
   for(const p of sorted){
     // Native ensemble integration is on 3h nodes. Retain ONLY those physical nodes.
     if(Math.abs(p.leadHour/3-Math.round(p.leadHour/3))>1e-5||p.leadHour<=priorLead+1e-6)continue;
     const onLand=!!p.landed || (landCheck ? landCheck(p.lat,p.lon) : getLandMetrics(p.lat,p.lon,config.coastlineSource,true).isLand);
-    let vmax=unit(Math.max(0,p.vmax));
-    let pmin=unit(Math.max(850,Math.min(1050,p.pmin)));
-    if(onLand){
+    const aligned=referenceAt(issue.simHour+p.leadHour);
+    // 82% NMC control / 18% independent ensemble thermodynamics. The ensemble
+    // still owns every agency's geometry, landfall and native intensity tendency.
+    const guidedWind=aligned?0.82*aligned.vmax+0.18*p.vmax:p.vmax;
+    let vmax=unit(Math.max(0,guidedWind));
+    let pmin=unit(Math.max(850,Math.min(1050,p.pmin+(p.vmax-vmax)*1.15)));
+    everLanded=everLanded||onLand;
+    if(everLanded){
       // The model already integrates friction, inner-core damage and land decay.
       // The final discretisation must not re-strengthen a landfall fix via rounding,
       // synoptic target relaxation or post-processing. Enforce an individual
@@ -55,10 +76,11 @@ export function physicalAgencyFixes(points:readonly AetherGuidancePoint[],issue:
   }
   return result;
 }
-export async function buildNetworkForecastsWithEnsemble(issue:NetworkFix,storm:Typhoon,config:SimulationConfig,signal?:AbortSignal,onProgress?:(done:number,total:number,stage:string)=>void):Promise<NetworkForecast[]> {
-  // CMA alone keeps the existing public wind ladder and operational-reference guidance.
-  const china=buildNetworkForecasts(issue,storm,config,true)[0];
-  if(!china||issue.dissipated)return china?[china]:[];
+export async function buildNetworkForecastsWithEnsemble(issue:NetworkFix,storm:Typhoon,config:SimulationConfig,
+  china:NetworkForecast,signal?:AbortSignal,onProgress?:(done:number,total:number,stage:string)=>void):Promise<NetworkForecast[]> {
+  // China is the EXACT already-computed NMC intensity series, not re-materialized
+  // here. The three other agencies each retain independently integrated paths.
+  if(issue.dissipated)return [china];
   if(signal?.aborted)throw new DOMException('台风网预报已取消','AbortError');
   const choices=selectNetworkAgencyModels(storm,config);
   const seed={...storm,...issue,history:(storm.history||[]).filter(p=>p.simHour<=issue.simHour),simHour:issue.simHour,forecastPath:[]} as Typhoon;
@@ -77,7 +99,7 @@ export async function buildNetworkForecastsWithEnsemble(issue:NetworkFix,storm:T
   const foreign=choices.map(({agency,modelId,memberIndex})=>{
     const member:AetherGuidanceMember|undefined=members.find(m=>m.modelId===modelId&&!m.control&&m.memberNumber===memberIndex);
     if(!member||!member.track.length)throw new Error(`集合成员计算缺失：${modelId} / ${agency}`);
-    const fixes=physicalAgencyFixes(member.track,issue,config,landCheck);
+    const fixes=physicalAgencyFixes(member.track,issue,config,landCheck,china.fixes);
     const style=styles.find(f=>f.agency===agency);
     return {agency,color:style?.color||'#aaa',fixes};
   });

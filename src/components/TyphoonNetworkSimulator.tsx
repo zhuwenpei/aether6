@@ -4,8 +4,6 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { Typhoon, SimulationConfig,TyphoonCategory } from '../types';
-import {limitNmcGenesisPeak,shapeNmcPeakIntensity} from '../simulation/NmcIntensityGuidance';
-import {issuePreSimulationReference} from '../simulation/PreSimulationReference';
 import { getTyphoonDisplayName, getTyphoonOrdinalNumber } from '../utils/TyphoonDisplayName';
 import { getWindForceCategory } from '../simulation/Engine';
 import { loadNaturalEarthData, landGeoJson, countriesGeoJson, checkPointOnLandGeoJson } from '../simulation/NaturalEarthLoader';
@@ -13,7 +11,8 @@ import { drawNmcForecastProductCooperative } from '../utils/NmcForecastProduct';
 import {chooseSafeNmcWidth,detectNmcDeviceClass} from '../utils/NmcRenderSafety';
 import { loadNmcOptionalGeography } from '../utils/NmcOptionalGeography';
 import { buildNetworkForecastsWithEnsemble } from '../utils/NetworkAgencyEnsemble';
-import { cmaBoundedNetworkHistory, buildNetworkForecasts, networkPointColor, networkHistorySegments, networkVisibleForecastFixes, networkForecastSegments, type NetworkFix, type NetworkProduct } from '../utils/TyphoonNetworkData';
+import { buildSharedNetworkNmcForecast } from '../utils/NetworkNmcForecast';
+import { cmaBoundedNetworkHistory, networkPointColor, networkHistorySegments, networkVisibleForecastFixes, networkForecastSegments, type NetworkFix, type NetworkProduct } from '../utils/TyphoonNetworkData';
 import { createReferenceRasterLayer, referenceBasemapLocation, REFERENCE_RASTER_CREDIT } from '../utils/TyphoonNetworkReferenceRaster';
 import { downloadStandaloneNetworkHtml } from '../utils/TyphoonNetworkStandaloneExport';
 import './TyphoonNetworkSimulator.css';
@@ -148,10 +147,10 @@ export function networkForecastDotColor(fix:NetworkFix):string {
  * deliberately faint R203 semi-transparent separation outline. */
 export const NETWORK_DOT_DIAMETER_PX=9;
 export const NETWORK_CMA_DOT_DIAMETER_PX=NETWORK_DOT_DIAMETER_PX;
-export const NETWORK_OTHER_AGENCY_DOT_DIAMETER_PX=3.4;
+export const NETWORK_OTHER_AGENCY_DOT_DIAMETER_PX=3.7;
 export const NETWORK_HISTORY_DOT_STROKE_PX=0.65;
 export const NETWORK_CMA_DOT_STROKE_PX=0.65;
-export const NETWORK_OTHER_DOT_STROKE_PX=0.25;
+export const NETWORK_OTHER_DOT_STROKE_PX=0.27;
 /** Invisible interaction radius for non-CMA forecast dots; visual size stays at 4px. */
 export const NETWORK_OTHER_AGENCY_HIT_RADIUS_PX=7;
 /** Horizontal ground distance visible from edge to edge during 32x replay. */
@@ -319,9 +318,18 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
         setPercent(26);setTask('计算台风移动节点与强度、气压、风圈');await raf();
         const issue=history[history.length-1];
         setPercent(45);setTask('抽样集合模型并独立计算各机构路径、强度和登陆衰减');await raf();
-        let forecasts:NetworkProduct['forecasts']=[];
-        try{forecasts=config?await buildNetworkForecastsWithEnsemble(issue,storm,config,controller.current.signal,(done,total,model)=>{if(active){setPercent(45+Math.round(16*done/Math.max(1,total)));setTask(`集合成员物理演算 ${model} (${done}/${total})`);}}):buildNetworkForecasts(issue,storm,config);}catch(err){
-          if(active){forecasts=buildNetworkForecasts(issue,storm,config,true).filter(item=>item.agency==='中国');setReferenceError(`集合成员计算失败，仅显示中国预报：${err instanceof Error?err.message:'未知错误'}`);}
+        if(!config)throw new Error('台风网入场物理配置缺失');
+        // Single NMC-issued intensity computation for both the Chinese network
+        // dots and the NMC image. The earlier entry-only peak slider is removed.
+        const nmc=buildSharedNetworkNmcForecast(storm,issue,config,chartSettings);
+        const chinese=nmc.china;
+        let forecasts:NetworkProduct['forecasts']=[chinese];
+        try{
+          forecasts=await buildNetworkForecastsWithEnsemble(nmc.issue,storm,config,chinese,controller.current.signal,
+            (done,total,model)=>{if(active){setPercent(45+Math.round(16*done/Math.max(1,total)));setTask(`集合成员物理演算 ${model} (${done}/${total})`);}});
+        }catch(err){
+          if(controller.current.signal.aborted)return;
+          if(active){forecasts=[chinese];setReferenceError(`集合成员计算失败，仅显示中国预报：${err instanceof Error?err.message:'未知错误'}`);}
         }
         if(!active||controller.current.signal.aborted)return;
         const data={history,issue,forecasts,maxHour:history[history.length-1].simHour};
@@ -338,27 +346,13 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
           ]);
           if(!active||controller.current.signal.aborted)return;
           const canvas=document.createElement('canvas');
-          const forecast=forecasts[0]?.fixes||[];
-          // Network reference shares the ordinary product's NMC-only conservative/peak controls.
-          // These transformations never write back to the CMA network forecast or the physical history.
-          let nmcPath=forecast.filter(f=>f.simHour>issue.simHour && f.simHour<=issue.simHour+chartSettings.forecastHours)
-            .map(f=>({...f,simHour:f.simHour-issue.simHour,category:(f.category||'热带低压') as TyphoonCategory}));
-          const genesisAgeHours=(storm.history?.length||0)>0
-            ? Math.max(0,issue.simHour-Number(storm.history![0].simHour)):Infinity;
-          const manualIntensity=!!config?.manualForecastRouteEnabled&&!!config?.manualForecastIntensityEnabled
-            &&!!config?.manualForecastIntensityCurve?.length;
-          const mainHistoryVerified=issuePreSimulationReference(storm,issue.simHour)?.origin==='main-history';
-          if(chartSettings.nmcCoarseIntensity&&!manualIntensity&&!mainHistoryVerified){
-            nmcPath=limitNmcGenesisPeak(nmcPath,genesisAgeHours,issue.vmax);
-          }
-          if(chartSettings.nmcCustomPeakEnabled){
-            const desiredPeak=Math.max(Math.ceil(issue.vmax),Math.round(chartSettings.nmcCustomPeak));
-            nmcPath=shapeNmcPeakIntensity(nmcPath,desiredPeak,issue.vmax);
-          }
+          // Draw the exact SAME Chinese issued fix array, with no subsequent
+          // peak retarget, CMA re-rounding or NMC-only second shaping pass.
+          const nmcPath=chinese.fixes;
           await drawNmcForecastProductCooperative({
             canvas,width:chooseSafeNmcWidth(chartSettings.nmcWidth,detectNmcDeviceClass(window.innerWidth<800)),typhoonName:stormName,typhoonNumber:String(ordinal),ordinalNumber:ordinal,
             issueDate:dateAt(startDate,issue.simHour),forecastHours:chartSettings.forecastHours,issueHour:issue.simHour,startDate,
-            current:issue,history,forecast:nmcPath.map(x=>({...x,simHour:x.simHour+issue.simHour})),
+            current:nmc.issue,history,forecast:nmcPath,issuedEndHour:nmc.issuedEndHour,
             landGeoJson,countriesGeoJson,coastlineGeoJson:landGeoJson,
             provinceGeoJson:optional?.provinces,riversGeoJson:optional?.rivers,
             showInfoBoxes:chartSettings.showInfoBoxes,showCenterBox:chartSettings.showCenterBox,
@@ -488,7 +482,7 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
       // Each straight dashed edge joins two VISIBLE dots; hidden 3h points cannot bend the line.
       for (const segment of networkForecastSegments(product.issue,f)) {
         layersRef.current.push(L.polyline([displayPoint(segment.from.lon,segment.from.lat),displayPoint(segment.to.lon,segment.to.lat)],
-          {renderer:networkSvgRendererRef.current??undefined,color:segment.color,weight:f.agency==='中国'?2.3:1.25,dashArray:f.agency==='中国'?'2,6':'1.8,6.5',opacity:.96,noClip:true,smoothFactor:0,lineCap:'round',lineJoin:'round'}).addTo(map));
+          {renderer:networkSvgRendererRef.current??undefined,color:segment.color,weight:f.agency==='中国'?2.3:1.4,dashArray:f.agency==='中国'?'2,6':'2,6.2',opacity:.96,noClip:true,smoothFactor:0,lineCap:'round',lineJoin:'round'}).addTo(map));
       }
     }
     // Hit targets are kept BELOW all visible dots. This avoids the enlarged
