@@ -1,8 +1,0 @@
-Round160 validation:
-PASS: new reference after cleared event, prior reference before cleared event, suppression after cleared event, same-hour replace/clear priority.
-PASS: wiring for standard hand-drawn route commit, live route synced to forecast, explicit clearing from settings/mobile more, archive boolean validation.
-PASS: physics pause request ref and generation guard, rAF/wake timer/task cancellation paths (source/logic inspection, not live mobile timing).
-PASS: Forecast shared desktop/mobile chrome, product entry hidden, compact exactly-two-button confirmation.
-PASS: Round121 143 144 146 148 153 157 158 159 regression scripts.
-PASS: targeted TypeScript type checking of types.ts and PreSimulationReference.ts; TS/TSX syntax parsing.
-NOT RUN: Vite production build, phone touch smoke test, live browser screenshots.

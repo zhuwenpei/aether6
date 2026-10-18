@@ -1,8 +1,0 @@
-ROUND151 — EYE/EYEWALL CALCULATION EXACT R148 REVERT
-- SynopticWindField.ts SHA-256: bb2b95d9c05742654261b3ec5678d957fdc0caa278b8d383e741930afc8b22b0
-- Same SHA-256 as Round148 original: yes
-- src/simulation/SynopticCoreRepair.ts: removed
-- SRC core repair references: 0
-- Existing features kept: 5 output aspects; crop/mercator matching; portrait colorbar; video aspect
-- Regressions: R121, R128, R129, R130, R135, R143, R144, R146, R148, R149(updated), R150(superseded), R151 — PASS
-- Caveat: no browser/phone visual validation in this package

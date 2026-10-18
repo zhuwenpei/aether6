@@ -1,8 +1,0 @@
-AETHER Round 48
-
-1. Pressure-spaghetti and dual-cycle residual-vortex products now have a real selectable lead-time cap: 72/96/120/144/168 h.
-2. The selected cap is applied consistently to the residual deterministic reference, model centres, ensemble members, cached-member rendering, dual-cycle synthetic previous tracks and product labels.
-3. Viewport framing remains based exclusively on the normal operational-stop deterministic path, calculated with the same selected lead-time ceiling.
-4. All residual/member/mean geometry in the two special products is clipped to the map rectangle so diagnostic tails cannot spill into headers, legends or outside the map frame.
-5. Added round48_residual_horizon_clip_regression.cjs and updated Round 46 static expectation for the dynamic horizon.
-6. Round 42-48 regressions pass; all 81 TS/TSX source files pass syntax transpilation.

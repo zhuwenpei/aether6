@@ -1,7 +1,0 @@
-{
-  "round": "R213",
-  "passed": 15,
-  "total": 15,
-  "ts": "2026-10-18T00:40:00-07:00",
-  "warningLines": "Found coordinates via public sources, not implemented"
-}
