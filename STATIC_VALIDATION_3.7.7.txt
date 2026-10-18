@@ -1,0 +1,47 @@
+TyphoonSIM / AETHER 3.7.7 — STATIC VALIDATION
+Date: 2026-09-15
+
+Scope
+-----
+This release was finalized without npm, npx, dependency installation, Vite build, or browser runtime execution, per the delivery constraint.
+The archive intentionally contains source/assets only and no node_modules/dist/.vite cache.
+
+Release guards
+--------------
+PASS  node scripts/release_ui_regression.cjs
+PASS  node scripts/tutorial_usage_physics_regression.cjs
+      land48 moisture reservoir: 0.838 -> 0.896
+      12 h cold-water release diagnostic: 0.052 -> 0.025
+PASS  node scripts/release_3_7_7_regression.cjs
+PASS  node --check for all 3 CommonJS regression guards
+
+Source syntax / structure
+-------------------------
+PASS  TypeScript compiler API syntax-transpilation of all 69 src/*.ts, src/*.tsx files
+PASS  Relative import resolution scan of all 69 source files
+PASS  JSON/GeoJSON parsing for all packaged JSON/GeoJSON assets and package.json
+PASS  Packaging hygiene: no node_modules, dist, .vite, __pycache__
+PASS  Removed obsolete public/aether-launch-cloud-reference.webp
+
+3.7.7 requested-change guards
+-----------------------------
+PASS  Station bulletin export uses local-language copy families and a monochrome canvas palette.
+PASS  Mobile foreground restore resets page scroll ownership and Leaflet drag/touch-zoom state.
+PASS  seasonModeEnabled defaults to false.
+PASS  Creator card persistence uses aether_author_seen_v1 and is conditional after first entry.
+PASS  Shared regional disaster-preparedness profile drives public warning anomalies and casualty protection/response terms.
+PASS  Product-only extended coastline loader remains outside App/MapView live simulation hot path.
+PASS  product_land_extended.geojson: 65,782 coordinate points; bounds approximately [-180,-90] to [180,83.64513].
+PASS  product_countries_extended.geojson: 10,654 coordinate points; bounds approximately [-180,-90] to [180,83.64513].
+PASS  Offline terrain high-elevation raster is clipped by the same Natural Earth land mask used by the live coastline.
+PASS  Generic remote rainfall footprint is tightened while explicit terrain/feeder mechanisms retain independent reach.
+PASS  Inland-stalled core rainfall and the coastal-to-inland handoff are present in instantaneous physics and 24 h product focus diagnostics.
+PASS  AETHER splash contains only the vector wordmark/glow treatment on a black field; no icon/cloud/background bitmap is bundled.
+
+Build/typecheck note
+--------------------
+A dependency-resolved project typecheck/build is not claimed because this source archive does not include node_modules and npm/npx were explicitly prohibited. The dependency-independent TypeScript syntax transpilation above passed for every source file.
+
+Final archive
+-------------
+PASS  Final AETHER_3.7.7.zip integrity verified with both `zip -T` and `unzip -tq`; the archive was then rebuilt with this validation record and re-tested.

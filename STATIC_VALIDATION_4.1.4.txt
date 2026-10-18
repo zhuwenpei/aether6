@@ -1,0 +1,41 @@
+AETHER / TyphoonSIM 4.1.4 STATIC VALIDATION
+Generated: 2026-09-16
+
+CONSTRAINTS
+- No npm install was executed.
+- No npm run was executed.
+- No npx command was executed.
+- No node_modules or dist directory is bundled.
+- The dependency-backed Vite browser/production build was intentionally not performed because project dependencies were not installed.
+
+SOURCE / SYNTAX
+- package.json version: 4.1.4
+- System TypeScript transpileModule scan: 70 src/**/*.ts(x) files, 0 syntax diagnostics.
+- A direct system `tsc --noEmit` check was attempted during development; with node_modules intentionally absent it reports missing package/type declarations (React/Leaflet/etc.), so it is not treated as a valid full-project typecheck. No dependency installation was performed to suppress those errors.
+
+RELEASE REGRESSIONS (DIRECT NODE; NO NPM)
+- node scripts/release_4_1_4_regression.cjs : PASS
+- node scripts/release_ui_regression.cjs : PASS
+- node scripts/tutorial_usage_physics_regression.cjs : PASS
+
+PURE TYPESCRIPT PHYSICS / PRODUCT REGRESSIONS
+Executed through the globally installed TypeScript compiler's in-memory CommonJS transpile hook; no project dependency installation was used.
+- rainfall_mechanism_regression.ts : PASS
+- core_structure_regression.ts : PASS
+- landfall_precip_continuity_regression.ts : PASS
+- rainfall_time_window_regression.ts : PASS
+- eye_temperature_regression.ts : PASS
+- city_station_name_regression.ts : PASS
+- district_public_state_regression.ts : PASS
+
+4.1.4 REQUIREMENT GUARDS
+1. Observed rainfall product has no switchable rainfallWindow state and calls windowHours: 24.
+2. 3.7.8 new-environment public panels and debug tab/tutorial reference are removed; migration fields are forced disabled.
+3. Typhoon public identifier is canonical simulated-genesis-year YYNN and is shared by report/product paths.
+4. Full-life cumulative rainfall report supports all-track/China domain and optional black track overlay; legend2/palette2 are fixed.
+5. NMC framing uses only recent 36 h history instead of full genesis history.
+6. JTWC framing uses recent 48 h history, complete swept uncertainty envelope, asymmetric 34/50/64 kt NE/SE/SW/NW radii, and collision-aware labels.
+7. Main-map radar reflectivity is procedurally calculated from computeGroundRadarReflectivity, supports multi-cyclone max-composite, has 10-75+ dBZ legend, and does not use a radar texture bitmap.
+
+NOTE ON DISTRICT REGRESSION FIXTURE
+- The legacy district bulletin fixture could diagnose severity 0 at its exact synthetic point while later expecting a non-null active-warning bulletin. The fixture now elevates only its test warning object for bulletin-format validation; production warning thresholds/logic were not changed.

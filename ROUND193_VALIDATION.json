@@ -1,0 +1,228 @@
+{
+  "round": 193,
+  "tests": 53,
+  "passed": 46,
+  "failed": 7,
+  "results": [
+    {
+      "name": "TS/TSX syntax src/utils/TyphoonNetworkData.ts",
+      "status": "PASS"
+    },
+    {
+      "name": "TS/TSX syntax src/utils/TyphoonNetworkOfflineMap.ts",
+      "status": "PASS"
+    },
+    {
+      "name": "TS/TSX syntax src/components/TyphoonNetworkSimulator.tsx",
+      "status": "PASS"
+    },
+    {
+      "name": "TS/TSX syntax src/components/ForecastImageModal.tsx",
+      "status": "PASS"
+    },
+    {
+      "name": "TS/TSX syntax src/App.tsx",
+      "status": "PASS"
+    },
+    {
+      "name": "6 m/s matches sampled reference-strength bin",
+      "status": "PASS"
+    },
+    {
+      "name": "18 m/s matches sampled reference-strength bin",
+      "status": "PASS"
+    },
+    {
+      "name": "28 m/s matches sampled reference-strength bin",
+      "status": "PASS"
+    },
+    {
+      "name": "35 m/s matches sampled reference-strength bin",
+      "status": "PASS"
+    },
+    {
+      "name": "40 m/s matches sampled reference-strength bin",
+      "status": "PASS"
+    },
+    {
+      "name": "45 m/s matches sampled reference-strength bin",
+      "status": "PASS"
+    },
+    {
+      "name": "53 m/s matches sampled reference-strength bin",
+      "status": "PASS"
+    },
+    {
+      "name": "six disjoint strength bins, 0..Infinity",
+      "status": "PASS"
+    },
+    {
+      "name": "invalid wind speed NaN neutral gray",
+      "status": "PASS"
+    },
+    {
+      "name": "invalid wind speed Infinity neutral gray",
+      "status": "PASS"
+    },
+    {
+      "name": "invalid wind speed -Infinity neutral gray",
+      "status": "PASS"
+    },
+    {
+      "name": "invalid wind speed -3 neutral gray",
+      "status": "PASS"
+    },
+    {
+      "name": "obsolete dissipated tag does not recolor real hurricane strength",
+      "status": "PASS"
+    },
+    {
+      "name": "weak dissipated category has neutral gray",
+      "status": "PASS"
+    },
+    {
+      "name": "forecast agency identity still 4 names and distinct line colors",
+      "status": "PASS"
+    },
+    {
+      "name": "history segments exactly N-1, no hidden intermediate vertices",
+      "status": "PASS"
+    },
+    {
+      "name": "historical segment single-point history has no lines",
+      "status": "PASS"
+    },
+    {
+      "name": "forecast dots retain every other 3h prediction",
+      "status": "FAIL",
+      "detail": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   6,\n+   12,\n+   18\n-   3,\n-   9,\n-   15\n  ]\n"
+    },
+    {
+      "name": "forecast straight segments touch visible dots ONLY",
+      "status": "PASS"
+    },
+    {
+      "name": "no prediction means no forecast edges",
+      "status": "PASS"
+    },
+    {
+      "name": "all THREE SDKs use segment factories for both track kinds",
+      "status": "FAIL",
+      "detail": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n2 !== 3\n"
+    },
+    {
+      "name": "no forecast full hidden-vertex polyline remains",
+      "status": "PASS"
+    },
+    {
+      "name": "Leaflet produces literal two-point unsmoothed lines",
+      "status": "FAIL",
+      "detail": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(page.includes('[[segment.from.lat,segment.from.lon],[segment.to.lat,segment.to.lon]]'))\n"
+    },
+    {
+      "name": "Baidu receives pairs, not a longer polyline",
+      "status": "FAIL",
+      "detail": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(page.includes('toBaiduPoint(BMap,segment.from.lon,segment.from.lat),toBaiduPoint(BMap,segment.to.lon,segment.to.lat)'))\n"
+    },
+    {
+      "name": "Petal receives segment endpoints only",
+      "status": "PASS"
+    },
+    {
+      "name": "forecast markers still use intensity, not agency",
+      "status": "FAIL",
+      "detail": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(page.includes('baiduStrengthIcon(BMap,networkForecastDotColor(f))'))\n"
+    },
+    {
+      "name": "no UI label 生效中",
+      "status": "PASS"
+    },
+    {
+      "name": "dissipated status remains supported",
+      "status": "PASS"
+    },
+    {
+      "name": "CMA 3h boundary and initial-only autoplay untouched",
+      "status": "FAIL",
+      "detail": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(page.includes('187.5'))\n"
+    },
+    {
+      "name": "land-center wind circle suppression untouched",
+      "status": "PASS"
+    },
+    {
+      "name": "OSM, Baidu, Petal, Offline provider menu retained",
+      "status": "PASS"
+    },
+    {
+      "name": "reference RGB sea/land sampled exactly",
+      "status": "PASS"
+    },
+    {
+      "name": "offline loads only locally packaged resources on demand",
+      "status": "PASS"
+    },
+    {
+      "name": "offline polygons beneath cyclone overlays even when fetched later",
+      "status": "PASS"
+    },
+    {
+      "name": "offline fetch cache and stale request cancellation",
+      "status": "PASS"
+    },
+    {
+      "name": "offline layer active for frames/rings also",
+      "status": "FAIL",
+      "detail": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(page.includes(\"(provider!=='osm'&&provider!=='offline')\"))\n"
+    },
+    {
+      "name": "map styling image-inspired with no PNG/screenshots as basemap",
+      "status": "PASS"
+    },
+    {
+      "name": "NMC unchanged call; no physical mutations",
+      "status": "PASS"
+    },
+    {
+      "name": "protected source byte-identical src/simulation/Engine.ts",
+      "status": "PASS"
+    },
+    {
+      "name": "protected source byte-identical src/utils/NmcForecastProduct.ts",
+      "status": "PASS"
+    },
+    {
+      "name": "protected source byte-identical src/utils/StrikeProbabilityField.ts",
+      "status": "PASS"
+    },
+    {
+      "name": "protected source byte-identical src/simulation/AetherEnsembleGuidance.ts",
+      "status": "PASS"
+    },
+    {
+      "name": "protected source byte-identical src/utils/SimulationArchive.ts",
+      "status": "PASS"
+    },
+    {
+      "name": "offline geometry runtime uses two local fetches only",
+      "status": "PASS"
+    },
+    {
+      "name": "offline vector geometry is genuine and nonempty",
+      "status": "PASS"
+    },
+    {
+      "name": "offline renderer creates land + political borders layers",
+      "status": "PASS"
+    },
+    {
+      "name": "offline style renders exactly sampled sea-adjacent white land",
+      "status": "PASS"
+    },
+    {
+      "name": "offline border lines do not flood land",
+      "status": "PASS"
+    }
+  ],
+  "generated": "2026-10-17T15:41:05.079Z"
+}

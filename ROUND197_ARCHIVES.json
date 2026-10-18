@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "storm": "达维",
+      "originalHistory": 187,
+      "currentHour": 186,
+      "lastCmaHour": 186,
+      "publicNodes": 63,
+      "slotTimeBeijing": "2023-08-03T20:00"
+    },
+    {
+      "storm": "卡努",
+      "originalHistory": 379,
+      "currentHour": 378,
+      "lastCmaHour": 378,
+      "publicNodes": 127,
+      "slotTimeBeijing": "2023-08-11T20:00"
+    }
+  ]
+}

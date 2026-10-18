@@ -1,0 +1,17 @@
+const assert=require('node:assert/strict');const Module=require('node:module');
+const original=Module._load;Module._load=function(id,parent,isMain){if(id.endsWith('/NaturalEarthLoader')||id.endsWith('NaturalEarthLoader'))return{productCoastlineGeoJson:null};return original.apply(this,arguments);};
+const {load}=require('./round185_test_loader.cjs');const a=load('src/utils/EnsembleIntensityAnalysis.ts');
+const q=a.ensQuantile;assert.equal(q([1,2,3,4,5],.5),3);assert.equal(q([0,10],.1),1);
+assert.equal(a.ensWindBin(33.99),0);assert.equal(a.ensWindBin(34),1);assert.equal(a.ensWindBin(137),6);
+assert.equal(a.ensWindColor(62.5),a.ensWindColor(35));assert.equal(a.ensFormatMember(1000,true),'1,000');assert.equal(a.ensFormatMember(1000,false),'1000');
+const point=(h,v=30)=>({lat:20+h/100,lon:150,leadHour:h,simHour:h,vmax:v,pmin:980});
+const late=(id)=>({id:String(id),modelId:'WMC',memberNumber:id,track:[point(120),point(126),point(132,45),point(135,50)]});
+const members=Array.from({length:60},(_,i)=>late(i));members[0].track.push(point(138,55));
+const data=a.buildEnsembleAnalysisSeries(members,144);
+assert.equal(data.allMembers,60);assert.equal(data.validTracks,60);
+assert.equal(data.wind[data.hours.indexOf(0)].length,0,'late-created members remain unknown');
+assert.equal(data.wind[data.hours.indexOf(120)].length,60);
+assert.equal(data.wind[data.hours.indexOf(132)].length,60);
+assert.equal(data.peaks.length,60);assert.ok(data.peaks[0]>(50/.514444),'peak uses off-grid recorded +135h, not only 6h');
+assert.equal(data.lastRecordedHour,138);
+console.log('round185_ensemble_intel_regression: PASS, quantiles, colors, unknown, native-grid and member peaks');

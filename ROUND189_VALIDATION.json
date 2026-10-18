@@ -1,0 +1,55 @@
+{
+  "revision": "R189",
+  "applicationVersion": "6.0.49",
+  "baseline": "AETHER_6_0_49_R188_真实化参数_三小时折线_完整源码.zip",
+  "behavior": {
+    "preserved_wind_fields": [
+      "rmw",
+      "r7.ne",
+      "r7.se",
+      "r7.sw",
+      "r7.nw",
+      "r10.ne",
+      "r10.se",
+      "r10.sw",
+      "r10.nw",
+      "r12.ne",
+      "r12.se",
+      "r12.sw",
+      "r12.nw"
+    ],
+    "per_hour_existing_wind_values": "untouched",
+    "current_live_wind_radii": "untouched on normal first application; older R188 journal reapply restores saved original radius",
+    "three_hour_line_segments": [
+      "vmax",
+      "pmin",
+      "speed",
+      "direction",
+      "non-radius instantaneous structural parameters"
+    ],
+    "path": "small displacement at three-hour position knots, same as R188",
+    "visual_note": "Wind circle centers follow the changed path, radii remain unchanged.",
+    "simulation_note": "Future physical simulation wind radius evolution is unchanged."
+  },
+  "regression": {
+    "new_round189": "PASS (24 assertion groups, two user samples, legacy reapply, undo, archive)",
+    "updated_round188": "PASS (32 assertion groups, two user samples)",
+    "round180_nmc": "PASS",
+    "round185_ensemble_intel": "PASS",
+    "round185_strike_endmode": "PASS",
+    "round185_archive_presim": "PASS",
+    "typescript_syntax": "PASS (4 affected TS/TSX modules)",
+    "vite_build": "NOT VERIFIED — vite: not found (dependencies not installed)",
+    "real_browser_and_mobile": "NOT VERIFIED"
+  },
+  "protected_core_files_unchanged": [
+    "src/utils/NmcForecastProduct.ts",
+    "src/utils/NmcRenderSafety.ts",
+    "src/simulation/AetherEnsembleGuidance.ts",
+    "src/components/AetherInputDialog.tsx",
+    "src/utils/StrikeProbabilityField.ts",
+    "src/simulation/PrecipitationModel.ts",
+    "src/simulation/Engine.ts",
+    "src/components/TyphoonReport.tsx"
+  ]
+}

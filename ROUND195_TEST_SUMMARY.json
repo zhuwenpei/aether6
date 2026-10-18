@@ -1,0 +1,43 @@
+{
+  "round": 195,
+  "base": "R194",
+  "version": "6.0.49",
+  "changes": [
+    "disable built-in Leaflet attribution control in Typhoon Network Simulator only",
+    "visible OSM attribution moved to unboxed upper-edge link",
+    "retain point-detail map popups and provider switching"
+  ],
+  "tests": {
+    "R195_targeted": {
+      "passed": 11,
+      "total": 11
+    },
+    "R195_mobile_Chromium_CSS_smoke": "PASS (isolated, not full application)",
+    "R194_refs": {
+      "passed": 9,
+      "total": 9
+    },
+    "R193_network": {
+      "passed": 53,
+      "total": 53
+    },
+    "R192_network": {
+      "passed": 32,
+      "total": 32
+    },
+    "R191_network": {
+      "passed": 28,
+      "total": 28
+    },
+    "R190_network": {
+      "passed": 20,
+      "total": 20
+    },
+    "R188_parameters": "PASS",
+    "R189_radii": "PASS",
+    "R185_NMC_crash": "PASS"
+  },
+  "full_vite_build": "NOT RUN: frontend dependencies missing",
+  "full_mobile_E2E": "NOT RUN",
+  "note": "OSM legal copyright remains visible in transparent text at map upper edge."
+}

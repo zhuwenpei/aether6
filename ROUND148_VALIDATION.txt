@@ -1,0 +1,10 @@
+Round148 targeted static and numerical regression
+- Normal irregular and dense waypoint paths: factor 1, PASS
+- Repeated-position dwell cluster: factor drops locally, PASS
+- NMC same map frame with/without land + compact 36-hour history: PASS
+- HMON/HWRF distinct style widths/heights and wind glyphs: PASS
+- Actual symbol renderer synthetic 55kt count: HMON=1681, HWRF=1147
+- Round121/128/129/130/135/138/143/144/146: PASS
+- tsc --noEmit --noCheck: PASS
+- Full Vite build: NOT RUN (dependencies not installed)
+- Mobile real-device render test: NOT RUN

@@ -1,0 +1,57 @@
+TyphoonSIM 3.5.10 - Static Validation Record
+==============================================
+
+Validation scope
+----------------
+This validation is source-only. No npm command was executed, no dependencies were installed,
+no Vite/dev server was started, and no TyphoonSIM business/runtime code was executed.
+
+Version consistency
+-------------------
+package.json: 3.5.10
+index.html title: TyphoonSIM 3.5.10
+README heading: TyphoonSIM 3.5.10
+
+Source inventory
+----------------
+TypeScript / TSX source files: 51
+TypeScript / TSX source lines: 49,014
+
+TypeScript parser validation
+----------------------------
+Command:
+  tsc --noEmit --noCheck --pretty false --project tsconfig.json
+Result:
+  PASS (exit code 0, 0 diagnostics)
+
+Full type-check reference
+-------------------------
+Command:
+  tsc --noEmit --pretty false --project tsconfig.json
+Result:
+  exit code 2, 124 diagnostics.
+
+Diagnostic groups:
+  TS2307  82  Cannot find module / corresponding type declarations
+  TS2875  32  JSX runtime module unavailable
+  TS2580   6  Node globals/types unavailable
+  TS2339   2  Cascading React base-class type errors in ErrorBoundary
+  TS4112   1  Cascading React base-class type error in ErrorBoundary
+  TS2304   1  __dirname unavailable because Node typings are absent
+
+The source package intentionally does not contain node_modules. The full-check diagnostics are
+consistent with missing React, React JSX runtime, Leaflet/react-leaflet, Turf, Recharts,
+lucide-react, mp4-muxer, Vite/Node type packages and their transitive declarations.
+No TypeScript parser/syntax diagnostic was produced by the noCheck project parse.
+
+3.5.10 requested-change static checks
+-------------------------------------
+[PASS] Station details header no longer has a report-image generation action; bottom report/video entries remain.
+[PASS] Typhoon summary report bottom dock is one row: Generate Video / Generate Report / Close icon.
+[PASS] Typhoon live physical snapshot UI/rendering references removed from src.
+[PASS] JMA forecast-image product and JmaForecastMap implementation removed; JMA map/video visual style remains independent.
+[PASS] Aircraft sounding report appears as a normal weather-product tile and opens directly in report parameter mode.
+[PASS] Global UI style selector/runtime branches removed; legacy persisted uiStyle values are ignored/stripped during migration.
+[PASS] Meteorological bulletin display strips emoji/pictographs and presents textual messages only.
+
+Packaging validation is recorded after archive creation in the release response.

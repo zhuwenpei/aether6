@@ -1,0 +1,144 @@
+{
+  "round": 192,
+  "tests": 32,
+  "passed": 25,
+  "failed": 7,
+  "results": [
+    {
+      "name": "TS/TSX parse src/components/TyphoonNetworkSimulator.tsx",
+      "status": "PASS"
+    },
+    {
+      "name": "TS/TSX parse src/utils/TyphoonNetworkData.ts",
+      "status": "PASS"
+    },
+    {
+      "name": "TS/TSX parse src/components/ForecastImageModal.tsx",
+      "status": "PASS"
+    },
+    {
+      "name": "TS/TSX parse src/App.tsx",
+      "status": "PASS"
+    },
+    {
+      "name": "forecast intensity 12 m/s same as historical",
+      "status": "PASS"
+    },
+    {
+      "name": "forecast intensity 20 m/s same as historical",
+      "status": "PASS"
+    },
+    {
+      "name": "forecast intensity 27 m/s same as historical",
+      "status": "PASS"
+    },
+    {
+      "name": "forecast intensity 35 m/s same as historical",
+      "status": "PASS"
+    },
+    {
+      "name": "forecast intensity 46 m/s same as historical",
+      "status": "PASS"
+    },
+    {
+      "name": "forecast intensity 62 m/s same as historical",
+      "status": "PASS"
+    },
+    {
+      "name": "weak dissipated vortex remains gray; strong physical wind stays strength-colored",
+      "status": "PASS"
+    },
+    {
+      "name": "forecast agency identity remains 4-color",
+      "status": "PASS"
+    },
+    {
+      "name": "OSM forecast lines use agency colors",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(page.includes('color:segment.color,weight:2,dashArray'))\n"
+    },
+    {
+      "name": "OSM forecast dots use intensity",
+      "status": "PASS"
+    },
+    {
+      "name": "Baidu forecast lines use agency colors",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(page.includes('strokeColor:segment.color,strokeWeight:2,strokeStyle'))\n"
+    },
+    {
+      "name": "Baidu forecast dots use intensity",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(page.includes('baiduStrengthIcon(BMap,networkForecastDotColor(f))'))\n"
+    },
+    {
+      "name": "Petal forecast lines use agency colors",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(page.includes('strokeColor:segment.color,strokeWeight:2,strokeLineDash:[2,7]'))\n"
+    },
+    {
+      "name": "Petal forecast dots use intensity",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(page.includes('strengthDotSvg(networkForecastDotColor(fix),NETWORK_DOT_DIAMETER_PX)'))\n"
+    },
+    {
+      "name": "top summary right aligned at all sizes",
+      "status": "PASS"
+    },
+    {
+      "name": "top caption has neither stroke nor text shadow",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile reference toolbar resized",
+      "status": "PASS"
+    },
+    {
+      "name": "map picker shows all 4 explicit providers",
+      "status": "PASS"
+    },
+    {
+      "name": "OSM default",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(page.includes(\"useState<'osm'|'baidu'|'petal'|'offline'>('osm')\"))\n"
+    },
+    {
+      "name": "Petal uses official Map Kit JS API and no unofficial tile URLs",
+      "status": "PASS"
+    },
+    {
+      "name": "Petal configuration and explanatory fallback",
+      "status": "PASS"
+    },
+    {
+      "name": "Petal waits for viewport before HWMap construction",
+      "status": "PASS"
+    },
+    {
+      "name": "Petal markers popup attached to geographic point",
+      "status": "PASS"
+    },
+    {
+      "name": "Petal center, land-only winds and re-entry supported",
+      "status": "PASS"
+    },
+    {
+      "name": "Petal overlays cleaned when switching or unmounting",
+      "status": "PASS"
+    },
+    {
+      "name": "no simulation state mutations",
+      "status": "PASS"
+    },
+    {
+      "name": "playback unchanged",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(page.includes('187.5')&&page.includes('cmaBoundedNetworkHistory(storm,startDate,currentHour)'))\n"
+    },
+    {
+      "name": "NMC core unchanged",
+      "status": "PASS"
+    }
+  ],
+  "generated": "2026-10-17T15:41:04.400Z"
+}

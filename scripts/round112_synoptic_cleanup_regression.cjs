@@ -1,0 +1,15 @@
+const fs = require('fs');
+const assert = require('node:assert/strict');
+const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+assert.equal(pkg.version, '6.0.35', 'ROUND112 package version mismatch');
+assert.equal(pkg.scripts['test:round112'], 'node scripts/round112_synoptic_cleanup_regression.cjs', 'ROUND112 npm script missing');
+const fieldSrc = fs.readFileSync('src/simulation/SynopticWindField.ts', 'utf8');
+const mapSrc = fs.readFileSync('src/utils/SynopticWindPressureMap.ts', 'utf8');
+assert(fieldSrc.includes('async function suppressMarineArtifactBands('), 'marine artifact cleanup helper missing');
+assert(fieldSrc.includes('await suppressMarineArtifactBands('), 'marine artifact cleanup pass not invoked');
+assert(fieldSrc.includes('The repair is reference-bounded'), 'ROUND112 cleanup comment missing');
+assert(mapSrc.includes('only annotate the primary tropical-cyclone centre'), 'primary-only L marker comment missing');
+assert(!mapSrc.includes('const extrema=await detectExtrema(field,bounds,options.signal);'), 'secondary H/L extrema are still being calculated');
+assert(!mapSrc.includes('if(storm.id===options.primaryTyphoon.id)continue;'), 'non-primary cyclone L marker block remains');
+console.log('ROUND112 synoptic cleanup regression: PASS');
+console.log(JSON.stringify({ version: pkg.version, cleanupHelper: true, primaryOnlyLabels: true }));

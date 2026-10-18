@@ -1,0 +1,81 @@
+{
+  "version": "R199",
+  "passed": 8,
+  "total": 12,
+  "failed": [
+    {
+      "name": "Forecast markers use smaller hierarchy than baseline",
+      "pass": false,
+      "error": "The expression evaluated to a falsy value:\n\n  assert(src.includes('NETWORK_OTHER_AGENCY_DOT_DIAMETER_PX=7'))\n"
+    },
+    {
+      "name": "Visible forecast point connections retain source-defined straight dotted paths",
+      "pass": false,
+      "error": "The expression evaluated to a falsy value:\n\n  assert(src.includes(\"dashArray:'2,7'\"))\n"
+    },
+    {
+      "name": "Forecast labels render as text-only SVG with no box or thumbnail",
+      "pass": false,
+      "error": "The expression evaluated to a falsy value:\n\n  assert(src.includes('paint-order=\"stroke\"'))\n"
+    },
+    {
+      "name": "Original history dots, ring geometry, land rules and frame behavior retained",
+      "pass": false,
+      "error": "The expression evaluated to a falsy value:\n\n  assert(src.includes('L.circleMarker(displayPoint(p.lon,p.lat),{radius:NETWORK_DOT_RADIUS_PX'))\n"
+    }
+  ],
+  "checks": [
+    {
+      "name": "TypeScript parser src/components/TyphoonNetworkSimulator.tsx",
+      "pass": true
+    },
+    {
+      "name": "TypeScript parser src/utils/TyphoonNetworkData.ts",
+      "pass": true
+    },
+    {
+      "name": "Forecast markers use smaller hierarchy than baseline",
+      "pass": false,
+      "error": "The expression evaluated to a falsy value:\n\n  assert(src.includes('NETWORK_OTHER_AGENCY_DOT_DIAMETER_PX=7'))\n"
+    },
+    {
+      "name": "Agency draw order always places CMA above other forecast fixes",
+      "pass": true
+    },
+    {
+      "name": "Visible forecast point connections retain source-defined straight dotted paths",
+      "pass": false,
+      "error": "The expression evaluated to a falsy value:\n\n  assert(src.includes(\"dashArray:'2,7'\"))\n"
+    },
+    {
+      "name": "Forecast colors remain wind-intensity colors",
+      "pass": true
+    },
+    {
+      "name": "Forecast labels render as text-only SVG with no box or thumbnail",
+      "pass": false,
+      "error": "The expression evaluated to a falsy value:\n\n  assert(src.includes('paint-order=\"stroke\"'))\n"
+    },
+    {
+      "name": "Both Leaflet and Petal scale their CMA/non-CMA dots to matching hierarchy",
+      "pass": true
+    },
+    {
+      "name": "Button, image, cyclone marker and label containers forcibly clear glass backdrop",
+      "pass": true
+    },
+    {
+      "name": "Spinning icon and unmoving intensity eye retained",
+      "pass": true
+    },
+    {
+      "name": "Reference icon and original NMC flow remain",
+      "pass": true
+    },
+    {
+      "name": "Original history dots, ring geometry, land rules and frame behavior retained",
+      "pass": false,
+      "error": "The expression evaluated to a falsy value:\n\n  assert(src.includes('L.circleMarker(displayPoint(p.lon,p.lat),{radius:NETWORK_DOT_RADIUS_PX'))\n"
+    }
+  ]
+}

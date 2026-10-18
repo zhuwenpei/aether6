@@ -1,0 +1,14 @@
+Round152 verification
+- Source changes versus Round151: SynopticWindField.ts + NEW IntactEyewallRefinement.ts only
+- Round152 standalone gate/angular smoothing/land/no-eye regression: PASS
+- Relative smoothing strength increases with Vmax: PASS
+- Round152 +80h (complete large-round sea eye): affected eyewall vectors: PASS
+- Round152 +215h, +240h (gap/blocked) and +268h (none): no changes: PASS
+- Land-contacting eyewall: no changes: PASS
+- TS strict check of new module: PASS
+- tsc --noEmit --noCheck: PASS
+- Round121,128,143,144,146,148,149 regressions: PASS
+- Actual 3 versions x 4 times HMON Canvas renders: 12/12 generated
+- R150 vs R151: pixel equal 4/4
+- R151 vs R152: T+80 changed 19415 / 952000 pixels (2.04%); T+215/240/268 pixel equal 3/3
+- Offline GIS and terrain fallback used; full production build and live mobile QA not tested

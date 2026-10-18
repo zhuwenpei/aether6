@@ -1,0 +1,39 @@
+{
+  "round": 190,
+  "baseline": "R189 wind radii preserved",
+  "applicationVersion": "6.0.49",
+  "feature": "typhoon network simulation",
+  "newFeatureUnitAndSourceTests": {"passed": 20, "total": 20, "script": "scripts/round190_typhoon_network_regression.cjs"},
+  "realArchiveSampling": [
+    {"storm": "达维", "originalHourlyPoints": 187, "threeHourlyPoints": 63, "beginHour": 0, "endHour": 186, "sourceUnmodified": true},
+    {"storm": "卡努", "originalHourlyPoints": 379, "threeHourlyPoints": 127, "beginHour": 0, "endHour": 378, "sourceUnmodified": true}
+  ],
+  "existingRegressionPass": [
+    "round189_preserve_wind_radii_regression.cjs",
+    "round188_parameter_nodes_regression.cjs",
+    "round185_nmc_crash_safety_retained_regression.cjs",
+    "round185_ensemble_intel_regression.cjs",
+    "round185_strike_endmode_regression.cjs",
+    "round185_nmc_safe_overlays_browser.py pixels (real Chromium)"
+  ],
+  "unchangedSha256Scopes": [
+    "src/utils/NmcForecastProduct.ts",
+    "src/simulation/Engine.ts",
+    "src/simulation/AetherEnsembleGuidance.ts",
+    "src/components/MapView.tsx",
+    "src/utils/StrikeProbabilityField.ts",
+    "src/simulation/RealisticParameterGeometry.ts",
+    "src/simulation/RealisticParameterApply.ts",
+    "src/utils/SimulationArchive.ts"
+  ],
+  "videoBehavior": "16 simulation hours per real second; 3-hour steps every 187.5ms; no animated map pan",
+  "provider": "OSM default; Baidu SDK requires VITE_BAIDU_MAP_AK",
+  "notVerified": [
+    "Vite production build: node_modules unavailable, dependency installation timed out",
+    "full interactive browser acceptance test (app was not bundled)",
+    "actual authorized Baidu map SDK login/rendering without AK",
+    "pixel-by-pixel screenshot equivalence on target mobile device",
+    "real-device long-playback CPU/memory"
+  ],
+  "notes": "Weather forecasts and agencies are simulated; no actual agency feeds. The product does not mutate storm physical histories or wind radii."
+}

@@ -1,0 +1,34 @@
+TyphoonSIM 3.6.10 — final static validation
+
+Constraints respected
+- No npm command executed.
+- No dependency installation performed.
+- Vite/project runtime was not started.
+- node_modules is not included in the source tree.
+
+TypeScript parsing
+Command:
+  tsc --noEmit --noCheck --project tsconfig.json
+Result:
+  PASS — exit 0, 0 diagnostics.
+
+Full TypeScript check
+Command:
+  tsc --noEmit --project tsconfig.json
+Result:
+  124 diagnostic lines, all in the existing dependency/environment families caused by the source package not containing node_modules (React/JSX runtime, lucide-react, Leaflet/react-leaflet, Recharts, Turf/RBush, Node/Vite typings, mp4-muxer, etc.).
+  Filtering TS2307/TS2875/TS2580/TS2304 and their dependency-cascade TS4112/TS2339 diagnostics leaves 0 new source-level diagnostics.
+
+Targeted 3.6.10 checks
+PASS - Ensemble members no longer inherit one common hard target-intensity cap; a configured target is converted to a member-specific automatic peak reference only inside ensemble guidance.
+PASS - Thermodynamic member spread includes shear, SST, OHC, humidity, outflow, intensification-rate and RI-availability differences.
+PASS - Rare strong and weak thermodynamic members are explicitly retained.
+PASS - Track regimes include main, ridge-westward, direct-north/early-turn, recurving and low-probability outlier families.
+PASS - User-drawn forecast routes use the new optional manualForecastRouteWeight only for ensemble members; Engine default remains 0.68 when the field is absent.
+PASS - NMC regular callouts are allocated pairwise to opposite annotation rails, so rail population differs by at most one before endpoint/special-callout handling.
+PASS - Ordered rail placements are no longer discarded solely by prior-leader proximity, preventing internal milestones from falling into an uneven perimeter layout.
+PASS - Deterministic/manual typhoon physics, 10-minute live integration, precipitation and EWRC algorithms were not otherwise changed.
+
+Source inventory
+- 53 TS/TSX files
+- 49,684 TS/TSX source lines

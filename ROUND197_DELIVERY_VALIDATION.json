@@ -1,0 +1,221 @@
+{
+  "round": "R197",
+  "version": "6.0.49",
+  "dedicated_test": {
+    "round": 197,
+    "passed": 16,
+    "total": 16,
+    "failed": 0,
+    "tests": [
+      {
+        "name": "Syntax: src/components/TyphoonNetworkSimulator.tsx",
+        "pass": true
+      },
+      {
+        "name": "Syntax: src/utils/TyphoonNetworkData.ts",
+        "pass": true
+      },
+      {
+        "name": "CMA common 6h short and 12h extended validity",
+        "pass": true
+      },
+      {
+        "name": "Every agency uses exactly CMA visible leads",
+        "pass": true
+      },
+      {
+        "name": "19:00 Beijing entry produces preceding 17:00 CMA issue",
+        "pass": true
+      },
+      {
+        "name": "Public slot never ahead of simulated time",
+        "pass": true
+      },
+      {
+        "name": "32x replay with 3h steps; interruption skips to final",
+        "pass": true
+      },
+      {
+        "name": "Blue hollow icon originates from uploaded assets",
+        "pass": true
+      },
+      {
+        "name": "Centroid aligned stationary strength-colored center + counterclockwise 0.5Hz",
+        "pass": true
+      },
+      {
+        "name": "Three providers show dynamic animated cyclone marker",
+        "pass": true
+      },
+      {
+        "name": "AMap: credentials, official SDK, coordinate conversion and fallback",
+        "pass": true
+      },
+      {
+        "name": "AMap forecasts, labels and coastline-independent wind rings",
+        "pass": true
+      },
+      {
+        "name": "NMC reference requests full overlay suite",
+        "pass": true
+      },
+      {
+        "name": "CMA forecast markers and guidance lines are larger/bolder",
+        "pass": true
+      },
+      {
+        "name": "No physics engine mutation and original agency identity lines",
+        "pass": true
+      },
+      {
+        "name": "Authentic map icon images are rendered without icon background mask",
+        "pass": true
+      }
+    ]
+  },
+  "real_archive_test": {
+    "status": "PASS",
+    "checks": [
+      {
+        "storm": "达维",
+        "originalHistory": 187,
+        "currentHour": 186,
+        "lastCmaHour": 186,
+        "publicNodes": 63,
+        "slotTimeBeijing": "2023-08-03T20:00"
+      },
+      {
+        "storm": "卡努",
+        "originalHistory": 379,
+        "currentHour": 378,
+        "lastCmaHour": 378,
+        "publicNodes": 127,
+        "slotTimeBeijing": "2023-08-11T20:00"
+      }
+    ]
+  },
+  "chromium_css_fixture": {
+    "status": "PASS",
+    "checks": [
+      {
+        "width": 360,
+        "status": "PASS",
+        "computed": {
+          "ref": {
+            "left": 313.5,
+            "right": 352.5,
+            "width": 39,
+            "cx": 333
+          },
+          "title": {
+            "left": 124.9140625,
+            "right": 235.0859375,
+            "width": 110.171875,
+            "cx": 180
+          },
+          "eye": {
+            "left": 175.5,
+            "right": 184.5,
+            "width": 9,
+            "cx": 180
+          },
+          "spin": {
+            "left": 164.5,
+            "right": 195.5,
+            "width": 31,
+            "cx": 180
+          },
+          "map": {
+            "left": 0,
+            "right": 360,
+            "width": 360,
+            "cx": 180
+          },
+          "duration": "2s",
+          "direction": "tn-cyclone-counterclockwise"
+        }
+      },
+      {
+        "width": 390,
+        "status": "PASS",
+        "computed": {
+          "ref": {
+            "left": 343.5,
+            "right": 382.5,
+            "width": 39,
+            "cx": 363
+          },
+          "title": {
+            "left": 135.3671875,
+            "right": 254.6328125,
+            "width": 119.265625,
+            "cx": 195
+          },
+          "eye": {
+            "left": 190.5,
+            "right": 199.5,
+            "width": 9,
+            "cx": 195
+          },
+          "spin": {
+            "left": 177.26585388183594,
+            "right": 212.73414611816406,
+            "width": 35.468292236328125,
+            "cx": 195
+          },
+          "map": {
+            "left": 0,
+            "right": 390,
+            "width": 390,
+            "cx": 195
+          },
+          "duration": "2s",
+          "direction": "tn-cyclone-counterclockwise"
+        }
+      },
+      {
+        "width": 430,
+        "status": "PASS",
+        "computed": {
+          "ref": {
+            "left": 383.5,
+            "right": 422.5,
+            "width": 39,
+            "cx": 403
+          },
+          "title": {
+            "left": 149.234375,
+            "right": 280.765625,
+            "width": 131.53125,
+            "cx": 215
+          },
+          "eye": {
+            "left": 210.5,
+            "right": 219.5,
+            "width": 9,
+            "cx": 215
+          },
+          "spin": {
+            "left": 199.5,
+            "right": 230.5,
+            "width": 31,
+            "cx": 215
+          },
+          "map": {
+            "left": 0,
+            "right": 430,
+            "width": 430,
+            "cx": 215
+          },
+          "duration": "2s",
+          "direction": "tn-cyclone-counterclockwise"
+        }
+      }
+    ],
+    "limitations": "CSS fixture only: external map SDKs not loaded"
+  },
+  "production_build": "NOT VERIFIED: vite missing",
+  "amap_online": "NOT VERIFIED: provider key absent",
+  "nmc_province_layer": "NOT AVAILABLE: baseline lacks bundled provinces GeoJSON",
+  "preserved_engine_files": true
+}

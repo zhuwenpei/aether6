@@ -1,0 +1,56 @@
+.cloud-compositor-dark { color-scheme: dark; }
+.cloud-compositor-dark .bg-white,
+.cloud-compositor-dark .bg-white\/95 { background-color: rgb(15 23 42 / 0.96) !important; }
+.cloud-compositor-dark .hover\:bg-white:hover { background-color: rgb(30 41 59) !important; }
+.cloud-compositor-dark .bg-slate-50 { background-color: rgb(2 6 23) !important; }
+.cloud-compositor-dark .bg-slate-100 { background-color: rgb(30 41 59) !important; }
+.cloud-compositor-dark .hover\:bg-slate-100:hover,
+.cloud-compositor-dark .hover\:bg-slate-200:hover { background-color: rgb(51 65 85) !important; }
+.cloud-compositor-dark .bg-slate-200 { background-color: rgb(51 65 85) !important; }
+.cloud-compositor-dark .bg-slate-300 { background-color: rgb(71 85 105) !important; }
+.cloud-compositor-dark .bg-blue-50 { background-color: rgb(30 58 138 / 0.24) !important; }
+.cloud-compositor-dark .bg-blue-100 { background-color: rgb(30 58 138 / 0.32) !important; }
+.cloud-compositor-dark .bg-green-50 { background-color: rgb(20 83 45 / 0.30) !important; }
+.cloud-compositor-dark .bg-red-50 { background-color: rgb(127 29 29 / 0.25) !important; }
+.cloud-compositor-dark .border-slate-100,
+.cloud-compositor-dark .border-slate-200 { border-color: rgb(51 65 85) !important; }
+.cloud-compositor-dark .border-red-100 { border-color: rgb(127 29 29 / 0.7) !important; }
+.cloud-compositor-dark .border-green-100 { border-color: rgb(21 128 61 / 0.65) !important; }
+.cloud-compositor-dark .text-slate-800,
+.cloud-compositor-dark .text-slate-700 { color: rgb(226 232 240) !important; }
+.cloud-compositor-dark .text-slate-600 { color: rgb(203 213 225) !important; }
+.cloud-compositor-dark .text-slate-500 { color: rgb(148 163 184) !important; }
+.cloud-compositor-dark .text-slate-400 { color: rgb(148 163 184) !important; }
+.cloud-compositor-dark .shadow-slate-200,
+.cloud-compositor-dark .shadow-slate-300\/50,
+.cloud-compositor-dark .shadow-blue-200,
+.cloud-compositor-dark .shadow-red-200 { --tw-shadow-color: rgb(0 0 0 / 0.35) !important; }
+.cloud-compositor-dark input[type="date"],
+.cloud-compositor-dark input[type="text"] { color: rgb(226 232 240) !important; }
+.cloud-compositor-dark input::placeholder { color: rgb(100 116 139) !important; }
+.cloud-compositor-dark .black-coastlines img,
+.cloud-compositor-dark .black-coastlines { filter: brightness(0); opacity: .75; }
+
+/* AETHER integration: full-page, touch-safe compositor workflow. */
+.cloud-compositor-overlay { overscroll-behavior: none; }
+.cloud-compositor-shell { min-width: 0; }
+.cloud-compositor-wizard { min-height: 0; }
+.cloud-compositor-dark button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.cloud-compositor-dark :is(input,select,button) { min-height: 40px; }
+.cloud-compositor-dark [class*="overflow-y-auto"] { overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.cloud-compositor-dark .leaflet-container { background:#020617; touch-action: none; }
+.cloud-compositor-dark .leaflet-control-attribution { display:none !important; }
+
+@media (max-width: 640px) {
+  .cloud-compositor-shell { border-width:0 !important; border-radius:0 !important; }
+  .cloud-compositor-dark :is(input[type="text"],input[type="date"],select) { font-size:16px !important; }
+  .cloud-compositor-dark .p-6 { padding:16px !important; }
+  .cloud-compositor-dark .p-5 { padding:14px !important; }
+  .cloud-compositor-dark .space-y-8 > :not([hidden]) ~ :not([hidden]) { margin-top:18px !important; }
+  .cloud-compositor-dark .rounded-3xl { border-radius:16px !important; }
+  .cloud-compositor-dark .rounded-2xl { border-radius:13px !important; }
+  .cloud-compositor-dark .cloud-compositor-close { width:42px; height:42px; }
+  .cloud-compositor-dark [class*="shadow-[0_-10px"] {
+    padding-bottom: max(14px, env(safe-area-inset-bottom,0px)) !important;
+  }
+}

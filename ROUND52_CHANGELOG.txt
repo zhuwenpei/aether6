@@ -1,0 +1,12 @@
+AETHER Round 52 — Quick tools / forecast constraints / special-ensemble fixes
+
+1. Moved practical access to the large-scale hand-drawn forecast framework into Quick Tools, with draw and clear actions.
+2. Added wind-radius transition timing (immediate, 3, 6, 12, 24, 36 h). Radius preference now transitions smoothly in simulation time instead of jumping when a duration is selected.
+3. Hardened no-framework forecasting: a stale manualForecastRouteEnabled flag without at least two finite points no longer changes forecast speed floors or disables the normal no-route curvature guard.
+4. Added path-ending choice to pressure-spaghetti and dual-cycle products: normal operational termination or residual-vortex continuation (member-specific 14–24 h after first <=8 m/s, within the selected total horizon).
+5. Added a forecast-only maximum-intensity soft reference in Quick Tools. It influences deterministic forecast MPI/intensification evolution without clipping live intensity; AETHER ensemble guidance consumes the adjusted deterministic intensity reference while retaining existing member/model intensity spread.
+6. Re-centered the mobile dry-air drawing toolbar with a final fixed-position override to prevent VisualViewport/layoutViewport double offsets on Android browsers.
+
+Validation:
+- Round 42–52 regression scripts pass.
+- 81 src TS/TSX files pass TypeScript syntax transpilation.

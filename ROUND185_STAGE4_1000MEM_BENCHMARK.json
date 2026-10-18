@@ -1,0 +1,10 @@
+{
+  "members": 1000,
+  "synthetic": true,
+  "cellDeg": 0.0025,
+  "cells": 16008001,
+  "bands": 11,
+  "seconds": 1.85,
+  "peakRssMiB": 193.8,
+  "progress": 1
+}

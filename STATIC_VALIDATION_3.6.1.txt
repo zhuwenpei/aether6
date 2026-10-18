@@ -1,0 +1,24 @@
+TyphoonSIM 3.6.1 STATIC VALIDATION
+
+Constraints respected
+- npm was not executed.
+- Dependencies were not installed.
+- Vite/application simulation was not started.
+- No project runtime/business code was executed.
+
+Static parser check
+- Command: tsc --noEmit --noCheck --project tsconfig.json
+- Result: PASS (exit 0)
+- TypeScript/TSX source files: 51
+- TypeScript/TSX source lines: 49059
+
+Full type-check context
+- `tsc --noEmit --project tsconfig.json` exits non-zero because this source archive intentionally has no node_modules.
+- Reported diagnostics are dependency/type-environment cascades (React/JSX runtime, Leaflet/Turf/lucide/mp4-muxer and Node globals/types).
+- Diagnostics outside those missing-environment categories: 0
+
+3.6.1 targeted source checks
+- StationHistory passes original station identity as sourceName while retaining the user-facing custom name.
+- StationReportRenderer matches historical stationReadings using sourceName and preserves cumulative station casualties instead of resetting on meteorological re-diagnosis.
+- Successful EWRC now reconciles stale generic structure-damage latches and preserves the penalty only when independent physical core damage is still active.
+- Storm-surge report/video line, swatch and point markers use #111827 (black); precipitation bars remain #2563eb.

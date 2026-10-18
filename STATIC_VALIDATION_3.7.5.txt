@@ -1,0 +1,61 @@
+TyphoonSIM 3.7.5 static / mechanism validation
+================================================
+
+1) TypeScript static parse/type pass available without external packages
+-----------------------------------------------------------------------
+Command: tsc --noEmit --pretty false
+Result: project-level check cannot complete because the source archive does not include node_modules
+and npm install timed out in the sandbox. Reported errors are missing external packages/types
+(react, leaflet, vite, turf, etc.). No syntax/type error was reported from the modified
+PrecipitationModel.ts or Engine.ts; MapView.tsx / SatelliteCloudModal.tsx only report their already
+missing external React/Leaflet packages.
+
+2) Existing rainfall mechanism regression
+-----------------------------------------
+Compiled directly with global TypeScript and executed without third-party runtime dependencies.
+PASS
+windwardMountain24h = 75.1 mm
+leeMountain24h      = 6.0 mm
+remoteLowland24h    = 0.0 mm
+downshearLeftHourly = 7.77 mm/h
+upshearHourly       = 2.80 mm/h
+
+3) New dry-air / small-core regression
+--------------------------------------
+PASS
+intact core mean           = 24.32 mm/h
+dry-collapse core mean     = 17.12 mm/h
+intact >=24 mm/h fraction  = 0.333
+dry >=24 mm/h fraction     = 0.239
+dry-collapse maximum       = 55.5 mm/h
+rebuild 10-34 km mean      = 54.66 mm/h
+rebuild 70-110 km mean     = 23.70 mm/h
+rebuild >=24 mm/h fraction = 0.619
+
+4) Direct same-state comparison against 3.7.4 baseline
+-----------------------------------------------------
+Using the same synthetic 58 m/s dry-air-collapse state:
+3.7.4 dry core mean        = 45.47 mm/h
+3.7.5 dry core mean        = 17.12 mm/h
+3.7.4 >=24 mm/h fraction   = 0.606
+3.7.5 >=24 mm/h fraction   = 0.239
+3.7.4 dry core max         = 188.1 mm/h
+3.7.5 dry core max         = 55.5 mm/h
+
+This specifically catches the reported failure mode: 3.7.4 could make a dry-intruded storm's
+biased convective lobe substantially wetter/stronger than the intact storm; 3.7.5 reverses that
+relationship and makes the dry-intruded inner core weaken as a whole.
+
+5) Scope
+--------
+Modified:
+- src/simulation/PrecipitationModel.ts
+- src/simulation/Engine.ts
+- src/components/MapView.tsx
+- src/components/SatelliteCloudModal.tsx
+- scripts/core_structure_regression.ts
+- package.json / README.md / index.html
+- 3.7.5 research/update/validation notes
+
+No user configuration format was intentionally removed. Existing Typhoon state fields were reused;
+no new persisted state field was added, so old localStorage/history snapshots remain structurally compatible.

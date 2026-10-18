@@ -1,0 +1,27 @@
+AETHER 4.3.12 / Round 28 mobile adaptation validation
+
+PASS  node scripts/round28_regression.cjs
+PASS  node scripts/round27_regression.cjs
+PASS  node scripts/round26_regression.cjs
+PASS  node scripts/round25_regression.cjs
+PASS  node scripts/round24_regression.cjs
+PASS  node scripts/round23_regression.cjs
+PASS  node scripts/round21_regression.cjs
+PASS  node scripts/round20_regression.cjs
+PASS  node scripts/round19_regression.cjs
+PASS  node scripts/round18_regression.cjs
+PASS  node scripts/round17_cloud_guidance_regression.cjs
+PASS  node scripts/release_ui_regression.cjs
+PASS  node scripts/release_4_1_5_regression.cjs
+PASS  TypeScript transpileModule syntax scan: 69 src .ts/.tsx files, 0 syntax errors
+PASS  PostCSS parse: src/index.css
+PASS  package.json JSON parse
+
+NOT APPLICABLE / STALE:
+- scripts/round22_regression.cjs directly requires src/components/TyphoonStatusCard.tsx, intentionally removed in Round 27.
+- scripts/drawn_track_desktop_regression.cjs directly requires the same intentionally removed status-card module.
+- scripts/aether_desktop_rework_regression.cjs contains a historical wind34_probability expectation known to predate current product-center architecture.
+
+NOT RUN:
+- npm run build / full semantic tsc: project node_modules is absent in this execution environment.
+- Physical iOS/Android Safari/Chrome device FPS and gesture testing.

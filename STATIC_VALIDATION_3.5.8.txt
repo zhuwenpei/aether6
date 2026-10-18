@@ -1,0 +1,42 @@
+TyphoonSIM 3.5.8 — Static Validation
+Date: 2026-09-04
+
+Scope
+-----
+Static source validation only. Per user instruction, no npm command was executed, no dependency installation was performed, and Vite/project business code was not started.
+
+Package identity
+----------------
+package.json version: 3.5.8
+index.html title: TyphoonSIM 3.5.8
+Professional workspace version marker: v3.5.8
+TypeScript/TSX source files: 52
+TypeScript/TSX source lines: 50300
+
+Static parser/compiler checks
+-----------------------------
+1) Command: tsc --noEmit --noCheck --pretty false
+   Result: PASS (exit code 0, zero diagnostics).
+   Purpose: parse the complete TypeScript/TSX project and validate syntax/emission structure without requiring installed third-party type packages.
+
+2) Command: tsc --noEmit --pretty false
+   Result: environment-limited as expected because this full-source archive intentionally does not include node_modules.
+   Diagnostic lines: 127
+   Error-code summary: 1 error TS2304;84 error TS2307;2 error TS2339;6 error TS2580;33 error TS2875;1 error TS4112;
+   Observed unresolved dependencies/types include React/react-jsx-runtime, Leaflet/react-leaflet, lucide-react, Recharts, Turf, rbush, mp4-muxer, Vite/Tailwind plugin and Node built-in typings.
+   The ErrorBoundary member diagnostics are a direct consequence of React base-class typings being unavailable; __dirname/process diagnostics are a consequence of Node typings being unavailable.
+   No TypeScript syntax-class diagnostics were produced, and the noCheck whole-project parse passed.
+
+Feature wiring spot-checks
+--------------------------
+PASS: rapid triple-click placement confirmation CSS/MapView/App wiring exists.
+PASS: JMA and black-gray vector basemap options exist in simulation UI and video export UI.
+PASS: Himawari-9 observation replay renderer exists and uses a six-hour analysis-block wind-circle path.
+PASS: rainfall diagnostic version marker 3.5.8-rain-v1 is wired through Engine/station/ranking/report paths.
+PASS: StationVideoModal + StationVideoRenderer are present and wired from StationHistory.
+PASS: station report renderer supports storm-surge chart data and shared report/video rendering.
+PASS: mobile video-preview height guard and station ranking mobile layout fixes are present in source/CSS.
+
+Archive validation
+------------------
+Archive integrity and SHA-256 are recorded after archive creation below in the delivery response.

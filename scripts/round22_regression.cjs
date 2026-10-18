@@ -1,0 +1,40 @@
+/** Round 22 checks: status classification and cross-component timeline/draw-mode wiring.
+ * No browser DOM, npm install or frontend dependency required for this lightweight regression.
+ */
+const fs = require('node:fs');
+const path = require('node:path');
+const assert = require('node:assert/strict');
+const ts = require('typescript');
+const root = path.resolve(__dirname, '..');
+const read = file => fs.readFileSync(path.join(root, file), 'utf8');
+const typeOutput = ts.transpileModule(read('src/types.ts'), {compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText;
+const types = {exports:{}};
+new Function('exports','module','require', typeOutput)(types.exports,types, () => {throw Error('unexpected types dependency');});
+const statusOutput = ts.transpileModule(read('src/utils/StormStatus.ts'), {compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText;
+const status = {exports:{}};
+new Function('exports','module','require',statusOutput)(status.exports,status,id => { if(id==='../types')return types.exports; throw Error('unexpected status dependency: '+id); });
+const state = {category:types.exports.TyphoonCategory.STY,simHour:48,history:[{simHour:0}],intensityChange6h:0,intensityChange24h:0,ewrcState:'none',structureMode:'cdo_mature'};
+const classify = (update,playing=true,replay=false) => status.exports.getStormStatus({...state,...update},playing,replay);
+assert.equal(classify({intensityChange6h:8,intensityChange24h:26}),'快速增强');
+assert.equal(classify({intensityChange6h:2,intensityChange24h:8}),'增强');
+assert.equal(classify({intensityChange6h:-2,intensityChange24h:-8}),'减弱');
+assert.equal(classify({intensityChange6h:-8,intensityChange24h:-28}),'快速减弱');
+assert.equal(classify({intensityChange6h:0,intensityChange24h:0}),'维持强度');
+assert.equal(classify({ewrcState:'max_decay',intensityChange6h:-8}),'眼墙置换中');
+assert.equal(classify({},false,true),'历史回放');
+assert.equal(classify({},false,false),'模拟已暂停');
+assert.equal(classify({dissipated:true},false),'已消散');
+const app=read('src/App.tsx'),map=read('src/components/MapView.tsx'),chart=read('src/components/AetherIntensityPanel.tsx'),timeline=read('src/components/Timeline.tsx'),card=read('src/components/TyphoonStatusCard.tsx'),top=read('src/components/AetherDesktopChrome.tsx'),cloud=read('src/simulation/HurricaneTrackerPort.ts'),css=read('src/index.css'),report=read('src/components/TyphoonReportModal.tsx');
+assert(app.includes('isPlayingRef.current = isPlaying') && app.includes('configRef.current.controlMode !== "draw" || !isPlayingRef.current'),'wheel interception must depend on playing state');
+assert(map.includes('config.controlMode === "draw" && isPlaying') && map.includes('map.scrollWheelZoom.enable()'),'Leaflet wheel zoom enabled when draw-mode paused');
+assert(map.includes('panFrame = requestAnimationFrame') && map.includes('cancelAnimationFrame(panFrame)'),'middle pan must coalesce and cancel animation frames');
+assert(chart.includes('clipPath id={clipId}') && chart.includes('clipPath={`url(#${clipId})`}') && chart.includes('currentHour - minH'),'chart must clip geometry to timeline');
+assert(chart.includes('hoverIndex !== null && <div className="storminc-chart-tooltip"'),'only actual hover may show tooltip');
+assert(timeline.includes('queueSeekPreview(hour)') && timeline.includes('"aether-timeline-scrubbing"'),'timeline scrub must be throttled and mark GPU fast path');
+assert(card.includes('aether-status-edge-hotspot') && card.includes('ChevronLeft') && card.includes('ChevronRight'),'desktop left-edge collapse/reveal');
+assert(top.includes('getStormStatus(typhoon') && !top.includes('T+{Math.round(currentHour)}'),'top pill derives shared status and no elapsed-hour label');
+assert(cloud.includes('const terrainConvergenceBearing') && !cloud.includes('const motionBearing = Number.isFinite'),'cloud shield must not rotate by joystick translation heading');
+assert(cloud.includes('smoothstep((dryStrength + dryExposure + 0.25 * landDamage - 0.10)'),'dry intrusion shield should be gated by diagnosed environment');
+assert(report.includes('if (reportType === "intensity" || productMapReady) return;'),'intensity report must defer global GIS load');
+assert(css.includes('.icwc-product-workstation { background:rgba(22,22,24,.97)') && css.includes('.aether-timeline-scrubbing #root'),'dark products, GPU fast path');
+console.log('round22_regression PASS: 9 live status cases, timeline/chart, draw-wheel, middle pan, cloud, report, dark products, edge reveal');

@@ -1,0 +1,17 @@
+Round163 verification (offline)
+Round163 forecast UI lifecycle/static check: PASS
+Round163 physical step vs UI throttle mocked RAF: PASS, 45 10-minute steps; 11 UI storm renders / 960ms
+Round163 quick-tools auto pause physics integration mock: PASS, zero steps during editing; resume reads new config and interventions
+Round121 forecast/land mask: PASS
+Round128 performance regression: PASS
+Round143 NMC straight label layout: PASS
+Round144 archive: PASS
+Round146 radii/JMA/NMC: PASS
+Round148 wind style/drawn route: PASS
+Round157 NMC + eyewall: PASS
+Round158 pre-simulation guidance: PASS
+Round160 cancellation/pause/chrome: PASS
+Round162 full quick-tool parity: PASS
+TypeScript TSX transpilation syntax: PASS on modified components/App
+Not run: installed-dependency Vite production build, live phone webview, long-running Chromium interaction test.
+Obsolete historical assertions intentionally superseded: Round161 dual-drawer expectation; Round162 continuation-while-quicktools-open expectation.

@@ -1,0 +1,587 @@
+/* R192 — dedicated phone reference styling, isolated from AETHER dark/glass global theme. */
+#root .tn-viewport{position:fixed!important;inset:0;z-index:9500;background:#a7d1f7!important;color:#141414!important;font-family:'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',Arial,sans-serif;overflow:hidden;isolation:isolate;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:none!important;border:0!important}
+.tn-viewport *{box-sizing:border-box}
+.tn-header{height:54px;background:#00c91a;color:#fff;display:grid;grid-template-columns:51px 62px minmax(0,1fr) 51px;align-items:center;gap:8px;padding:0 6px;position:absolute;inset:0 0 auto;z-index:9505;box-shadow:0 1px 2px #127d191f}
+#root .tn-header button{appearance:none;background:transparent!important;color:#fff!important;border:0!important;box-shadow:none!important;cursor:pointer;padding:0;flex-shrink:0;backdrop-filter:none!important}
+#root .tn-header .tn-back{height:50px;width:51px;display:grid;place-items:center;background:#00ae20!important;border:1px solid #44f35f!important}
+.tn-back svg{width:40px;height:40px}
+#root .tn-header .tn-switch{font-size:13px;font-weight:700;line-height:1.12;border:1.5px solid #5cef84!important;border-radius:10px!important;padding:4px 9px!important;height:46px;min-width:58px;text-align:center;background:#00b94c!important}
+.tn-header-title{grid-column:3;text-align:center;font-size:clamp(20px,6.1vw,31px);font-weight:500;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 0 #007d2933}
+#root .tn-header .tn-reference-link{height:48px;width:51px;display:grid;place-items:center;background:#00b934!important}
+.tn-reference-link svg{width:39px;height:39px}
+.tn-map,.tn-baidu-map,.tn-petal-map{position:absolute;inset:54px 0 0;background:#a6d1fa;z-index:1}
+.tn-baidu-map,.tn-petal-map{z-index:2}
+.tn-map .leaflet-container{background:#a6d1fa}
+.tn-ticker{pointer-events:none;position:absolute;top:57px;left:0;right:0;z-index:9502;text-align:right;color:#102aab;font-size:clamp(11px,3.22vw,18px);font-weight:500;line-height:1.25;text-shadow:0 1px 1px #fff8}
+.tn-ticker div{white-space:nowrap;letter-spacing:-.55px}
+.tn-ticker b{display:block;color:#eb0017;font-weight:800;font-size:clamp(18px,5vw,25px);margin-top:7px;text-shadow:1px 1px 0 #fff}
+/* Native Leaflet popup: anchored in geographic coordinates; arrow is Leaflet's native tip. */
+#root .tn-map .leaflet-popup.tn-map-popup{z-index:9200;color:#161616!important}
+#root .tn-map .leaflet-popup.tn-map-popup .leaflet-popup-content-wrapper{background:#fff!important;color:#141414!important;border:1px solid #8e959c!important;box-shadow:0 3px 7px #43536448!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;border-radius:6px!important;padding:0!important}
+#root .tn-map .leaflet-popup.tn-map-popup .leaflet-popup-content{margin:0!important;width:min(80vw,350px)!important;min-width:0;color:#141414!important}
+#root .tn-map .leaflet-popup.tn-map-popup .leaflet-popup-tip{background:#fff!important;border:1px solid #8e959c!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+/* Highly specific overrides protect the content from app-wide dark styling and generic popup div rules. */
+#root .tn-map .tn-map-popup .leaflet-popup-content > .tn-detail,
+#root .tn-viewport .tn-detail{background:#fff!important;color:#151515!important;border:0!important;box-shadow:none!important;opacity:1!important;text-shadow:none!important;filter:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.tn-detail{font-size:14px;line-height:1.66;border-radius:5px;padding-bottom:6px;max-width:min(390px,calc(100vw - 38px))}
+#root .tn-viewport .tn-detail-heading{font-size:16px;font-weight:600;padding:8px 33px 8px 12px;line-height:1.35;border-bottom:1px solid #d0d2d4;background:#fff!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:1!important}
+#root .tn-viewport .tn-detail-body{color:#161616!important;opacity:1!important;background:#fff!important;padding:9px 11px 4px;line-height:1.75}
+#root .tn-viewport .tn-detail-body>div{color:#161616!important;opacity:1!important;text-shadow:none!important;white-space:normal}
+.tn-quadrant{display:grid;grid-template-columns:minmax(105px,1.8fr) repeat(4,minmax(26px,1fr));text-align:center;gap:0;font-size:12px;white-space:nowrap}
+.tn-quadrant span:first-child{text-align:left}
+.tn-quadrant-label{padding-top:4px}
+#root .tn-viewport .tn-simulated-note{text-align:right;color:#66737e!important;font-size:10px;padding-right:11px;background:#fff!important;opacity:1!important}
+/* Baidu InfoWindow is likewise map-anchored with its provider-rendered triangular tip. */
+#root .tn-baidu-map .tn-detail{background:#fff!important;color:#161616!important;opacity:1!important}
+#root .tn-baidu-map .tn-detail-body, #root .tn-baidu-map .tn-detail-body>div{color:#161616!important;background:#fff!important;opacity:1!important}
+.tn-map-error{position:absolute;z-index:9520;top:159px;left:10px;right:10px;background:#fff2d9;color:#804000;padding:10px;border-radius:8px;font-size:12px;box-shadow:0 2px 6px #3336;cursor:pointer}
+.tn-label-pin{border:0!important;background:transparent!important;color:#fff;font:700 11px Arial,sans-serif;white-space:nowrap;pointer-events:none;-webkit-text-stroke:2px #262626;paint-order:stroke fill;text-shadow:0 1px 2px #222}
+.tn-reference-page{position:absolute;inset:54px 0 0;background:#000;overflow:auto;display:flex;flex-direction:column;align-items:stretch;z-index:3}
+.tn-nmc-img{display:block;width:100%;height:auto;object-fit:contain;object-position:top;flex:none;background:#fff}
+.tn-reference-error{color:#d3dfef;font-size:14px;text-align:center;margin-top:30px;padding:20px}
+.tn-loading{position:absolute;inset:0;background:linear-gradient(180deg,#01c539 0 65px,#d9eeff 65px,#add2f1 100%);display:flex;justify-content:center;align-items:center;flex-direction:column;gap:14px;padding:24px;text-align:center}
+.tn-loading-title{color:#087e38;font-size:28px;font-weight:bold}
+.tn-loading-caption{color:#1c5174;font-size:13px}
+.tn-progress{height:18px;width:min(86vw,480px);overflow:hidden;background:#ffffffbb;border-radius:13px;border:1px solid #7ba4ac;box-shadow:inset 0 0 4px #235b7533}
+.tn-progress>div{background:linear-gradient(90deg,#00b849,#12e5a4);height:100%;transition:width .12s linear}
+.tn-progress-caption{font-size:12px;color:#175a59}
+.tn-error{color:#9e1212;font-size:12px;max-width:330px}
+#root .tn-loading button{background:#02b83f!important;color:#fff!important;border:0!important;border-radius:8px;padding:10px 20px;cursor:pointer}
+@media (min-width:800px){.tn-header{height:65px}.tn-map,.tn-baidu-map,.tn-petal-map{top:65px}.tn-reference-page{top:65px}.tn-ticker{top:71px;font-size:18px}.tn-detail{font-size:16px}.tn-header-title{font-size:31px}.tn-ticker b{font-size:24px}}
+@media (max-width:375px){.tn-header{gap:4px}.tn-header-title{font-size:21px}.tn-ticker{font-size:10px}.tn-detail{font-size:12px}.tn-quadrant{grid-template-columns:96px repeat(4,minmax(24px,1fr));font-size:11px}.tn-detail-body{padding:8px}}
+/* R195: The Leaflet bottom attribution control is disabled in this product only.
+   The OSM legal credit is a visible, background-free link near the map's upper edge.
+   Do not create a mask, shadow, blurred pane, or any footer element. */
+#root .tn-viewport .tn-osm-credit{
+  position:absolute!important;top:143px;left:7px;right:auto;z-index:9503;
+  display:inline-block;width:auto;height:auto;margin:0!important;padding:0!important;
+  background:transparent!important;border:0!important;border-radius:0!important;
+  box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  font:400 9px/1.2 Arial,sans-serif!important;color:#364d67!important;
+  opacity:.75;text-decoration:none!important;text-shadow:none!important;
+  -webkit-text-stroke:0!important;pointer-events:auto;
+}
+#root .tn-viewport .tn-osm-credit-after-status{top:166px}
+@media (max-width:799px){
+  #root .tn-viewport .tn-osm-credit{top:117px;font-size:8px!important}
+  #root .tn-viewport .tn-osm-credit-after-status{top:144px}
+}
+
+#root .tn-map .leaflet-popup.tn-agency-popup .leaflet-popup-content{width:min(68vw,300px)!important}
+
+/* R192 reference typography: blue summary sits at upper-right, without halo/outline.
+   No global app text shadow, stroke or bold transforms may leak into the caption. */
+#root .tn-viewport .tn-ticker{left:auto!important;right:0!important;width:100%;top:58px;
+  text-align:right!important;padding-right:7px!important;padding-left:5px!important;
+  font-size:clamp(11px,3.0vw,16px)!important;font-weight:400!important;
+  line-height:1.24!important;letter-spacing:0!important;text-shadow:none!important;
+  -webkit-text-stroke:0!important;filter:none!important;color:#112ba5!important}
+#root .tn-viewport .tn-ticker div{text-align:right!important;white-space:nowrap;
+  font-size:inherit!important;font-weight:400!important;letter-spacing:0!important;
+  -webkit-text-stroke:0!important;text-shadow:none!important}
+#root .tn-viewport .tn-ticker b{font-size:clamp(18px,5vw,25px)!important;
+  font-weight:700!important;line-height:1.25!important;text-shadow:none!important;
+  -webkit-text-stroke:0!important;text-align:right!important;margin-top:5px!important}
+#root .tn-viewport .tn-header-title{font-weight:400!important;text-shadow:none!important;
+  -webkit-text-stroke:0!important;letter-spacing:0!important}
+#root .tn-viewport .tn-provider-wrapper{position:relative;flex-shrink:0;display:flex;align-items:center}
+#root .tn-viewport .tn-provider-menu{position:absolute;top:calc(100% + 5px);left:0;
+  width:132px;background:#fff!important;border:1px solid #329f60!important;
+  border-radius:6px;box-shadow:0 3px 12px #1236;z-index:9530;overflow:hidden;
+  display:flex;flex-direction:column}
+#root .tn-viewport .tn-provider-menu button{color:#174c31!important;background:#fff!important;
+  font-size:13px!important;font-weight:500!important;text-align:left!important;
+  padding:9px 10px!important;border-bottom:1px solid #e8eee9!important;
+  min-height:34px;line-height:1.2;white-space:nowrap}
+#root .tn-viewport .tn-provider-menu button:focus,
+#root .tn-viewport .tn-provider-menu button:hover{background:#d9f8e5!important}
+.tn-petal-map{background:#b0d9ec}
+@media (max-width:375px){#root .tn-viewport .tn-ticker{font-size:10.5px!important}}
+/* R192 phone screenshot calibration (reference captures have a ~45px web-app toolbar). */
+@media (max-width:799px){
+  #root .tn-viewport .tn-header{height:46px!important;gap:5px!important;padding:0 5px!important}
+  #root .tn-viewport .tn-header .tn-back{height:43px!important;width:45px!important}
+  #root .tn-viewport .tn-back svg{height:34px!important;width:34px!important}
+  #root .tn-viewport .tn-header .tn-switch{height:41px!important;min-width:55px!important;
+    font-size:12px!important;border-radius:9px!important;padding:3px 6px!important}
+  #root .tn-viewport .tn-header-title{font-size:clamp(20px,5.4vw,26px)!important}
+  #root .tn-viewport .tn-header .tn-reference-link{height:43px!important;width:44px!important}
+  #root .tn-viewport .tn-reference-link svg{height:33px!important;width:33px!important}
+  #root .tn-viewport .tn-map,#root .tn-viewport .tn-baidu-map,
+  #root .tn-viewport .tn-petal-map{top:46px!important}
+  #root .tn-viewport .tn-reference-page{top:46px!important}
+  #root .tn-viewport .tn-ticker{top:47px!important;
+    font-size:clamp(10.5px,3vw,14px)!important;line-height:1.24!important}
+  #root .tn-viewport .tn-ticker b{font-size:clamp(17px,4.4vw,21px)!important;margin-top:5px!important}
+  #root .tn-viewport .tn-detail{font-size:13px!important;line-height:1.60!important}
+  #root .tn-viewport .tn-detail-heading{font-size:14px!important;font-weight:500!important;
+    padding:7px 31px 7px 10px!important}
+  #root .tn-viewport .tn-detail-body{line-height:1.65!important;padding:8px 10px 5px!important}
+  #root .tn-viewport .tn-quadrant{font-size:11.5px!important}
+}
+/* Text stays fully opaque for native map popups, independent of the app theme. */
+#root .tn-viewport .tn-detail, #root .tn-viewport .tn-detail *{
+  text-shadow:none!important;-webkit-text-stroke:0!important;filter:none!important}
+
+/* R193 offline water/land sampled from Petal reference images. No map-vendor imagery. */
+#root .tn-viewport .tn-map.tn-offline-basemap{background:#a1d2fd!important}
+#root .tn-viewport .tn-map.tn-offline-basemap .leaflet-container{background:#a1d2fd!important}
+#root .tn-viewport .tn-provider-menu{width:184px!important}
+
+/* R196: match reference header geometry with a reserved column for each control.
+   Grid tracks keep the title centered between the map-switch and cyclone-icon
+   instead of moving it as controls change width or the app's global styles load. */
+#root .tn-viewport .tn-header{
+  display:grid!important;grid-template-columns:51px 62px minmax(0,1fr) 51px!important;
+  justify-content:stretch!important;align-items:center!important;
+}
+#root .tn-viewport .tn-header .tn-back{grid-column:1;grid-row:1}
+#root .tn-viewport .tn-header .tn-provider-wrapper{grid-column:2;grid-row:1}
+#root .tn-viewport .tn-header .tn-header-title{
+  grid-column:3;grid-row:1;min-width:0;justify-self:stretch;
+  align-self:center;text-align:center!important;line-height:1.14!important;
+}
+#root .tn-viewport .tn-header .tn-reference-link{grid-column:4;grid-row:1;justify-self:end}
+#root .tn-viewport .tn-header.tn-header-reference{grid-template-columns:51px minmax(0,1fr) 51px!important}
+#root .tn-viewport .tn-header.tn-header-reference .tn-header-title{grid-column:2}
+/* The little unboxed x is INSIDE the white detail panel, not a filled square. */
+@media (max-width:799px){
+  #root .tn-viewport .tn-header{grid-template-columns:45px 55px minmax(0,1fr) 44px!important;gap:5px!important}
+  #root .tn-viewport .tn-header.tn-header-reference{grid-template-columns:45px minmax(0,1fr) 44px!important}
+  #root .tn-viewport .tn-header .tn-reference-link{width:44px!important;height:43px!important}
+  #root .tn-viewport .tn-reference-link svg{width:39px!important;height:39px!important}
+}
+
+/* R196: one accessible close control inside every provider's data card, rather
+   than a grey Leaflet button floating on top of the map. React's capture handler
+   closes Leaflet, Baidu or Petal info at their original geographic anchor. */
+#root .tn-viewport .tn-detail{position:relative!important}
+#root .tn-viewport .tn-detail .tn-detail-close{
+  position:absolute!important;right:12px!important;top:10px!important;z-index:10!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  width:22px!important;height:22px!important;min-width:0!important;min-height:0!important;
+  margin:0!important;padding:0!important;border:0!important;border-radius:0!important;
+  background:transparent!important;color:#898989!important;box-shadow:none!important;
+  opacity:1!important;filter:none!important;backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;text-shadow:none!important;-webkit-text-stroke:0!important;
+  font:400 16px/1 Arial,sans-serif!important;cursor:pointer;
+}
+#root .tn-viewport .tn-detail .tn-detail-close:hover,
+#root .tn-viewport .tn-detail .tn-detail-close:focus-visible{color:#444!important;background:transparent!important}
+
+
+/* R197 — user-supplied cyan alpha cyclone, centered precisely on its transparent eye.
+   Only the cyan artwork spins; the colored physical-intensity eye stays stationary. */
+#root .tn-viewport .tn-cyclone-icon{
+  border:0!important;background:transparent!important;box-shadow:none!important;
+  display:block!important;overflow:visible!important;pointer-events:auto!important;
+}
+#root .tn-viewport .tn-cyclone-center{
+  display:block;position:relative;width:31px;height:31px;line-height:0;
+  background:transparent;transform:translateZ(0);pointer-events:auto;
+}
+#root .tn-viewport .tn-cyclone-spin{
+  display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+  transform-origin:50% 50%;animation:tn-cyclone-counterclockwise 2s linear infinite;
+  will-change:transform;pointer-events:none;
+}
+#root .tn-viewport .tn-cyclone-eye{
+  position:absolute;left:50%;top:50%;width:9px;height:9px;border-radius:50%;
+  transform:translate(-50%,-50%);background:var(--tn-intensity,#8320d6);
+  pointer-events:none;
+}
+@keyframes tn-cyclone-counterclockwise{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
+/* Uploaded 51443.png is already a transparent WHITE cyclone symbol. */
+#root .tn-viewport .tn-reference-art{display:block;object-fit:contain;width:40px;height:40px;
+  background:transparent!important;box-shadow:none!important;pointer-events:none;filter:none}
+#root .tn-viewport .tn-reference-link{border:0!important;background:#00b934!important;
+  display:grid!important;place-items:center!important}
+#root .tn-viewport .tn-amap-map{position:absolute;inset:54px 0 0;background:#a8d6f7;z-index:2}
+@media(max-width:799px){
+  #root .tn-viewport .tn-amap-map{top:46px!important}
+  #root .tn-viewport .tn-reference-art{height:39px!important;width:39px!important}
+}
+/* CMA official-style lead-fix labels are placed near their own larger CMA dots. */
+#root .tn-viewport .tn-label-pin{z-index:11;pointer-events:none}
+/* Center the title against the ENTIRE handset width, not the asymmetric
+   left-side back+provider columns.  At 360px it still fits between controls. */
+@media(max-width:799px){
+  #root .tn-viewport .tn-header .tn-header-title{
+    position:absolute!important;left:50%!important;top:50%!important;
+    transform:translate(-50%,-50%)!important;width:max-content!important;
+    max-width:calc(100vw - 226px)!important;min-width:0!important;
+    overflow:visible!important;text-overflow:clip!important;
+    font-size:clamp(18px,5.1vw,25px)!important;
+  }
+  #root .tn-viewport .tn-header.tn-header-reference .tn-header-title{
+    max-width:calc(100vw - 112px)!important;
+  }
+}
+@media(max-width:799px){
+  #root .tn-viewport .tn-header .tn-header-title{
+    position:fixed!important;left:50vw!important;top:23px!important;
+    transform:translate(-50%,-50%)!important;
+  }
+}
+
+/* R198: disclose the user-reference app's map-source identity without truncation. */
+#root .tn-viewport .tn-provider-menu {width:min(296px,calc(100vw - 18px))!important;}
+#root .tn-viewport .tn-provider-menu button {white-space:normal!important;overflow-wrap:anywhere!important;}
+
+/* R199 -- eliminate inherited frosted-glass backgrounds on map glyphs/captions.
+   The user-provided PNGs themselves have transparent alpha backgrounds. */
+#root .tn-viewport .tn-header .tn-reference-link,
+#root .tn-viewport .tn-header .tn-reference-link:hover,
+#root .tn-viewport .tn-header .tn-reference-link:focus {
+  background:transparent!important;background-color:transparent!important;
+  background-image:none!important;border:0!important;box-shadow:none!important;
+  filter:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  opacity:1!important;isolation:isolate;
+}
+#root .tn-viewport .tn-header .tn-reference-link::before,
+#root .tn-viewport .tn-header .tn-reference-link::after{content:none!important;display:none!important}
+#root .tn-viewport .tn-reference-art {
+  opacity:1!important;background:transparent!important;background-color:transparent!important;
+  background-image:none!important;border:0!important;box-shadow:none!important;
+  mix-blend-mode:normal!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+#root .tn-viewport .tn-map .leaflet-marker-icon.tn-cyclone-icon,
+#root .tn-viewport .tn-map .leaflet-marker-icon.tn-label-pin,
+#root .tn-viewport .tn-map .leaflet-marker-icon.tn-forecast-lead-icon,
+#root .tn-viewport .tn-cyclone-center,
+#root .tn-viewport .tn-cyclone-spin,
+#root .tn-viewport .tn-label-pin svg,
+#root .tn-viewport .tn-forecast-lead-icon svg,
+#root .tn-viewport .tn-cyclone-eye {
+  background:transparent!important;background-color:transparent!important;background-image:none!important;
+  border:0!important;border-radius:0!important;box-shadow:none!important;
+  filter:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  opacity:1!important;mix-blend-mode:normal!important;
+}
+#root .tn-viewport .tn-cyclone-eye{border-radius:50%!important;background:var(--tn-intensity,#8320d6)!important}
+#root .tn-viewport .tn-map .leaflet-marker-icon.tn-forecast-lead-icon {
+  width:110px!important;height:23px!important;line-height:0!important;
+  padding:0!important;outline:0!important;white-space:nowrap!important;overflow:visible!important;
+}
+#root .tn-viewport .tn-map .tn-forecast-lead-icon svg {
+  display:block!important;width:110px!important;height:23px!important;overflow:visible!important;
+}
+#root .tn-viewport .tn-forecast-lead-icon::before,
+#root .tn-viewport .tn-forecast-lead-icon::after,
+#root .tn-viewport .tn-cyclone-icon::before,
+#root .tn-viewport .tn-cyclone-icon::after{
+  content:none!important;display:none!important;
+}
+/* Summary text must remain pure glyphs, never a semi-transparent card. */
+#root .tn-viewport .tn-ticker,
+#root .tn-viewport .tn-ticker div,
+#root .tn-viewport .tn-ticker b {
+  background:transparent!important;background-color:transparent!important;background-image:none!important;
+  border:0!important;box-shadow:none!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;opacity:1!important;
+}
+
+/* The global round126 dialog-button selector contains IDs inside :is(), giving
+   it two-ID specificity.  An actual ID scoped to this one control is necessary
+   to prevent the inherited gray fill and inset shadow from returning. */
+#root .tn-viewport #tn-network-reference-icon:not(#aether-default-dialog-button),
+#root .tn-viewport #tn-network-reference-icon:not(#aether-default-dialog-button):hover,
+#root .tn-viewport #tn-network-reference-icon:not(#aether-default-dialog-button):focus-visible{
+  background-color:transparent!important;background:transparent!important;
+  box-shadow:none!important;border:0!important;backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;filter:none!important;
+}
+
+/* R200 mobile map stability and screenshot typography correction.
+   Leaflet now uses a common SVG layer (rather than deferred Canvas repaint)
+   for cyclone/rings/tracks/fixes during two-finger map gestures. */
+#root .tn-viewport .tn-map .leaflet-overlay-pane svg.leaflet-zoom-animated,
+#root .tn-viewport .tn-map .leaflet-overlay-pane svg.leaflet-zoom-hide {
+  shape-rendering:geometricPrecision;
+}
+#root .tn-viewport .tn-map .leaflet-overlay-pane path {
+  stroke-linecap:round;stroke-linejoin:round;
+}
+/* Reference text is fairly light.  Labels remain transparent, with a thin
+   dark outline only around glyph strokes -- no dark rectangle/glass backdrop. */
+#root .tn-viewport .tn-ticker {
+  font-family:'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',Arial,sans-serif!important;
+  font-size:clamp(10px,2.72vw,14.4px)!important;
+  font-weight:400!important;
+  line-height:1.24!important;
+  text-shadow:none!important;-webkit-text-stroke:0!important;
+}
+#root .tn-viewport .tn-ticker div {
+  font-size:inherit!important;font-weight:400!important;
+  text-shadow:none!important;-webkit-text-stroke:0!important;
+}
+#root .tn-viewport .tn-map .leaflet-marker-icon.tn-forecast-lead-icon {
+  width:98px!important;height:19px!important;
+}
+#root .tn-viewport .tn-map .tn-forecast-lead-icon svg {
+  width:98px!important;height:19px!important;
+}
+/* Override the older 2px CSS text stroke: the transparent SVG already draws
+   its OWN calibrated 1.25px outline and must not get a second halo. */
+#root .tn-viewport .tn-map .tn-forecast-lead-icon,
+#root .tn-viewport .tn-map .tn-forecast-lead-icon svg,
+#root .tn-viewport .tn-map .tn-forecast-lead-icon svg text {
+  -webkit-text-stroke:0!important;text-shadow:none!important;
+  filter:none!important;backdrop-filter:none!important;
+}
+
+/* R201: screenshot-calibrated, unboxed header controls.  Scoped IDs beat the
+   application's global dialog / glass button selectors without altering menus. */
+#root .tn-viewport .tn-header #tn-network-back:not(#aether-default-dialog-button),
+#root .tn-viewport .tn-header #tn-network-back:not(#aether-default-dialog-button):hover,
+#root .tn-viewport .tn-header #tn-network-back:not(#aether-default-dialog-button):focus-visible {
+  box-sizing:border-box!important;
+  background:transparent!important;background-color:transparent!important;
+  background-image:none!important;
+  border:1.5px solid #fff!important;border-radius:0!important;
+  box-shadow:none!important;text-shadow:none!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  filter:none!important;opacity:1!important;outline:none!important;
+}
+#root .tn-viewport .tn-header #tn-network-switch:not(#aether-default-dialog-button),
+#root .tn-viewport .tn-header #tn-network-switch:not(#aether-default-dialog-button):hover,
+#root .tn-viewport .tn-header #tn-network-switch:not(#aether-default-dialog-button):focus-visible {
+  box-sizing:border-box!important;
+  background:transparent!important;background-color:transparent!important;
+  background-image:none!important;
+  border:1.5px solid #fff!important;border-radius:9px!important;
+  box-shadow:none!important;text-shadow:none!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  filter:none!important;opacity:1!important;outline:none!important;
+  width:46px!important;height:46px!important;min-width:46px!important;
+  min-height:46px!important;max-width:46px!important;max-height:46px!important;
+  padding:3px 0!important;
+  display:flex!important;flex-direction:column!important;align-items:center!important;
+  justify-content:center!important;gap:0!important;
+  white-space:nowrap!important;line-height:1!important;
+}
+#root .tn-viewport .tn-header #tn-network-switch .tn-switch-first,
+#root .tn-viewport .tn-header #tn-network-switch .tn-switch-second {
+  display:block!important;position:static!important;
+  width:auto!important;height:auto!important;
+  margin:0!important;padding:0!important;
+  background:transparent!important;border:0!important;box-shadow:none!important;
+  text-shadow:none!important;filter:none!important;opacity:1!important;
+  color:#fff!important;font-family:inherit!important;text-align:center!important;
+  letter-spacing:0!important;white-space:nowrap!important;
+}
+#root .tn-viewport .tn-header #tn-network-switch .tn-switch-first {
+  font-size:14px!important;font-weight:600!important;line-height:16px!important;
+}
+#root .tn-viewport .tn-header #tn-network-switch .tn-switch-second {
+  font-size:12px!important;font-weight:600!important;line-height:14px!important;
+}
+#root .tn-viewport .tn-header #tn-network-reference-icon:not(#aether-default-dialog-button) {
+  background:transparent!important;background-color:transparent!important;
+  background-image:none!important;border:0!important;box-shadow:none!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  filter:none!important;opacity:1!important;outline:none!important;
+}
+/* The real reference button ID is tn-network-reference-icon; keep this one
+   selector alongside the already-existing R199 override for theme immunity. */
+#root .tn-viewport .tn-header #tn-network-reference-icon:not(#aether-default-dialog-button):hover,
+#root .tn-viewport .tn-header #tn-network-reference-icon:not(#aether-default-dialog-button):focus-visible {
+  background:transparent!important;background-color:transparent!important;
+  border:0!important;box-shadow:none!important;filter:none!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+#root .tn-viewport .tn-header #tn-network-back::before,
+#root .tn-viewport .tn-header #tn-network-back::after,
+#root .tn-viewport .tn-header #tn-network-switch::before,
+#root .tn-viewport .tn-header #tn-network-switch::after {
+  content:none!important;display:none!important;
+}
+@media(max-width:799px){
+  #root .tn-viewport .tn-header #tn-network-switch:not(#aether-default-dialog-button),
+  #root .tn-viewport .tn-header #tn-network-switch:not(#aether-default-dialog-button):hover,
+  #root .tn-viewport .tn-header #tn-network-switch:not(#aether-default-dialog-button):focus-visible {
+    width:41px!important;height:41px!important;min-width:41px!important;min-height:41px!important;
+    max-width:41px!important;max-height:41px!important;border-radius:8px!important;
+  }
+  #root .tn-viewport .tn-header #tn-network-switch .tn-switch-first {font-size:12.5px!important;line-height:14px!important}
+  #root .tn-viewport .tn-header #tn-network-switch .tn-switch-second {font-size:11px!important;line-height:12.5px!important}
+}
+
+/* R202: labels and cyclone now belong to the same geographic SVG overlay as
+   tracks and wind-radii, not the delayed Leaflet DOM marker pane. SVG glyphs
+   never render the inherited glass tile, and they pinch-zoom as one unit. */
+#root .tn-viewport .tn-map svg .tn-geo-glyph,
+#root .tn-viewport .tn-map svg .tn-geo-glyph * {
+  background:none!important;filter:none!important;box-shadow:none!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  opacity:1!important;mix-blend-mode:normal!important;
+}
+#root .tn-viewport .tn-map svg .tn-geo-lead {
+  paint-order:stroke fill;stroke-linejoin:round;stroke:#292929;stroke-width:1.25px;
+  fill:#fff;font-weight:600;pointer-events:none;
+}
+#root .tn-viewport .tn-map svg .tn-geo-cyclone-spin {
+  transform-box:fill-box;transform-origin:center;
+  animation:tn-cyclone-counterclockwise 2s linear infinite;
+  pointer-events:none;
+}
+#root .tn-viewport .tn-map svg .tn-geo-cyclone-eye {stroke:none;pointer-events:none}
+#root .tn-viewport .tn-map svg .leaflet-interactive[fill]:not(.tn-geo-cyclone-eye) {
+  /* History/forecast SVG circles use a barely visible, translucent fine outline. */
+}
+
+/* R206 — single Gaode source; no map-provider menu or top-left menu popup. */
+#root .tn-viewport .tn-header,
+#root .tn-viewport .tn-header.tn-header-reference {
+  grid-template-columns:51px minmax(0,1fr) 51px!important;
+}
+#root .tn-viewport .tn-header .tn-header-title,
+#root .tn-viewport .tn-header.tn-header-reference .tn-header-title {
+  grid-column:2!important;
+  grid-row:1!important;
+  text-align:center!important;
+}
+#root .tn-viewport .tn-header .tn-reference-link {grid-column:3!important;grid-row:1!important}
+#root .tn-viewport .tn-header .tn-back {grid-column:1!important;grid-row:1!important}
+/* Do not let old all-device glass styling add a backdrop to the arrow. */
+#root .tn-viewport .tn-header #tn-network-back:not(#aether-default-dialog-button),
+#root .tn-viewport .tn-header #tn-network-back:not(#aether-default-dialog-button):hover,
+#root .tn-viewport .tn-header #tn-network-back:not(#aether-default-dialog-button):focus-visible {
+  border:0!important;
+  outline:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+/* Short, unobtrusive credit in the lower left. No backdrop, panel, or shadow. */
+#root .tn-viewport .tn-osm-credit,
+#root .tn-viewport .tn-osm-credit-after-status {
+  top:auto!important;
+  bottom:calc(9px + env(safe-area-inset-bottom, 0px))!important;
+  left:7px!important;right:auto!important;
+  z-index:9502!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  font:400 9px/1.1 Arial,sans-serif!important;
+  color:#3b5360!important;
+  opacity:.58!important;
+  white-space:nowrap!important;
+  max-width:120px!important;
+  pointer-events:auto!important;
+}
+@media(max-width:799px){
+  #root .tn-viewport .tn-header,
+  #root .tn-viewport .tn-header.tn-header-reference {
+    grid-template-columns:45px minmax(0,1fr) 44px!important;
+  }
+  #root .tn-viewport .tn-header .tn-header-title,
+  #root .tn-viewport .tn-header.tn-header-reference .tn-header-title {
+    max-width:calc(100vw - 116px)!important;
+  }
+  #root .tn-viewport .tn-osm-credit {font-size:8px!important;}
+}
+
+/* R208: screenshot-matched map controls with the user's transparent PNG artwork.
+   No glass tiles or grey pseudo-elements may leak from app-wide button rules. */
+#root .tn-viewport .tn-header,
+#root .tn-viewport .tn-header.tn-header-reference{
+  grid-template-columns:46px minmax(0,1fr) repeat(3,35px)!important;
+  gap:4px!important;padding:0 5px!important;
+}
+#root .tn-viewport .tn-header.tn-header-reference{
+  grid-template-columns:46px minmax(0,1fr) 0px 0px 0px!important;
+}
+#root .tn-viewport .tn-header .tn-header-title,
+#root .tn-viewport .tn-header.tn-header-reference .tn-header-title{
+  grid-column:2!important;min-width:0!important;max-width:none!important;
+  text-align:center!important;margin:0!important;
+}
+#root .tn-viewport .tn-header .tn-share-action{grid-column:3!important;grid-row:1!important}
+#root .tn-viewport .tn-header .tn-reference-link{grid-column:4!important;grid-row:1!important}
+#root .tn-viewport .tn-header .tn-history-action{grid-column:5!important;grid-row:1!important}
+#root .tn-viewport .tn-header .tn-header-action,
+#root .tn-viewport .tn-header .tn-header-action:hover,
+#root .tn-viewport .tn-header .tn-header-action:focus-visible,
+#root .tn-viewport .tn-header #tn-network-reference-icon:not(#aether-default-dialog-button){
+  display:grid!important;place-items:center!important;
+  width:35px!important;height:43px!important;min-width:0!important;min-height:0!important;
+  max-width:none!important;max-height:none!important;
+  padding:0!important;margin:0!important;border:0!important;border-radius:0!important;
+  background:transparent!important;box-shadow:none!important;filter:none!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  outline:none!important;opacity:1!important;
+}
+#root .tn-viewport .tn-header .tn-header-action img{
+  display:block!important;width:34px!important;height:34px!important;object-fit:contain!important;
+  background:transparent!important;box-shadow:none!important;filter:none!important;opacity:1!important;
+}
+#root .tn-viewport .tn-header .tn-header-action:disabled{opacity:.5!important}
+#root .tn-viewport .tn-header .tn-header-action::before,
+#root .tn-viewport .tn-header .tn-header-action::after{display:none!important;content:none!important}
+#root .tn-viewport .tn-right-tools{
+  position:absolute!important;right:10px!important;top:65.4%!important;z-index:9503!important;
+  display:flex!important;flex-direction:column!important;gap:7px!important;
+  background:transparent!important;pointer-events:auto;
+}
+#root .tn-viewport .tn-floating-button,
+#root .tn-viewport .tn-replay-button{
+  appearance:none!important;display:grid!important;place-items:center!important;
+  width:42px!important;height:42px!important;padding:0!important;margin:0!important;
+  background:transparent!important;border:0!important;border-radius:0!important;
+  box-shadow:none!important;filter:none!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  outline:none!important;cursor:pointer!important;opacity:1!important;
+}
+#root .tn-viewport .tn-floating-button img,
+#root .tn-viewport .tn-replay-button img{
+  width:100%!important;height:100%!important;display:block!important;object-fit:contain!important;
+  background:transparent!important;box-shadow:none!important;filter:none!important;
+}
+#root .tn-viewport .tn-replay-button{
+  position:absolute!important;left:9px!important;bottom:calc(52px + env(safe-area-inset-bottom, 0px))!important;
+  width:54px!important;height:54px!important;z-index:9503!important;
+}
+#root .tn-viewport .tn-floating-button::before,
+#root .tn-viewport .tn-floating-button::after,
+#root .tn-viewport .tn-replay-button::before,
+#root .tn-viewport .tn-replay-button::after{content:none!important;display:none!important}
+/* Local, keyless night styling on genuine OSM raster data. Not a CARTO endpoint. */
+#root .tn-viewport .tn-map img.tn-osm-night-tiles{
+  filter:invert(.93) hue-rotate(175deg) saturate(.65) brightness(.78) contrast(1.14)!important;
+}
+/* R208 typographic rebalancing. The lead-times travel with SVG map geometry. */
+#root .tn-viewport .tn-map svg .tn-geo-lead{
+  stroke:#303030!important;stroke-width:.7px!important;
+  font-weight:500!important;font-size:9px!important;
+  paint-order:stroke fill!important;stroke-linejoin:round!important;
+}
+#root .tn-viewport .tn-ticker{
+  font-size:clamp(12.5px,3.5vw,16.5px)!important;
+  font-weight:400!important;line-height:1.24!important;
+}
+#root .tn-viewport .tn-ticker b.tn-status-active,
+#root .tn-viewport .tn-ticker b.tn-status-ended{
+  display:block!important;text-align:center!important;
+  font-size:clamp(15px,3.6vw,18px)!important;
+  font-weight:600!important;line-height:1.12!important;
+  margin-top:5px!important;text-shadow:none!important;
+}
+#root .tn-viewport .tn-ticker b.tn-status-active{color:#e50019!important}
+#root .tn-viewport .tn-ticker b.tn-status-ended{color:#00ac24!important}
+@media(max-width:375px){
+  #root .tn-viewport .tn-header,
+  #root .tn-viewport .tn-header.tn-header-reference{
+    grid-template-columns:42px minmax(0,1fr) repeat(3,32px)!important;gap:2px!important;
+  }
+  #root .tn-viewport .tn-header .tn-header-action,
+  #root .tn-viewport .tn-header #tn-network-reference-icon:not(#aether-default-dialog-button){width:32px!important}
+  #root .tn-viewport .tn-header .tn-header-action img{width:30px!important;height:30px!important}
+  #root .tn-viewport .tn-ticker{font-size:clamp(11.5px,3.5vw,13.5px)!important}
+}
+
+/* Legible mandatory OpenStreetMap attribution on the dark OSM-derived tiles. */
+#root .tn-viewport .tn-osm-credit.tn-credit-night{
+  color:#ffffff!important;opacity:.87!important;font-size:10px!important;
+  text-shadow:0 1px 2px #001a27!important;max-width:210px!important;
+}

@@ -1,0 +1,8 @@
+Round158 验证范围
+- 新增 preSimulationReference 精确起报时刻绑定、99.5% path/intensity/speed/radii 融合、未运行时效禁止虚构
+- 普通预报早停而沙盒继续存活的已运行时次补齐，模拟消散的预报截断
+- .aether/.aether.json JSON 字段保留及导入验证，起报时刻不匹配拦截
+- Round158 独立子引擎按 10min 物理步进、默认 8x、母模拟暂停隔离
+- 原有陆地18m/s软平台镜像及相关回归
+- 回归：121,143,144,146,148,157
+限制：缺少 React/Vite/Leaflet 等 npm 包，未执行完整 Vite 构建与真机 UI/E2E。

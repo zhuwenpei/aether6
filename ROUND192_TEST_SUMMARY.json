@@ -1,0 +1,35 @@
+{
+  "round": 192,
+  "based_on": "R191",
+  "program_version": "6.0.49",
+  "scope": [
+    "forecast point intensity colors vs agency route colors",
+    "reference typography right alignment and no stroke",
+    "Petal Maps official Web Map Kit SDK and map source selection"
+  ],
+  "checks": {
+    "round192_domain_regression": "32/32 PASS",
+    "petal_sdk_mock_loader": "4/4 PASS",
+    "round191_compatibility": "28/28 PASS",
+    "round190_compatibility": "20/20 PASS",
+    "chromium_typography_isolated": "PASS",
+    "r188_parameter_nodes": "PASS (exit 0)",
+    "r189_wind_radii": "PASS (exit 0)",
+    "nmc_crash_safety": "PASS (exit 0)",
+    "ensemble_intensity": "PASS (exit 0)",
+    "strike_termination": "PASS (exit 0)",
+    "full_vite_build": "NOT VERIFIED — vite not found",
+    "petal_maps_live_authorized_tiles": "NOT VERIFIED — authorized API key not provided",
+    "mobile_pixel_level_comparison": "NOT VERIFIED — isolated Chromium style test only"
+  },
+  "unchanged_sha256_paths": [
+    "src/simulation/Engine.ts",
+    "src/simulation/AetherEnsembleGuidance.ts",
+    "src/utils/NmcForecastProduct.ts",
+    "src/utils/StrikeProbabilityField.ts",
+    "src/utils/TyphoonNetworkData.ts",
+    "src/App.tsx",
+    "src/components/ForecastImageModal.tsx",
+    "src/utils/SimulationArchive.ts"
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "version": "R210",
+  "base": "R209 delivered ZIP",
+  "incident": "Cloudflare vite Rollup cannot resolve react-leaflet from Step1Target.tsx",
+  "root_cause": "Three cloudCompositor components import react-leaflet without a matching installed and locked dependency.",
+  "resolution": "Replace react-leaflet usage with a Leaflet React bridge and remove its unlocked package.json dependency; retain frozen bun.lock.",
+  "changed": [
+    "src/cloudCompositor/components/Step1Target.tsx",
+    "src/cloudCompositor/components/Step2Typhoon.tsx",
+    "src/cloudCompositor/components/SmartWMSTileLayer.tsx",
+    "package.json"
+  ],
+  "added": [
+    "src/cloudCompositor/lib/LeafletReactLite.tsx",
+    "scripts/round210_cloudflare_missing_leaflet_dependency_regression.cjs",
+    "ROUND210_CLOUDFLARE_REACT_LEAFLET_IMPORT_FIX.md",
+    "ROUND210_VALIDATION.json"
+  ],
+  "checks": {
+    "r210_static": {
+      "passed": 25,
+      "total": 25
+    },
+    "r209_low_memory_static": {
+      "passed": 10,
+      "total": 10
+    },
+    "typescript_source_AST_import_scan": {
+      "files": 136,
+      "undeclared_external_imports": 0
+    },
+    "tsx_transpilation": {
+      "passed": 4,
+      "total": 4
+    },
+    "round204_svg_mount": {
+      "passed": 9,
+      "total": 9
+    },
+    "round208_nmc_cone_numeric": {
+      "passed": 7,
+      "total": 7
+    },
+    "round185_nmc_crash_retained": true,
+    "round188_parameters": true,
+    "round189_radii": true,
+    "vite_production_build": "NOT RUN: missing local node_modules",
+    "bun_manifest_dependency_names_checked": true
+  },
+  "bun_lock_sha256": "4c615017dc69ed11bc78ab66c5a523e960b0c27b43fb9004c53ad1f3458587cf",
+  "notes": [
+    "Outdated earlier regressions requiring pre-R208 10px dots or obsolete implementation may fail on R209 baseline and are not R210 regressions.",
+    "Cloudflare requires a fresh build to verify end-to-end."
+  ]
+}

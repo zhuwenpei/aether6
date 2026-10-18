@@ -1,0 +1,60 @@
+TyphoonSIM 3.7.6 static validation
+Date: 2026-09-15
+
+Scope
+-----
+User explicitly requested no npm operation. No npm install, npm run, npx, Vite build, or dependency download was performed.
+The supplied source archive contains no node_modules, so validation is source/static only.
+
+Checks performed
+----------------
+1. node scripts/tutorial_usage_physics_regression.cjs
+   PASS
+   - first-run tutorial wiring
+   - debug tab presence
+   - required tutorial interaction steps / white-dot gesture modes
+   - timelineHidden save/restore migration
+   - map gesture + historical scrub synchronization guards
+   - live/forecast cold-water buffer and release formula mirrors
+   - measured formula comparison: cold-water release at illustrative 12 h exposure 0.052 -> 0.025
+
+2. node scripts/release_ui_regression.cjs
+   PASS
+
+3. TypeScript syntax transpilation using the already-installed global TypeScript compiler API
+   PASS:
+   - src/App.tsx
+   - src/components/MapView.tsx
+   - src/components/ControlDrawer.tsx
+   - src/components/AetherTutorial.tsx
+   - src/components/AetherLaunchSequence.tsx
+   - src/simulation/Engine.ts
+
+4. Launch-performance source inspection
+   PASS
+   - no feTurbulence
+   - no feDisplacementMap
+   - no feGaussianBlur in AetherLaunchSequence / launch CSS
+   - launch motion is transform/opacity based
+   - supplied target image is reduced to public/aether-launch-cloud-reference.webp (~132 KiB) and used only as a static outer-cloud texture; central baked logo/text are covered by the SVG cutout
+
+5. Version/source consistency
+   PASS
+   - package.json version = 3.7.6
+   - README heading = TyphoonSIM 3.7.6
+   - Engine external User-Agent = TyphoonSim/3.7.6
+   - UPDATE_NOTES_3.7.6.md present
+
+6. Archive hygiene
+   PASS before packaging
+   - no node_modules
+   - no dist
+   - no .DS_Store / __MACOSX
+
+Not performed
+-------------
+- npm / npx commands (per user request)
+- Vite production build (dependencies are not installed and npm was prohibited)
+- browser/device interactive performance profiling
+
+The modified archive should therefore be treated as statically validated source. The source-level regression guards specifically cover the requested map/timeline/history/tutorial/cold-water changes.

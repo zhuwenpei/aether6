@@ -1,0 +1,23 @@
+{
+  "kind": "isolated Chromium SVG interaction, not complete Leaflet",
+  "cases": [
+    {
+      "viewport_width": 360,
+      "hit_outside_visible_dot": true,
+      "playback_icon_hidden": true,
+      "restored_after_interrupt": true
+    },
+    {
+      "viewport_width": 390,
+      "hit_outside_visible_dot": true,
+      "playback_icon_hidden": true,
+      "restored_after_interrupt": true
+    },
+    {
+      "viewport_width": 430,
+      "hit_outside_visible_dot": true,
+      "playback_icon_hidden": true,
+      "restored_after_interrupt": true
+    }
+  ]
+}

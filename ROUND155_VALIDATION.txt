@@ -1,0 +1,48 @@
+AETHER 6.0.39 · Round155 Validation
+===================================
+Baseline: round154_synoptic_video_fixed_crop.zip
+
+1) Node numerical parity test:
+  node scripts/round155_synoptic_video_lossless_regression.cjs
+  48,000 stencil sample positions: exact min/max/spread match
+  9 pressure levels: 4,621 contour segments, exact geometry/order match
+  sampled coordinate arithmetic unchanged, tested 1348x940, 1080x1920, 2160x1440
+
+Isolated stencil sample hot-path benchmarks (96,000 calls; synthetic 320x175 field):
+  1st run: baseline 180.53 ms, optimized 51.80 ms => 3.49x
+  2nd run: baseline 188.94 ms, optimized 55.10 ms => 3.43x
+This is NOT complete video export speedup.
+
+2) Actual Chromium Canvas with product_coastline_fine_v5.geojson:
+  python scripts/round155_coastline_pixel_check.py
+  Test extent: 105–140E, 5–45N; 674 coastline rings
+  Direct canvas draw vs reusable Path2D draw: 0 differing byte components
+  Single warm pass: baseline 7.1 ms vs cache 1.9 ms
+  6 repeated passes: baseline 15.1 ms vs cache 0.8 ms
+  Cache path construction not included in repeated-pass timings; first fixed frame builds paths.
+
+3) Chromium cooperative scheduling microbenchmark:
+  180 await setTimeout(0): 716.0 ms
+  180 await scheduler.yield(): 1.2 ms
+  Scheduler and browser/device versions may vary; no meteorological work was changed.
+
+4) Compatibility tests:
+  Round121 PASS
+  Round143 PASS
+  Round144 PASS
+  Round146 PASS
+  Round148 PASS
+  Round149 PASS
+  Round152 PASS
+  Round153 PASS
+  Round154 PASS
+  round155 lossless regression PASS
+  coastline Canvas parity PASS
+  tsc --noEmit --noCheck PASS
+  transpileModule checks of 5 touched TS modules PASS
+
+5) Scope and limitations:
+  Round151's historical byte-identity assertion was already inapplicable to the
+  unmodified Round154 baseline, which deliberately includes Round152/153 physics refinements.
+  Full Vite build and real handset export benchmarking NOT RUN (missing npm dependencies).
+  No verified whole-video multiplicative speedup claim is made.
