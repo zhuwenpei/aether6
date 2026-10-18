@@ -11,6 +11,7 @@ import './NetworkEntrySettings.css';
  */
 export type NetworkChartSettings={
   precalculate:boolean;
+  quietSimulationHints:boolean;
   resolutionId:'1080p'|'2k'|'4k'|'8k';
   nmcWidth:number;
   forecastHours:number;
@@ -62,7 +63,7 @@ export function readNetworkChartSettingsFromProducts(precalculate=false):Network
     watermark:readText('strikeWatermark','WMC',30)
   };
   return {
-    precalculate,resolutionId,nmcWidth:NORMAL_SIZES[resolutionId].width,
+    precalculate,quietSimulationHints:false,resolutionId,nmcWidth:NORMAL_SIZES[resolutionId].width,
     forecastHours:readSelect('forecastHours',120,[24,48,72,96,120]),
     nmcCoarseIntensity:readCheck('nmcCoarseIntensity',true),
     nmcCustomPeakEnabled:readCheck('nmcCustomPeakEnabled',false),
@@ -83,12 +84,24 @@ export default function NetworkEntrySettings({config,storm,currentHour,startDate
   const [precalculate,setPrecalculate]=useState(false);
   const [drawer,setDrawer]=useState(false);
   const [openEditor,setOpenEditor]=useState(false);
+  const [quietSimulationHints,setQuietSimulationHints]=useState(false);
+  const [quietDialog,setQuietDialog]=useState(false);
+  const [quietPassword,setQuietPassword]=useState('');
+  const [quietAcknowledged,setQuietAcknowledged]=useState(false);
+  const [quietError,setQuietError]=useState('');
   return <div className="tn-entry-overlay" role="dialog" aria-modal="true" aria-label="台风网模拟入场调整">
     <section className="tn-entry-card">
       <div className="tn-entry-head"><button type="button" onClick={onCancel} aria-label="取消进入">←</button><strong>模拟台风网 · 预报调整</strong></div>
       <div className="tn-entry-body">
         <p className="tn-entry-muted">本次入场生成专用预报，不改变主模拟物理历史与原始参数。</p>
         <p className="tn-entry-muted">中国预报与 NMC 参考图完全共用正常 NMC 产品的强度计算结果；各国预报在独立集合成员基础上高权重参考这一结果。巅峰参数请在完整气象图设置的 NMC 产品中调整。</p>
+        <div className="tn-entry-quiet-row">
+          <button type="button" className="tn-entry-quiet-toggle" aria-pressed={quietSimulationHints}
+            onClick={()=>{if(quietSimulationHints){setQuietSimulationHints(false);return;}setQuietPassword('');setQuietAcknowledged(false);setQuietError('');setQuietDialog(true);}}>
+            {quietSimulationHints?'✓ 已关闭重复模拟提示（点击恢复）':'关闭所有模拟提示信息（需密码）'}
+          </button>
+          <small>仅收起页面中的重复说明，不删除地图和导出文件中的简短“模拟”标识。</small>
+        </div>
         <button type="button" className="tn-entry-drawer-toggle" onClick={()=>setDrawer(v=>!v)} aria-expanded={drawer} aria-controls="tn-entry-drawer">☰　气象图生成参数 <span>{drawer?'收起 ▲':'展开 ▼'}</span></button>
         {drawer&&<div id="tn-entry-drawer" className="tn-entry-drawer">
           <label className="tn-entry-check"><input type="checkbox" checked={precalculate} onChange={e=>setPrecalculate(e.target.checked)}/> 进入台风网时提前计算集合预报图片</label>
@@ -97,8 +110,21 @@ export default function NetworkEntrySettings({config,storm,currentHour,startDate
           <small>进入抽屉后选择气象图产品并调整所有原有参数，关闭抽屉即保存；确认进入时会读取其最新设置。概率页固定生成袭击概率和经典八机构中心图，版式与正常产品完全相同。</small>
         </div>}
       </div>
-      <div className="tn-entry-actions"><button type="button" onClick={onCancel}>取消</button><button type="button" className="tn-entry-confirm" onClick={()=>onConfirm(config,readNetworkChartSettingsFromProducts(precalculate))}>确认并进入台风网 →</button></div>
+      <div className="tn-entry-actions"><button type="button" onClick={onCancel}>取消</button><button type="button" className="tn-entry-confirm" onClick={()=>onConfirm(config,{...readNetworkChartSettingsFromProducts(precalculate),quietSimulationHints})}>确认并进入台风网 →</button></div>
     </section>
+    {quietDialog&&<div className="tn-entry-quiet-backdrop" role="presentation"><section className="tn-entry-quiet-dialog" role="dialog" aria-modal="true" aria-label="模拟提示设置免责声明">
+      <h3>关闭重复模拟提示 · 风险确认</h3>
+      <p><strong>免责声明：</strong>所有路径、强度、风圈、警戒线进入判定、集合概率和机构名称下的预报均由模拟系统生成，不是任何气象机构发布的实时预报、预警或官方警戒判断。不能用于避险、航海、航班、工程、财产或生命安全决策。</p>
+      <p>注意：关闭的只是重复提示文字与说明，不会改变模拟计算；地图和导出文件仍保留最小可见“模拟”标识。警戒线采用公开复现坐标，尚非官方 GIS 原始文件。</p>
+      <label>设置密码<input type="password" autoComplete="off" value={quietPassword} onChange={e=>{setQuietPassword(e.target.value);setQuietError('');}} placeholder="请输入密码"/></label>
+      <label className="tn-entry-quiet-agree"><input type="checkbox" checked={quietAcknowledged} onChange={e=>setQuietAcknowledged(e.target.checked)}/> 我已阅读并理解上述免责声明和注意事项</label>
+      {quietError&&<div className="tn-entry-quiet-error" role="alert">{quietError}</div>}
+      <div className="tn-entry-quiet-buttons"><button type="button" onClick={()=>setQuietDialog(false)}>取消</button><button type="button" onClick={()=>{
+        if(quietPassword!=='110908'){setQuietError('密码不正确');return;}
+        if(!quietAcknowledged){setQuietError('请先确认阅读免责声明');return;}
+        setQuietSimulationHints(true);setQuietDialog(false);setQuietPassword('');
+      }}>确认开启</button></div>
+    </section></div>}
     {openEditor&&<div className="tn-entry-product-drawer" role="region" aria-label="完整气象图产品参数">
       <ForecastImageModal isOpen={true} onClose={()=>setOpenEditor(false)} typhoon={storm} typhoons={[storm]}
         currentHour={currentHour} startDate={startDate} config={config} mobileMode={mobileMode} settingsOnly={true}

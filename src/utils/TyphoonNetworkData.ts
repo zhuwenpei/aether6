@@ -5,11 +5,12 @@
  */
 import type { Typhoon, TyphoonState, SimulationConfig } from '../types';
 import { getWindForceCategory, materializeForecastPath } from '../simulation/Engine';
+import {insideNetwork24hWarning} from './NetworkWarningLines';
 
 export type NetworkFix = Pick<TyphoonState, 'lat'|'lon'|'vmax'|'pmin'|'speed'|'direction'|'rmw'|'r7'|'r10'|'r12'|'simHour'> & {
   category?: string; landed?: boolean; dissipated?: boolean;
 };
-export type NetworkForecast = { agency: '中国'|'日本'|'美国'|'韩国'; color: string; fixes: NetworkFix[] };
+export type NetworkForecast = { agency: '中国'|'日本'|'美国'|'韩国'; color: string; fixes: NetworkFix[]; sourceModelId?: string };
 export type NetworkProduct = { history: NetworkFix[]; issue: NetworkFix; forecasts: NetworkForecast[]; maxHour: number };
 
 const interpolate = (a:number,b:number,t:number) => a+(b-a)*t;
@@ -87,6 +88,40 @@ export function cmaBoundedNetworkHistory(storm:Typhoon, startDate:Date, currentH
     if(fix.simHour<=currentHour+1e-7 && fix.simHour<=valid[valid.length-1].simHour+1e-7)result.push(fix);
   }
   return result.map(fix=>({...fix,vmax:toCmaPublishedWindSpeed(fix.vmax)}));
+}
+
+/** R218: keep the original 3h CMA-public-slot points until entry into the
+ * 24h warning region. After actual crossing, show 1h fixes sampled from the
+ * physical history up to the selected simulation hour. Crossing time is found
+ * on the chronological source history, never from forecast positions.
+ * Both 1h/3h histories retain the CMA public-strength discretisation.
+ */
+export function warningAdaptiveNetworkHistory(storm:Typhoon,startDate:Date,currentHour:number):NetworkFix[]{
+  const base=cmaBoundedNetworkHistory(storm,startDate,currentHour);
+  const valid=(storm.history||[]).filter(p=>Number.isFinite(p.simHour)&&Number.isFinite(p.lat)&&Number.isFinite(p.lon)&&Number.isFinite(p.vmax)&&p.simHour<=currentHour+1e-6)
+    .slice().sort((a,b)=>a.simHour-b.simHour);
+  if(!valid.length)return base;
+  const cap=Math.min(currentHour,valid[valid.length-1].simHour);
+  if(!Number.isFinite(cap))return base;
+  // Test successive real source fixes, not raster pixels or map display coords.
+  const firstCross=valid.find(p=>insideNetwork24hWarning(p.lat,p.lon));
+  if(!firstCross)return base;
+  const firstHour=Math.min(cap,firstCross.simHour);
+  const kept=base.filter(p=>p.simHour<firstHour-1e-7);
+  // Preserve the actual first crossing fix, even for nonintegral source hours;
+  // subsequently use the same whole-hour reference grid as the engine history.
+  const hours=[firstHour];
+  for(let hour=Math.floor(firstHour+1e-6)+1;hour<=cap+1e-6;hour++){
+    if(hour>firstHour+1e-6)hours.push(hour);
+  }
+  if(cap>hours[hours.length-1]+1e-6)hours.push(cap);
+  for(const hour of hours){
+    const fix=sampleNetworkFix(valid,hour);
+    if(fix.simHour>kept[kept.length-1]?.simHour+1e-7 || !kept.length){
+      kept.push({...fix,vmax:toCmaPublishedWindSpeed(fix.vmax)});
+    }
+  }
+  return kept;
 }
 
 /** R193: color key sampled against the uploaded Petal reference (not agency colors).

@@ -1,6 +1,6 @@
 {
   "type": "FeatureCollection",
-  "name": "China_typhoon_24h_48h_warning_lines_reference_WGS84",
+  "name": "China_typhoon_24h_48h_warning_lines_reference_R218_rendered_WGS84",
   "crs": {
     "type": "name",
     "properties": {
@@ -13,10 +13,11 @@
       "properties": {
         "name": "中国台风24小时警戒线",
         "hours": 24,
-        "recommendedColor": "#207be9",
+        "recommendedColor": "#e1162d",
         "recommendedDash": [],
         "source": "https://lzugis.github.io/lzugis-blogs/project/ui.html",
-        "officialGISVerified": false
+        "officialGISVerified": false,
+        "renderedInNetwork": true
       },
       "geometry": {
         "type": "LineString",
@@ -53,13 +54,14 @@
       "properties": {
         "name": "中国台风48小时警戒线",
         "hours": 48,
-        "recommendedColor": "#14a05a",
+        "recommendedColor": "#f9e12a",
         "recommendedDash": [
           4,
-          2
+          5
         ],
         "source": "https://lzugis.github.io/lzugis-blogs/project/ui.html",
-        "officialGISVerified": false
+        "officialGISVerified": false,
+        "renderedInNetwork": true
       },
       "geometry": {
         "type": "LineString",

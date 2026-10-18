@@ -777,3 +777,8 @@
   object-fit:contain!important;object-position:center top!important;flex:0 0 auto!important;
 }
 @media(max-width:480px){#root .tn-viewport .tn-probability-page figure{width:calc(100% - 12px)!important;max-width:calc(100% - 12px)!important}}
+
+/* R218: low-profile, permanently visible provenance when repeated notices are hidden. */
+#root .tn-map-simulation-mark{position:absolute;left:8px;bottom:33px;z-index:390;pointer-events:none;
+  font:600 10px/1.2 'Microsoft YaHei',sans-serif;letter-spacing:1px;
+  color:#536974;background:#ffffffa8;border-radius:3px;padding:2px 4px}

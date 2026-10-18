@@ -23,3 +23,20 @@
 #root .tn-entry-drawer .tn-entry-original-settings{display:block;width:100%;border-radius:8px!important;
   padding:13px 12px!important;background:#007f36!important;color:white!important;border:1px solid #008d40!important;
   font-weight:700!important;font-size:14px!important;text-align:center!important}
+
+/* R218: explicit password + disclaimer gate for hiding repetitive prompts. */
+#root .tn-entry-quiet-row{display:flex;flex-direction:column;gap:6px;margin:0 0 16px}
+#root .tn-entry-quiet-toggle{background:#e9eef3!important;color:#1e3e52!important;border:1px solid #a4b9c3!important;border-radius:9px;padding:12px!important;font-size:13px;font-weight:700;text-align:left}
+#root .tn-entry-quiet-row small{font-size:11px;color:#56707a;line-height:1.5}
+#root .tn-entry-quiet-backdrop{position:fixed;inset:0;z-index:9900;background:#071419d9;display:flex;align-items:center;justify-content:center;padding:14px}
+#root .tn-entry-quiet-dialog{width:min(500px,100%);max-height:90dvh;overflow:auto;padding:18px;background:#fff;border-radius:13px;border:2px solid #13a543;color:#193343;box-shadow:0 16px 60px #0008}
+#root .tn-entry-quiet-dialog h3{font-size:18px;margin:0 0 12px;color:#087c35}
+#root .tn-entry-quiet-dialog p{font-size:12px;line-height:1.75;margin:0 0 10px}
+#root .tn-entry-quiet-dialog label{display:flex;flex-direction:column;gap:6px;margin:11px 0;font-size:13px;font-weight:600}
+#root .tn-entry-quiet-dialog input[type=password]{padding:10px;border-radius:7px;color:#1b3544;background:#f3f8fa;border:1px solid #a6c2cd}
+#root .tn-entry-quiet-dialog label.tn-entry-quiet-agree{flex-direction:row;align-items:flex-start;line-height:1.5}
+#root .tn-entry-quiet-agree input{margin-top:3px;accent-color:#06b34c;min-width:17px;min-height:17px}
+#root .tn-entry-quiet-error{color:#b21b27;font-size:12px}
+#root .tn-entry-quiet-buttons{display:flex;gap:10px;margin-top:14px}
+#root .tn-entry-quiet-buttons button{flex:1;border-radius:8px;padding:11px!important;border:1px solid #bcc8cf!important;background:#e5edf2!important;color:#263d4c!important}
+#root .tn-entry-quiet-buttons button:last-child{background:#05a53b!important;border-color:#059f36!important;color:white!important;font-weight:bold}

@@ -4,6 +4,7 @@
  * This is a read-only export, NOT a runnable copy of the physics simulator.
  */
 import type { NetworkProduct } from './TyphoonNetworkData';
+import {NETWORK_WARNING_24H,NETWORK_WARNING_48H} from './NetworkWarningLines';
 
 export type StandaloneNetworkPayload = {
   product: NetworkProduct;
@@ -12,6 +13,7 @@ export type StandaloneNetworkPayload = {
   startTimeISO: string;
   nmcImage: string | null;
   galleryImages?: {strike:string;centers:string}|null;
+  quietSimulationHints?:boolean;
 };
 
 async function urlToDataUri(url: string): Promise<string> {
@@ -54,7 +56,7 @@ export async function buildStandaloneNetworkHtml(payload: StandaloneNetworkPaylo
     const response = await fetch('/data/pacific_land_lite.geojson');
     if (response.ok) coastline = await response.json();
   } catch { /* The standalone graph and NMC plate still work without coastlines. */ }
-  const packed = safeEmbeddedJson({ ...payload, art, coastline });
+  const packed = safeEmbeddedJson({ ...payload, art, coastline,warningLines:{h24:NETWORK_WARNING_24H,h48:NETWORK_WARNING_48H} });
   return STANDALONE_TEMPLATE.replace('__AETHER_EMBEDDED_PAYLOAD__', packed);
 }
 
@@ -132,9 +134,10 @@ function drawLand(){ctx.fillStyle=night?'#242e35':'#fffdf7';ctx.strokeStyle=nigh
   for(const feature of data.coastline?.features||[]){const g=feature.geometry;if(!g)continue;let polys=g.type==='Polygon'?[g.coordinates]:g.type==='MultiPolygon'?g.coordinates:[];for(const poly of polys){ctx.beginPath();for(const ring of poly){let first=true;for(let i=0;i<ring.length;i++){const p=ring[i],v=mapPoint(p[1],p[0]);if(first){ctx.moveTo(...v);first=false}else ctx.lineTo(...v)}ctx.closePath()}ctx.fill('evenodd');ctx.stroke()}}
 }
 function segment(a,b,stroke,width,dash=[]){const x=mapPoint(a.lat,a.lon),y=mapPoint(b.lat,b.lon);ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.setLineDash(dash);ctx.beginPath();ctx.moveTo(...x);ctx.lineTo(...y);ctx.stroke();ctx.setLineDash([])}
+function drawWarningLines(){for(const [verts,stroke,dashes] of [[data.warningLines?.h24||[],'#e1162d',[]],[data.warningLines?.h48||[],'#f9e12a',[4,5]]]){if(verts.length<2)continue;ctx.strokeStyle=stroke;ctx.lineWidth=1.75;ctx.setLineDash(dashes);ctx.beginPath();verts.forEach(([lon,lat],i)=>{const p=mapPoint(lat,lon);if(i===0)ctx.moveTo(...p);else ctx.lineTo(...p)});ctx.stroke();ctx.setLineDash([])}}
 function rings(f){for(const [key,stroke] of [['r7','#00ad2a'],['r10','#dfff6b'],['r12','#c41618']]){const rr=f[key];if(!rr)continue;const qs=['ne','se','sw','nw'];ctx.beginPath();let once=true;for(let j=0;j<4;j++){const r=Math.max(0,rr[qs[j]]||0);for(let i=0;i<=120;i++){const rad=(j*90+i*90/120)*Math.PI/180;const y=f.lat+r*Math.cos(rad)/111.195,x=f.lon+r*Math.sin(rad)/(111.195*Math.max(.12,Math.cos(f.lat*Math.PI/180)));const p=mapPoint(y,x);if(once){ctx.moveTo(...p);once=false}else ctx.lineTo(...p)}}ctx.closePath();ctx.strokeStyle=stroke;ctx.fillStyle=stroke;ctx.globalAlpha=.11;ctx.fill();ctx.globalAlpha=1;ctx.lineWidth=.8;ctx.stroke()}}
 function dot(f,size){const p=mapPoint(f.lat,f.lon);ctx.beginPath();ctx.arc(p[0],p[1],size/2,0,Math.PI*2);ctx.fillStyle=color(f);ctx.fill();ctx.strokeStyle='#ffffff65';ctx.lineWidth=.65;ctx.stroke()}
-function draw(){if(!w||!h)return;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);ctx.fillStyle=night?'#12212c':'#a1d2fd';ctx.fillRect(0,0,w,h);drawLand();
+function draw(){if(!w||!h)return;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);ctx.fillStyle=night?'#12212c':'#a1d2fd';ctx.fillRect(0,0,w,h);drawLand();drawWarningLines();
  for(let i=1;i<history.length;i++)segment(history[i-1],history[i],color(history[i]),2.1);
  for(const f of forecasts){let last=product.issue;for(const fix of f.fixes.filter(p=>[6,12,18,24,30,36,42,48,54,60,66,72,84,96,108,120].some(v=>Math.abs(v-(p.simHour-product.issue.simHour))<.01))){segment(last,fix,f.color,f.agency==='中国'?1.8:1.18,[2,5]);last=fix}}
  const fixed=history[Math.max(0,Math.min(frame,history.length-1))];if(fixed)rings(fixed);
@@ -145,8 +148,13 @@ function draw(){if(!w||!h)return;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect
 }
 const cycloneImage=new Image();cycloneImage.onload=draw;cycloneImage.src=data.art.cyclone||'';
 function tick(){const p=history[Math.min(frame,history.length-1)];if(!p)return;const date=new Date(Date.parse(data.startTimeISO)+p.simHour*3600000+8*3600000);const ts=date.getUTCFullYear()+'年'+(date.getUTCMonth()+1)+'月'+date.getUTCDate()+'日'+String(date.getUTCHours()).padStart(2,'0')+'时';document.getElementById('ticker').innerHTML='<div>第'+data.ordinal+'号　'+data.typhoonName+' '+ts+'</div><div>风级:'+grade(p.vmax)+'级　风速:'+Math.round(p.vmax)+'m/s 等级:'+grade(p.vmax)+'级　气压:'+Math.round(p.pmin)+'hPa</div><div>经纬度：'+p.lon.toFixed(1)+'°,'+p.lat.toFixed(1)+'°　移向/移速：'+Math.round(p.direction)+'°,'+Math.round(p.speed)+'公里/小时</div><div id="state">'+(p.dissipated?'【已停编】':'【生效中】')+'</div>'}
-function stop(){if(replayHandle)clearInterval(replayHandle);replayHandle=null;playing=false;frame=history.length-1;tick();draw()}
-function run(){if(replayHandle)clearInterval(replayHandle);if(!history.length)return;playing=true;frame=0;span=1000;detail.style.display='none';selected=null;lat=history[0].lat;lon=history[0].lon;tick();draw();replayHandle=setInterval(()=>{frame++;if(frame>=history.length-1){stop();return}lat=history[frame].lat;lon=history[frame].lon;tick();draw()},93.75)}
+function stop(){if(replayHandle!==null)cancelAnimationFrame(replayHandle);replayHandle=null;playing=false;frame=history.length-1;tick();draw()}
+function run(){if(replayHandle!==null)cancelAnimationFrame(replayHandle);if(!history.length)return;playing=true;frame=0;span=1000;detail.style.display='none';selected=null;lat=history[0].lat;lon=history[0].lon;tick();draw();let clock=history[0].simHour,previous=null;
+ const step=(ts)=>{if(!playing)return;if(previous!==null)clock+=Math.max(0,Math.min(.12,(ts-previous)/1000))*32;previous=ts;
+ let next=frame;while(next<history.length-1&&history[next+1].simHour<=clock+1e-7)next++;
+ if(next!==frame){frame=next;lat=history[frame].lat;lon=history[frame].lon;tick();draw()}
+ if(frame>=history.length-1){stop();return}replayHandle=requestAnimationFrame(step)};
+ replayHandle=requestAnimationFrame(step)}
 function recenter(){stop();const p=history[history.length-1];if(p){lat=p.lat;lon=p.lon;draw()}}
 document.getElementById('night').onclick=()=>{night=!night;draw()};document.getElementById('locate').onclick=recenter;document.getElementById('replay').onclick=run;
 document.getElementById('traffic').onclick=()=>{};document.getElementById('history').onclick=()=>{};
@@ -156,6 +164,7 @@ document.getElementById('openprob').onclick=()=>{document.getElementById('ref').
 document.getElementById('back').onclick=()=>{if(document.getElementById('prob').style.display==='block')showReference(true);else showReference(false)};
 document.getElementById('share').onclick=()=>{const blob=new Blob(['<!doctype html>\n'+document.documentElement.outerHTML],{type:'text/html;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='台风网模拟_离线快照.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),10000)};
 const nmc=document.getElementById('nmc');if(data.nmcImage)nmc.src=data.nmcImage;else document.getElementById('referror').textContent='此存档未能生成 NMC 图片';
+if(data.quietSimulationHints){const note=document.querySelector('#prob p');if(note)note.style.display='none';const title=document.querySelector('#prob h2');if(title)title.textContent='热带气旋概率 · 模拟';}
 if(data.galleryImages){document.getElementById('probstrike').src=data.galleryImages.strike;document.getElementById('probcenters').src=data.galleryImages.centers;}
 else document.getElementById('probmissing').textContent='本次快照未附带集合预报图片';
 let pDown=null;canvas.addEventListener('pointerdown',e=>{if(playing)stop();pDown={x:e.clientX,y:e.clientY,lon,lat};canvas.setPointerCapture(e.pointerId)});
@@ -179,7 +188,7 @@ if(!best){let closest=7;
     }
   }
 }
-selected=best;if(best){const f=best.fix;detail.textContent='';const close=document.createElement('button');close.textContent='×';close.onclick=()=>{selected=null;detail.style.display='none'};detail.appendChild(close);const content=document.createElement('div');content.textContent=(best.agency?'预测机构：【'+best.agency+'】':data.typhoonName)+'\n中心位置：'+f.lon.toFixed(1)+'°E，'+f.lat.toFixed(1)+'°N\n最大风力：'+Math.round(f.vmax)+'米/秒\n中心气压：'+Math.round(f.pmin)+'百帕\n模拟资料 · 仅供娱乐与分析';detail.appendChild(content);detail.style.display='block';draw()}else detail.style.display='none';});
+selected=best;if(best){const f=best.fix;detail.textContent='';const close=document.createElement('button');close.textContent='×';close.onclick=()=>{selected=null;detail.style.display='none'};detail.appendChild(close);const content=document.createElement('div');content.textContent=(best.agency?'预测机构：【'+best.agency+'】':data.typhoonName)+'\n中心位置：'+f.lon.toFixed(1)+'°E，'+f.lat.toFixed(1)+'°N\n最大风力：'+Math.round(f.vmax)+'米/秒\n中心气压：'+Math.round(f.pmin)+'百帕'+(best.agency?(('\n集合主路径来源：'+(forecasts.find(x=>x.agency===best.agency)?.sourceModelId||'—'))):'')+(data.quietSimulationHints?'':'\n模拟资料 · 仅供娱乐与分析');detail.appendChild(content);detail.style.display='block';draw()}else detail.style.display='none';});
 canvas.addEventListener('wheel',e=>{e.preventDefault();if(playing)stop();span=Math.max(100,Math.min(24000,span*(e.deltaY>0?1.25:.8)));draw()},{passive:false});
 window.addEventListener('resize',resize);resize();tick();draw();
 </script></body></html>`;

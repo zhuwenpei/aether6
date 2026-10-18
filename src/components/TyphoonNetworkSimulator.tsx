@@ -11,8 +11,9 @@ import { drawNmcForecastProductCooperative } from '../utils/NmcForecastProduct';
 import {chooseSafeNmcWidth,detectNmcDeviceClass} from '../utils/NmcRenderSafety';
 import { loadNmcOptionalGeography } from '../utils/NmcOptionalGeography';
 import { buildNetworkForecastsWithEnsemble } from '../utils/NetworkAgencyEnsemble';
+import { NETWORK_WARNING_24H,NETWORK_WARNING_48H } from '../utils/NetworkWarningLines';
 import { buildSharedNetworkNmcForecast } from '../utils/NetworkNmcForecast';
-import { cmaBoundedNetworkHistory, networkPointColor, networkHistorySegments, networkVisibleForecastFixes, networkForecastSegments, type NetworkFix, type NetworkProduct } from '../utils/TyphoonNetworkData';
+import { warningAdaptiveNetworkHistory, networkPointColor, networkHistorySegments, networkVisibleForecastFixes, networkForecastSegments, type NetworkFix, type NetworkProduct } from '../utils/TyphoonNetworkData';
 import { createReferenceRasterLayer, referenceBasemapLocation, REFERENCE_RASTER_CREDIT } from '../utils/TyphoonNetworkReferenceRaster';
 import { downloadStandaloneNetworkHtml } from '../utils/TyphoonNetworkStandaloneExport';
 import './TyphoonNetworkSimulator.css';
@@ -103,7 +104,7 @@ export function cycloneAsset(vmax:number,category?:string):string {
   return `/network-icons/cyclone-${palette[networkPointColor(vmax,category)]||'unknown'}.webp`;
 }
 
-function Details({fix,name,startDate,agency}: {fix:NetworkFix; name:string; startDate:Date; agency?:string}){
+function Details({fix,name,startDate,agency,quiet,sourceModelId}: {fix:NetworkFix; name:string; startDate:Date; agency?:string;quiet?:boolean;sourceModelId?:string}){
   const label=agency?`预测机构：【${agency}】`:`${name} ${fmtDate(dateAt(startDate,fix.simHour))}`;
   const r=(rad:NetworkFix['r7'])=>['ne','se','sw','nw'].map(k=>num(rad?.[k as keyof typeof rad]??0)).map(encode);
   return <div className="tn-detail">
@@ -114,13 +115,13 @@ function Details({fix,name,startDate,agency}: {fix:NetworkFix; name:string; star
       <div>最大风力： {getWindForceCategory(fix.vmax)}级，{num(fix.vmax)}米/秒{!agency?`，${num(fix.vmax*3.6)}公里/小时`:''}</div>
       <div>强度等级： {grade(fix.vmax,fix.category)}</div>
       <div>中心气压： {Number.isFinite(fix.pmin)?`${num(fix.pmin)}百帕`:'-'}</div>
-      {agency? <div>预报时效： {fmtDate(dateAt(startDate,fix.simHour))}</div>: <>
+      {agency? <>{sourceModelId&&<div>集合主路径来源：{sourceModelId}</div>}<div>预报时效： {fmtDate(dateAt(startDate,fix.simHour))}</div></>: <>
         <div>移向移速： {compass(fix.direction)}，{num(fix.speed)}公里/小时</div>
         <div className="tn-quadrant tn-quadrant-label"><span>风圈方位：</span><span>东北</span><span>东南</span><span>西南</span><span>西北</span></div>
         {([['七级风圈半径',fix.r7],['十级风圈半径',fix.r10],['12级风圈半径',fix.r12]] as const).map(([title,rad])=><div className="tn-quadrant" key={title}><span>{title}：</span>{r(rad).map((v,i)=><span key={i}>{v}</span>)}</div>)}
       </>}
     </div>
-    <div className="tn-simulated-note">模拟资料 · 仅供娱乐与分析</div>
+    {!quiet&&<div className="tn-simulated-note">模拟资料 · 仅供娱乐与分析</div>}
   </div>;
 }
 
@@ -275,7 +276,7 @@ function geographicCyclone(map:L.Map,at:L.LatLngExpression,renderer:L.SVG,fix:Ne
 export default function TyphoonNetworkSimulator({storm,startDate,currentHour,config,chartSettings,onClose}:NetworkProps){
   const [stage,setStage]=useState<'loading'|'map'|'reference'|'probability'>('loading');
   const [percent,setPercent]=useState(0);
-  const [task,setTask]=useState('读取逐小时历史记录');
+  const [task,setTask]=useState('读取历史节点和警戒区域');
   const [error,setError]=useState('');
   const [product,setProduct]=useState<NetworkProduct|null>(null);
   const [reference,setReference]=useState<string|null>(null);
@@ -312,7 +313,7 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
     (async()=>{
       try{
         setPercent(5);await raf();
-        const history=cmaBoundedNetworkHistory(storm,startDate,currentHour);
+        const history=warningAdaptiveNetworkHistory(storm,startDate,currentHour);
         if(!history.length)throw new Error('所选时刻尚无可公开档位的历史台风中心记录');
         if(!active||controller.current.signal.aborted)return;
         setPercent(26);setTask('计算台风移动节点与强度、气压、风圈');await raf();
@@ -325,7 +326,7 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
         const chinese=nmc.china;
         let forecasts:NetworkProduct['forecasts']=[chinese];
         try{
-          forecasts=await buildNetworkForecastsWithEnsemble(nmc.issue,storm,config,chinese,controller.current.signal,
+          forecasts=await buildNetworkForecastsWithEnsemble(issue,storm,config,chinese,controller.current.signal,
             (done,total,model)=>{if(active){setPercent(45+Math.round(16*done/Math.max(1,total)));setTask(`集合成员物理演算 ${model} (${done}/${total})`);}});
         }catch(err){
           if(controller.current.signal.aborted)return;
@@ -374,7 +375,7 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
             if(active)setGallery(images);
           }catch(err){if(active && !controller.current.signal.aborted)setGalleryError(err instanceof Error?err.message:'集合图计算失败');}
         }
-        setPercent(100);setTask('计算完成，按CMA三小时公开档位回放');await raf();
+        setPercent(100);setTask('计算完成，按3小时／入线后1小时节点回放');await raf();
         playbackZoomRef.current=null;setStage('map');setFrame(0);setPlaying(history.length>1);
       }catch(err){if(active&&!controller.current.signal.aborted)setError(err instanceof Error?err.message:'模拟产品生成失败');}
     })();
@@ -385,16 +386,29 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
   // OSM tiles are WGS84; Gaode tiles require GCJ-02 positions over mainland China.
   const displayPoint=(lon:number,lat:number):[number,number]=>
     basemap==='amap'?referenceBasemapLocation('amap',lon,lat,toAmapPosition):[lat,lon];
-  // 32x: 3 hours of simulation per 93.75 ms, using discrete CMA slots only.
-  // Geographic labels/dots/popup/radii are all owned by the map; only the top
-  // summary panel is intentionally screen anchored as in the reference photo.
+  // R218: physical playback speed is 32 simulated hours per real second,
+  // independent of whether adjacent visible fixes are 3h or 1h apart.
+  // requestAnimationFrame uses elapsed virtual HOURS rather than one fixed
+  // delay per node, so adding hourly fixes does not slow down the storm.
   useEffect(()=>{
     if(stage!=='map'||!product||!playing)return;
-    const timer=window.setInterval(()=>setFrame(last=>{
-      if(last>=product.history.length-1){setPlaying(false);return last;}
-      return last+1;
-    }),93.75);
-    return ()=>window.clearInterval(timer);
+    const history=product.history;
+    if(history.length<2){setPlaying(false);return;}
+    let handle=0;
+    let clock=history[Math.min(frame,history.length-1)].simHour;
+    let previousTimestamp:number|null=null;
+    let previousIndex=frame;
+    const step=(timestamp:number)=>{
+      if(previousTimestamp!==null)clock+=Math.max(0,Math.min(.12,(timestamp-previousTimestamp)/1000))*32;
+      previousTimestamp=timestamp;
+      let next=previousIndex;
+      while(next<history.length-1&&history[next+1].simHour<=clock+1e-7)next++;
+      if(next!==previousIndex){previousIndex=next;setFrame(next);}
+      if(next>=history.length-1){setPlaying(false);return;}
+      handle=requestAnimationFrame(step);
+    };
+    handle=requestAnimationFrame(step);
+    return ()=>cancelAnimationFrame(handle);
   },[stage,product,playing]);
 
   /** User interruption updates simulation time without moving the camera.
@@ -427,7 +441,7 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
       closeButton:false,offset:L.point(0,0),minWidth:Math.min(300,Math.max(232,window.innerWidth-48)),
       maxWidth:Math.min(390,window.innerWidth-30)});
     popup.setLatLng(displayPoint(fix.lon,fix.lat));
-    popup.setContent(renderToStaticMarkup(<Details fix={fix} name={stormName} startDate={startDate} agency={agency}/>));
+    popup.setContent(renderToStaticMarkup(<Details fix={fix} name={stormName} startDate={startDate} agency={agency} quiet={chartSettings.quietSimulationHints} sourceModelId={product?.forecasts.find(f=>f.agency===agency)?.sourceModelId}/>));
     popup.openOn(map);
   };
   // Keep the single Gaode Leaflet viewport mounted while reference is open.
@@ -470,6 +484,18 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
     window.setTimeout(()=>map.invalidateSize(),40);
     layersRef.current.forEach(x=>map.removeLayer(x));layersRef.current=[];
     const hist=product.history;
+    // Persistent map-owned WGS84 warning lines: reproject with each provider
+    // switch, then travel with the tiles/SVG on every playback pan/zoom.
+    for(const [vertices,color,dash] of [
+      [NETWORK_WARNING_24H,'#e1162d',undefined],
+      [NETWORK_WARNING_48H,'#f9e12a','4,5']
+    ] as const){
+      layersRef.current.push(L.polyline(vertices.map(([lon,lat])=>displayPoint(lon,lat)),{
+        renderer:networkSvgRendererRef.current??undefined,color,weight:1.75,
+        dashArray:dash,opacity:.96,interactive:false,noClip:true,smoothFactor:0,
+        lineCap:'round',lineJoin:'round'
+      }).addTo(map));
+    }
     for(const segment of networkHistorySegments(hist)){
       layersRef.current.push(L.polyline([displayPoint(segment.from.lon,segment.from.lat),displayPoint(segment.to.lon,segment.to.lat)],
         {renderer:networkSvgRendererRef.current??undefined,color:segment.color,weight:2.5,opacity:.96,noClip:true,smoothFactor:0,lineCap:'round',lineJoin:'round'}).addTo(map));
@@ -665,7 +691,7 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
           name:stormName,signal:controller.current.signal,onProgress:setMapMessage});
         setGallery(bundledGallery);
       }
-      await downloadStandaloneNetworkHtml({product,typhoonName:stormName,ordinal,startTimeISO:startDate.toISOString(),nmcImage:reference,galleryImages:bundledGallery});
+      await downloadStandaloneNetworkHtml({product,typhoonName:stormName,ordinal,startTimeISO:startDate.toISOString(),nmcImage:reference,galleryImages:bundledGallery,quietSimulationHints:chartSettings.quietSimulationHints});
       setMapMessage('');
     }catch(err){setMapMessage(`HTML 导出失败：${err instanceof Error?err.message:String(err)}`);}
     finally{setExporting(false);}
@@ -717,6 +743,7 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
           <button className="tn-floating-button" title="台风中心居中" aria-label="回正台风中心" onClick={centerLatest}><img src="/network-icons/network-locate.png" alt=""/></button>
         </div>
         <button className="tn-replay-button" title="从头重放32倍速动画" aria-label="刷新重放" onClick={replayFromStart}><img src="/network-icons/network-replay.png" alt=""/></button>
+        <div className="tn-map-simulation-mark" aria-label="模拟台风资料">模拟</div>
         {mapMessage&&<div className="tn-map-error" role="status" onClick={()=>setMapMessage('')}>{mapMessage}</div>}
       </>}
       {stage==='reference'&&<main className="tn-reference-page">
@@ -725,8 +752,9 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
         <div className="tn-reference-actions"><button type="button" onClick={openProbability}>热带气旋概率</button></div>
       </main>}
       {stage==='probability'&&<main className="tn-probability-page">
-        <div className="tn-probability-caption">【AETHER 模拟】热带气旋概率与集合预报</div>
-        <p>以下两张图片仅为模拟气象信息，非任何机构官方预报；长按图片可保存。</p>
+        {!chartSettings.quietSimulationHints&&<><div className="tn-probability-caption">【AETHER 模拟】热带气旋概率与集合预报</div>
+        <p>以下两张图片仅为模拟气象信息，非任何机构官方预报；长按图片可保存。</p></>}
+        {chartSettings.quietSimulationHints&&<div className="tn-probability-caption">热带气旋概率与集合预报 · 模拟</div>}
         {galleryBusy&&<div className="tn-probability-loading" role="status">{galleryProgress||'生成气象图中，请稍候…'}</div>}
         {galleryError&&<div className="tn-reference-error" role="alert">{galleryError}<button type="button" onClick={()=>{setGalleryError('');openProbability();}}>重新生成</button></div>}
         {gallery&&<>
