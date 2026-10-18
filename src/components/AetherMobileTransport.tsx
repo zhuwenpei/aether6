@@ -55,6 +55,13 @@ export default function AetherMobileTransport(props: Props) {
   const stamp = `${String(displayDate.getMonth()+1).padStart(2,"0")}-${String(displayDate.getDate()).padStart(2,"0")} ${String(displayDate.getHours()).padStart(2,"0")}:00`;
 
   if(collapsed) return <nav className="aether-mobile-transport" aria-label="模拟播放控制">
+    <div className="aether-landscape-time-main" aria-label="横屏大时间轴">
+      <span>大时间轴 · T+{Math.round(currentHour)}h / {Math.round(maxHour)}h</span>
+      <input type="range" min={0} max={Math.max(1,maxHour)} step={1}
+        value={Math.min(previewHour,Math.max(1,maxHour))}
+        aria-label="横屏历史时间位置" onChange={e=>preview(Number(e.target.value))}
+        onPointerUp={commit} onTouchEnd={commit} onKeyUp={commit}/>
+    </div>
     <button onClick={onStepBackward} disabled={currentHour<=0} aria-label="后退一小时"><SkipBack /></button>
     <button className="primary" onClick={onPlayToggle} aria-label={isPlaying?"暂停":"播放"}>{isPlaying?<Pause/>:<Play className="fill-current"/>}</button>
     <button className={isTerminationReport ? "report" : "danger"} onClick={onTerminate} aria-label={isTerminationReport ? "查看停编报告" : "停编"}>{isTerminationReport?<Images/>:<OctagonX/>}</button>

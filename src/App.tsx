@@ -436,6 +436,9 @@ export default function App() {
   };
 
   const [timelineCollapsed, setTimelineCollapsed] = useState(true);
+  // R223: 0=full landscape workstation, 1=map+floating joystick,
+  // 2=immersive map. Portrait keeps its original chrome in all cases.
+  const [landscapeShellStage, setLandscapeShellStage] = useState<0 | 1 | 2>(0);
   // Desktop keyboard/gamepad bridge.  The polling listener is installed once and always calls
   // the newest actions through this ref, avoiding a new requestAnimationFrame loop every sim tick.
   const desktopActionsRef = useRef<{
@@ -544,6 +547,8 @@ export default function App() {
       const landscape = window.matchMedia("(orientation: landscape)").matches &&
         window.innerWidth > window.innerHeight && keyboard <= 120;
       document.body.classList.toggle("aether-mobile-landscape", useLegacyMobileUi && landscape);
+      document.body.classList.toggle("aether-landscape-rail-collapsed", useLegacyMobileUi && landscape && landscapeShellStage >= 1);
+      document.body.classList.toggle("aether-landscape-ui-hidden", useLegacyMobileUi && landscape && landscapeShellStage === 2);
       document.body.classList.toggle("aether-keyboard-open", useLegacyMobileUi && keyboard > 120);
     };
     syncVisualViewport();
@@ -551,12 +556,12 @@ export default function App() {
     window.visualViewport?.addEventListener("resize", syncVisualViewport, { passive: true });
     window.visualViewport?.addEventListener("scroll", syncVisualViewport, { passive: true });
     return () => {
-      document.body.classList.remove("legacy-mobile-ui", "aether-mobile-ui", "aether-mobile-landscape", "aether-keyboard-open");
+      document.body.classList.remove("legacy-mobile-ui", "aether-mobile-ui", "aether-mobile-landscape", "aether-landscape-rail-collapsed", "aether-landscape-ui-hidden", "aether-keyboard-open");
       window.removeEventListener("resize", syncVisualViewport);
       window.visualViewport?.removeEventListener("resize", syncVisualViewport);
       window.visualViewport?.removeEventListener("scroll", syncVisualViewport);
     };
-  }, [useLegacyMobileUi]);
+  }, [useLegacyMobileUi, landscapeShellStage]);
 
   // Manual influences are intentionally cumulative. Each control owns its own toggle state,
   // so applying dry air must not silently erase a shear/EWRC choice made at the same simulation time.
@@ -3809,15 +3814,28 @@ export default function App() {
         
         {/* The professional workstation owns its complete chrome. */}
         <GeoJsonStatusBadge />
-        {useLegacyMobileUi && !preSimulationInput && <aside className="aether-landscape-rail" aria-label="横屏模拟控制区域">
-          <div className="aether-landscape-rail-caption">台风状态 · 模拟操作</div>
-          <div className="aether-landscape-joystick-bay"><span>方向控制</span></div>
-        </aside>}
+        {useLegacyMobileUi && <div className="aether-cutout-safe-strip" aria-hidden="true" />}
+        {useLegacyMobileUi && !preSimulationInput && <>
+          <aside className="aether-landscape-rail" aria-label="横屏模拟控制区域">
+            <div className="aether-landscape-joystick-bay"><span>方向摇杆</span></div>
+          </aside>
+          <button type="button" className="aether-landscape-sidebar-toggle"
+            aria-label={landscapeShellStage >= 1 ? "展开侧边控制栏" : "收起侧边控制栏"}
+            onClick={() => setLandscapeShellStage(v => v === 0 ? 1 : 0)}>
+            {landscapeShellStage >= 1 ? '❯' : '❮'}
+          </button>
+          <button type="button" className="aether-landscape-immersive-toggle"
+            aria-label={landscapeShellStage === 2 ? "展开横屏控制栏" : "二次收起横屏控制界面"}
+            onClick={() => setLandscapeShellStage(v => v === 2 ? 1 : 2)}>
+            {landscapeShellStage === 2 ? '⌃ 展开' : '⌄'}
+          </button>
+        </>}
 
    {/* 1. Map View viewport: only one full Leaflet scene may be mounted.
         Two concurrent scenes used to rerender expensive land/track layers and
         leave duplicate touch/drawer ownership behind on Forecast exit. */}
         {!preSimulationInput && <MapView
+          landscapeLayoutEpoch={landscapeShellStage}
           initialViewport={liveCameraBeforeForecastRef.current ?? undefined}
           onMapReady={handleSynopticMapReady}
           synopticSelectionActive={synopticSelecting}

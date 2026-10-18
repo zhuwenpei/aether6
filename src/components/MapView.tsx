@@ -198,6 +198,8 @@ function getContinuousStationColor(wind: number): string {
   /** Unique DOM viewport id for concurrently mounted sandbox and live maps. */
   viewportId?: string;
   initialViewport?: {center:[number,number];zoom:number};
+  /** Changes when the landscape workstation switches from panel to immersive map. */
+  landscapeLayoutEpoch?: number;
   onMapReady?: (map: L.Map | null) => void;
   synopticSelectionActive?: boolean;
   typhoons: Typhoon[];
@@ -225,7 +227,7 @@ function getContinuousStationColor(wind: number): string {
 
 
  export default function MapView({
-  viewportId = "typhoon-gis-viewport",initialViewport,
+  viewportId = "typhoon-gis-viewport",initialViewport,landscapeLayoutEpoch = 0,
   onMapReady, synopticSelectionActive = false,
   typhoons,
   layers,
@@ -3571,6 +3573,35 @@ function getContinuousStationColor(wind: number): string {
       clearTimeout(timer);
     };
   }, [mapInitialized]);
+
+  // R223: resize transitions alter the Leaflet container, never the page's screen centre.
+  // Re-centre on the MAP's own centre after a layout transition; keep one Leaflet instance.
+  useEffect(() => {
+    if (!mapInitialized || !config.followMainTyphoon) return;
+    const map = mapRef.current;
+    if (!map) return;
+    let raf = 0;
+    let settle = 0;
+    const scheduleCenter = () => {
+      if (settle) window.clearTimeout(settle);
+      settle = window.setTimeout(() => {
+        raf = requestAnimationFrame(() => {
+          if (!mapRef.current) return;
+          const active = typhoonsRef.current.find(t => t.active && !t.dissipated) ?? typhoonsRef.current[0];
+          map.invalidateSize({ pan: false, animate: false });
+          // All follow targets are relative to Leaflet's new map pane, NEVER screen width/2.
+          if (active) map.panTo([active.lat, active.lon], { animate: true, duration: 0.3 });
+        });
+      }, 350);
+    };
+    scheduleCenter();
+    window.addEventListener('orientationchange', scheduleCenter, { passive: true });
+    return () => {
+      window.removeEventListener('orientationchange', scheduleCenter);
+      if (settle) window.clearTimeout(settle);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [landscapeLayoutEpoch, mapInitialized, config.followMainTyphoon]);
 
   // R220: the Leaflet map is a real 4/5-width sibling of the landscape side panel.
   // A CSS-only resize without invalidating Leaflet leaves tiles, hit targets and

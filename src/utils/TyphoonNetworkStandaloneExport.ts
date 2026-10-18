@@ -56,7 +56,9 @@ export async function buildStandaloneNetworkHtml(payload: StandaloneNetworkPaylo
     const response = await fetch('/data/pacific_land_lite.geojson');
     if (response.ok) coastline = await response.json();
   } catch { /* The standalone graph and NMC plate still work without coastlines. */ }
-  const packed = safeEmbeddedJson({ ...payload, art, coastline,warningLines:{h24:NETWORK_WARNING_24H,h48:NETWORK_WARNING_48H} });
+  // The password setting is session UI-only. Portable products always retain
+  // provenance, including when called directly by a future export workflow.
+  const packed = safeEmbeddedJson({ ...payload, quietSimulationHints:false, art, coastline,warningLines:{h24:NETWORK_WARNING_24H,h48:NETWORK_WARNING_48H} });
   return STANDALONE_TEMPLATE.replace('__AETHER_EMBEDDED_PAYLOAD__', packed);
 }
 

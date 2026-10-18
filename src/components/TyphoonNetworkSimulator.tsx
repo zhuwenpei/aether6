@@ -709,12 +709,14 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
           name:stormName,signal:controller.current.signal,onProgress:setMapMessage});
         setGallery(bundledGallery);
       }
-      await downloadStandaloneNetworkHtml({product,typhoonName:stormName,ordinal,startTimeISO:startDate.toISOString(),nmcImage:reference,galleryImages:bundledGallery,quietSimulationHints:chartSettings.quietSimulationHints});
+      await downloadStandaloneNetworkHtml({product,typhoonName:stormName,ordinal,startTimeISO:startDate.toISOString(),nmcImage:reference,galleryImages:bundledGallery,
+        // Export retains simulated-data notices regardless of in-app password settings.
+        quietSimulationHints:false});
       setMapMessage('');
     }catch(err){setMapMessage(`HTML 导出失败：${err instanceof Error?err.message:String(err)}`);}
     finally{setExporting(false);}
   };
-  return <div className={`tn-viewport tn-stage-${stage}`} role="dialog" aria-modal="true" aria-label="台风网模拟"
+  return <div className={`tn-viewport tn-stage-${stage}`} role="dialog" aria-modal="true" aria-label={chartSettings.quietSimulationHints ? "台风网" : "台风网模拟"}
     onClickCapture={event=>{
       if(!(event.target instanceof Element))return;
       if(event.target.closest('.tn-provider-wrapper'))return;
@@ -724,8 +726,8 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
       leafletRef.current?.closePopup();
       }}>
     {stage==='loading'? <div className="tn-loading">
-      <div className="tn-loading-title">台风网模拟</div>
-      <div className="tn-loading-caption">正在准备历史节点、模拟预报与参考图片</div>
+      <div className="tn-loading-title">{chartSettings.quietSimulationHints ? "台风网" : "台风网模拟"}</div>
+      <div className="tn-loading-caption">{chartSettings.quietSimulationHints ? "正在准备历史节点、预报与参考图片" : "正在准备历史节点、模拟预报与参考图片"}</div>
       <div className="tn-progress"><div style={{width:`${percent}%`}}/></div>
       <div className="tn-progress-caption" aria-live="polite">{task} · {Math.round(percent)}%</div>
       {error&&<div className="tn-error" role="alert">{error}</div>}
@@ -761,7 +763,7 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
           <button className="tn-floating-button" title="台风中心居中" aria-label="回正台风中心" onClick={centerLatest}><img src="/network-icons/network-locate.png" alt=""/></button>
         </div>
         <button className="tn-replay-button" title="从头重放32倍速动画" aria-label="刷新重放" onClick={replayFromStart}><img src="/network-icons/network-replay.png" alt=""/></button>
-        <div className="tn-map-simulation-mark" aria-label="模拟台风资料">模拟</div>
+        {!chartSettings.quietSimulationHints&&<div className="tn-map-simulation-mark" aria-label="模拟台风资料">模拟</div>}
         {mapMessage&&<div className="tn-map-error" role="status" onClick={()=>setMapMessage('')}>{mapMessage}</div>}
       </>}
       {stage==='reference'&&<main className="tn-reference-page">
@@ -772,7 +774,7 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
       {stage==='probability'&&<main className="tn-probability-page">
         {!chartSettings.quietSimulationHints&&<><div className="tn-probability-caption">【AETHER 模拟】热带气旋概率与集合预报</div>
         <p>以下两张图片仅为模拟气象信息，非任何机构官方预报；长按图片可保存。</p></>}
-        {chartSettings.quietSimulationHints&&<div className="tn-probability-caption">热带气旋概率与集合预报 · 模拟</div>}
+        {chartSettings.quietSimulationHints&&<div className="tn-probability-caption">热带气旋概率与集合预报</div>}
         {galleryBusy&&<div className="tn-probability-loading" role="status">{galleryProgress||'生成气象图中，请稍候…'}</div>}
         {galleryError&&<div className="tn-reference-error" role="alert">{galleryError}<button type="button" onClick={()=>{setGalleryError('');openProbability();}}>重新生成</button></div>}
         {gallery&&<>

@@ -55,10 +55,10 @@ export default function AetherMobileChrome({
     <header className={`aether-mobile-header${moreOpen ? " aether-mobile-more-open" : ""}`} aria-label={sandboxMode?"Forecast 预模拟主控栏":"AETHER 手机主控栏"}>
       <div className="aether-mobile-brand" aria-label={brandText}><b>{brandText}</b></div>
       <div className="aether-mobile-header-actions">
-        {!sandboxMode&&<button aria-label="气象产品" onClick={onProducts}><Images /></button>}
-        <button aria-label="台风状态与影响" onClick={onInfluence}><Activity /></button>
-        <button aria-label="设置" onClick={onSettings}><Settings /></button>
-        <button aria-label="更多" aria-expanded={moreOpen} onClick={() => {if(!moreOpen)onMoreOpen?.();setMoreOpen(v => !v);}}>{moreOpen ? <X /> : <MoreHorizontal />}</button>
+        {!sandboxMode&&<button className="aether-landscape-tool-products" aria-label="气象产品" onClick={onProducts}><Images /></button>}
+        <button className="aether-landscape-tool-shortcuts" aria-label="台风状态与影响" onClick={onInfluence}><Activity /></button>
+        <button className="aether-landscape-tool-menu" aria-label="设置" onClick={onSettings}><Settings /></button>
+        <button className="aether-landscape-tool-more" aria-label="更多" aria-expanded={moreOpen} onClick={() => {if(!moreOpen)onMoreOpen?.();setMoreOpen(v => !v);}}>{moreOpen ? <X /> : <MoreHorizontal />}</button>
       </div>
       {moreOpen && <div className="aether-mobile-overflow aether-mobile-tools-overflow" role="menu">
         {sandboxMode&&<section className="aether-more-tool-section">
@@ -119,11 +119,20 @@ export default function AetherMobileChrome({
     </header>
 
     {typhoon && intensity && <section className="aether-mobile-statusrail" aria-label="当前台风状态">
+      <div className="aether-landscape-status-title">当前台风信息</div>
+      <div className="aether-landscape-storm-name">{typhoon.name || '未命名台风'}</div>
+      <div className="aether-landscape-status-title">当前台风信息</div>
+      <div className="aether-landscape-storm-name">{typhoon.name || '未命名台风'}</div>
+      <div className="aether-landscape-status-title">当前台风信息</div>
+      <div className="aether-landscape-storm-name">{typhoon.name || '未命名台风'}</div>
+      <div className="aether-landscape-status-title">当前台风信息</div>
+      <div className="aether-landscape-storm-name">{typhoon.name || '未命名台风'}</div>
       <span className="aether-mobile-status-time">{clock}</span><i />
       <span className="aether-mobile-status-phase">{phase}</span>
       <i /><strong>{intensity.category}</strong><span>{intensity.value}{intensity.unit.toUpperCase()}</span>
       <i /><span>{Math.round(typhoon.pmin)} hPa</span>
       <i /><span>{Math.round(typhoon.direction)}° · {Math.round(typhoon.speed)} km/h</span>
+      <div className="aether-landscape-position">{Math.abs(typhoon.lat).toFixed(1)}°{typhoon.lat >= 0 ? 'N' : 'S'} · {Math.abs(typhoon.lon).toFixed(1)}°{typhoon.lon >= 0 ? 'E' : 'W'}</div>
     </section>}
   </>;
 }

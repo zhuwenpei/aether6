@@ -100,7 +100,7 @@ export default function NetworkEntrySettings({config,storm,currentHour,startDate
             onClick={()=>{if(quietSimulationHints){setQuietSimulationHints(false);return;}setQuietPassword('');setQuietAcknowledged(false);setQuietError('');setQuietDialog(true);}}>
             {quietSimulationHints?'✓ 已关闭重复模拟提示（点击恢复）':'关闭所有模拟提示信息（需密码）'}
           </button>
-          <small>仅收起页面中的重复说明，不删除地图和导出文件中的简短“模拟”标识。</small>
+          <small>通过密码确认后，仅在程序内的台风网页面隐藏模拟性质提示；导出 HTML 与气象图产品仍保留来源声明。</small>
         </div>
         <button type="button" className="tn-entry-drawer-toggle" onClick={()=>setDrawer(v=>!v)} aria-expanded={drawer} aria-controls="tn-entry-drawer">☰　气象图生成参数 <span>{drawer?'收起 ▲':'展开 ▼'}</span></button>
         {drawer&&<div id="tn-entry-drawer" className="tn-entry-drawer">
@@ -115,7 +115,7 @@ export default function NetworkEntrySettings({config,storm,currentHour,startDate
     {quietDialog&&<div className="tn-entry-quiet-backdrop" role="presentation"><section className="tn-entry-quiet-dialog" role="dialog" aria-modal="true" aria-label="模拟提示设置免责声明">
       <h3>关闭重复模拟提示 · 风险确认</h3>
       <p><strong>免责声明：</strong>所有路径、强度、风圈、警戒线进入判定、集合概率和机构名称下的预报均由模拟系统生成，不是任何气象机构发布的实时预报、预警或官方警戒判断。不能用于避险、航海、航班、工程、财产或生命安全决策。</p>
-      <p>注意：关闭的只是重复提示文字与说明，不会改变模拟计算；地图和导出文件仍保留最小可见“模拟”标识。警戒线采用公开复现坐标，尚非官方 GIS 原始文件。</p>
+      <p>注意：确认后当前程序内台风网页面不显示模拟性质提示；所有导出的离线 HTML 和气象图产品仍保留模拟标识和来源声明。这个开关不改变模拟计算。警戒线采用公开复现坐标，尚非官方 GIS 原始文件。</p>
       <label>设置密码<input type="password" autoComplete="off" value={quietPassword} onChange={e=>{setQuietPassword(e.target.value);setQuietError('');}} placeholder="请输入密码"/></label>
       <label className="tn-entry-quiet-agree"><input type="checkbox" checked={quietAcknowledged} onChange={e=>setQuietAcknowledged(e.target.checked)}/> 我已阅读并理解上述免责声明和注意事项</label>
       {quietError&&<div className="tn-entry-quiet-error" role="alert">{quietError}</div>}
