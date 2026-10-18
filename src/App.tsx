@@ -539,7 +539,11 @@ export default function App() {
       root.style.setProperty("--aether-vv-left", `${left}px`);
       root.style.setProperty("--aether-vv-bottom", `${viewportBottom}px`);
       root.style.setProperty("--aether-keyboard", `${keyboard}px`);
-      document.body.classList.toggle("aether-mobile-landscape", useLegacyMobileUi && width > height);
+      // R220: orientation follows the layout viewport, not a keyboard-reduced visual viewport.
+      // Keep portrait UI untouched; mobile landscape switches to a separate two-zone workstation.
+      const landscape = window.matchMedia("(orientation: landscape)").matches &&
+        window.innerWidth > window.innerHeight && keyboard <= 120;
+      document.body.classList.toggle("aether-mobile-landscape", useLegacyMobileUi && landscape);
       document.body.classList.toggle("aether-keyboard-open", useLegacyMobileUi && keyboard > 120);
     };
     syncVisualViewport();
@@ -3805,6 +3809,10 @@ export default function App() {
         
         {/* The professional workstation owns its complete chrome. */}
         <GeoJsonStatusBadge />
+        {useLegacyMobileUi && !preSimulationInput && <aside className="aether-landscape-rail" aria-label="横屏模拟控制区域">
+          <div className="aether-landscape-rail-caption">台风状态 · 模拟操作</div>
+          <div className="aether-landscape-joystick-bay"><span>方向控制</span></div>
+        </aside>}
 
    {/* 1. Map View viewport: only one full Leaflet scene may be mounted.
         Two concurrent scenes used to rerender expensive land/track layers and

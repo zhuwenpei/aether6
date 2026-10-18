@@ -3786,3 +3786,514 @@ body.aether-mobile-ui .pro-route-toolbar > button {
 .aether-realistic-desktop-menu button:hover:not(:disabled){background:#334155}
 .aether-realistic-desktop-menu button:disabled{opacity:.4;cursor:not-allowed}
 @media (max-width:767px){.aether-realistic-desktop-menu{display:none}}
+
+/* ============================================================================
+ * R220: PHONE LANDSCAPE WORKSTATION — separate control rail and map workspace.
+ * This is NOT an aspect-ratio squeeze of the portrait layout.  All changes are
+ * limited to touch/mobile landscape; portrait and desktop chrome stay intact.
+ * ========================================================================== */
+@media (orientation: landscape) {
+  body.aether-mobile-ui.aether-mobile-landscape:not(.aether-keyboard-open) {
+    --aether-landscape-rail-w:clamp(158px,20vw,280px);
+    --aether-landscape-head-h:clamp(76px,25dvh,106px);
+    --aether-landscape-status-h:clamp(60px,22dvh,100px);
+    --aether-landscape-transport-h:58px;
+  }
+  /* The actual Leaflet/Canvas coordinate system only occupies the right 4/5.
+     ResizeObserver in MapView updates Leaflet projections after reflow. */
+  body.aether-mobile-ui.aether-mobile-landscape:not(.aether-keyboard-open) #typhoon-gis-viewport {
+    position:absolute !important;
+    inset:0 0 0 var(--aether-landscape-rail-w) !important;
+    width:calc(100% - var(--aether-landscape-rail-w)) !important;
+    height:100% !important;
+    min-width:0 !important;
+    border-left:1px solid rgba(255,255,255,.13);
+    box-sizing:border-box !important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-landscape-rail {
+    display:block;
+    position:fixed;
+    top:var(--aether-vv-top,0px);
+    left:var(--aether-vv-left,0px);
+    width:var(--aether-landscape-rail-w);
+    height:var(--aether-vvh,100dvh);
+    z-index:2180;
+    pointer-events:none;
+    overflow:hidden;
+    background:linear-gradient(155deg,#171d25,#0a0d13 65%);
+    border-right:1px solid #3b4755;
+    box-shadow:6px 0 20px #0004;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-landscape-rail-caption { display:none; }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-landscape-joystick-bay {
+    position:absolute;
+    top:calc(var(--aether-landscape-head-h) + var(--aether-landscape-status-h) + var(--aether-landscape-transport-h) + 11px);
+    bottom:7px;
+    left:7px;
+    right:7px;
+    min-height:0;
+    border:1px solid #374556;
+    border-radius:11px;
+    background:linear-gradient(180deg,#202a3538,#0c141dcc);
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-landscape-joystick-bay span {
+    display:block;text-align:center;padding-top:4px;color:#9bafc3;
+    font:650 9px/1.2 ui-sans-serif,system-ui,sans-serif;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-header {
+    z-index:2400;
+    position:fixed !important;
+    left:var(--aether-vv-left,0px) !important;
+    top:var(--aether-vv-top,0px) !important;
+    width:var(--aether-landscape-rail-w) !important;
+    height:var(--aether-landscape-head-h) !important;
+    min-height:0 !important;
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:space-evenly !important;
+    align-items:stretch !important;
+    padding: max(4px,env(safe-area-inset-top,0px)) 6px 5px !important;
+    gap:2px !important;
+    border-radius:0 !important;
+    border-bottom:1px solid #364454 !important;
+    box-shadow:none !important;
+    contain:none !important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-brand { flex:0 0 auto;text-align:center;align-items:center; }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-brand b { font-size:18px !important;line-height:1 !important; }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-header-actions {
+    width:100%;display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:3px !important;
+    flex:0 0 auto;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-header-actions > button {
+    min-width:0 !important;width:100% !important;height:36px !important;min-height:36px !important;
+    border-radius:8px !important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-header-actions svg {width:17px;height:17px}
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-statusrail {
+    position:fixed !important;
+    left:var(--aether-vv-left,0px) !important;
+    top:calc(var(--aether-vv-top,0px) + var(--aether-landscape-head-h)) !important;
+    width:var(--aether-landscape-rail-w) !important;
+    height:var(--aether-landscape-status-h) !important;
+    display:flex !important;
+    flex-flow:row wrap !important;
+    align-content:flex-start;
+    align-items:center;
+    gap:5px 7px !important;
+    padding:7px 9px !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    white-space:normal !important;
+    font-size:9px !important;
+    line-height:1.35 !important;
+    border-bottom:1px solid #364454 !important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-statusrail > i {display:none}
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-statusrail > strong {font-size:10px}
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-overflow {
+    position:fixed !important;
+    z-index:2600;
+    top:calc(var(--aether-vv-top,0px) + 8px) !important;
+    left:calc(var(--aether-vv-left,0px) + var(--aether-landscape-rail-w) + 8px) !important;
+    right:auto !important;
+    width:min(260px,calc(var(--aether-vvw,100vw) - var(--aether-landscape-rail-w) - 20px)) !important;
+    max-height:calc(var(--aether-vvh,100dvh) - 16px);
+    overflow:auto;
+  }
+  /* The four frequent actions remain visible in the side rail, NOT on the map. */
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-transport {
+    position:fixed !important;
+    top:calc(var(--aether-vv-top,0px) + var(--aether-landscape-head-h) + var(--aether-landscape-status-h) + 4px) !important;
+    bottom:auto !important;
+    left:calc(var(--aether-vv-left,0px) + 6px) !important;
+    right:auto !important;
+    width:calc(var(--aether-landscape-rail-w) - 12px) !important;
+    height:var(--aether-landscape-transport-h) !important;
+    padding:4px !important;
+    display:grid !important;
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+    gap:3px !important;
+    border-radius:11px !important;
+    box-sizing:border-box;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-transport button {
+    width:100% !important;min-width:0 !important;min-height:0 !important;
+    height:100% !important;padding:0 !important;
+    border-radius:8px !important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape #joystick-wrapper {
+    position:fixed !important;
+    z-index:2410;
+    left:calc(var(--aether-vv-left,0px) + (var(--aether-landscape-rail-w) - 90px) / 2) !important;
+    right:auto !important;
+    bottom:calc(var(--aether-vv-bottom,0px) + 14px) !important;
+    margin:0 !important;
+    transform:scale(.78) !important;
+    transform-origin:left bottom !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape:has(.aether-mobile-timeline) #joystick-wrapper { opacity:1!important;pointer-events:auto!important; }
+  /* Expanded transport is a landscape floating editor over the MAP, leaving the
+     side rail and joystick usable; do not compress 10 controls into 160px. */
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-timeline {
+    position:fixed !important;
+    top:auto !important;
+    left:calc(var(--aether-vv-left,0px) + var(--aether-landscape-rail-w) + 10px) !important;
+    right:calc(env(safe-area-inset-right,0px) + 10px) !important;
+    bottom:calc(var(--aether-vv-bottom,0px) + 9px) !important;
+    width:auto !important;
+    max-width:620px !important;
+    height:auto;
+    max-height:min(88dvh,calc(var(--aether-vvh,100dvh) - 18px)) !important;
+    overflow-y:auto !important;
+    padding:10px !important;
+    gap:7px !important;
+    border-radius:12px !important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-timeline-actions button,
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-timeline-tools button {min-height:38px!important}
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-timeline-tools button {flex-direction:row!important}
+  body.aether-mobile-ui.aether-mobile-landscape .draw-track-toolbar,
+  body.aether-mobile-ui.aether-mobile-landscape .pro-route-toolbar,
+  body.aether-mobile-ui.aether-mobile-landscape .dry-air-toolbar {
+    left:calc(var(--aether-vv-left,0px) + var(--aether-landscape-rail-w) + 10px) !important;
+    right:10px !important;
+    top:auto !important;
+    bottom:10px !important;
+    width:auto !important;
+    max-width:none !important;
+    transform:none !important;
+  }
+  /* Fullscreen settings: left category rail, right scrollable editor. */
+  body.aether-mobile-ui.aether-mobile-landscape #control-drawer-sidebar.aether-mobile-drawer {
+    display:grid !important;
+    grid-template-columns:clamp(170px,24vw,275px) minmax(0,1fr) !important;
+    grid-template-rows:56px minmax(0,1fr) !important;
+    grid-template-areas:"drawerhead content" "drawertabs content";
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-drawer-header {grid-area:drawerhead;min-width:0;padding:4px 9px!important}
+  body.aether-mobile-ui.aether-mobile-landscape #control-drawer-tabs.aether-mobile-drawer-tabs {
+    grid-area:drawertabs;
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+    overflow-x:hidden !important;
+    overflow-y:auto !important;
+    min-height:0;
+    border-right:1px solid #333b48;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape #control-drawer-tabs .aether-mobile-drawer-tab {
+    flex:0 0 auto !important;
+    width:100% !important;
+    min-width:0 !important;
+    min-height:44px !important;
+    flex-direction:row !important;
+    justify-content:flex-start !important;
+    gap:10px !important;
+    padding:8px 12px !important;
+    border-bottom:1px solid #27313d !important;
+    text-align:left;
+    touch-action:pan-y !important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape #control-drawer-content.aether-mobile-drawer-content {
+    grid-area:content;
+    min-width:0;min-height:0;
+    overflow:auto !important;
+    padding:12px max(12px,env(safe-area-inset-right,0px)) !important;
+  }
+  /* Product center: left header + vertical product catalog, right ORIGINAL settings. */
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-product-workstation {
+    grid-template-columns:clamp(170px,25vw,290px) minmax(0,1fr) !important;
+    grid-template-rows:56px minmax(0,1fr) !important;
+    grid-template-areas:"producthead settings" "productnav settings";
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-product-header {grid-area:producthead;padding:5px 9px!important;gap:4px}
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-product-header b {font-size:12px}
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-product-header-actions button {width:35px!important;min-width:35px!important;height:38px!important;min-height:38px!important}
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-product-nav {
+    grid-area:productnav;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+    padding:8px!important;
+    gap:6px!important;
+    border-right:1px solid #303846!important;
+    min-height:0;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-product-nav .icwc-product-tab {
+    width:100%!important;min-width:0!important;flex:0 0 auto!important;
+    height:auto!important;min-height:42px!important;
+    padding:8px 10px!important;
+    white-space:normal!important;
+    text-align:left!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-product-settings {
+    grid-area:settings;min-width:0;min-height:0;
+    overflow-y:auto!important;
+    padding:12px 16px calc(16px + env(safe-area-inset-bottom,0px))!important;
+  }
+  /* Floating dialogs/report editors take advantage of landscape width and
+     independently scroll their content instead of reducing font sizes. */
+  body.aether-mobile-ui.aether-mobile-landscape .aether-influence-overlay,
+  body.aether-mobile-ui.aether-mobile-landscape .termination-dialog-overlay {align-items:center!important;padding:8px!important}
+  body.aether-mobile-ui.aether-mobile-landscape .aether-influence-modal,
+  body.aether-mobile-ui.aether-mobile-landscape .termination-dialog-panel {
+    width:min(760px,94vw)!important;max-width:94vw!important;
+    height:auto!important;max-height:calc(var(--aether-vvh,100dvh) - 18px)!important;
+    border-radius:14px!important;
+    padding:12px 16px!important;
+    overflow-y:auto!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-report-builder-body {
+    display:grid!important;grid-template-columns:minmax(225px,32%) minmax(0,1fr)!important;
+    gap:12px!important;
+    overflow:hidden!important;
+    min-height:0;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-report-builder-controls {
+    min-width:0;min-height:0;max-height:100%;overflow-y:auto!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-report-builder-body > :nth-child(2) {min-width:0;min-height:0;overflow:auto}
+  body.aether-mobile-ui.aether-mobile-landscape .aether-report-builder-canvasframe {min-height:0!important;max-height:65dvh!important}
+  body.aether-mobile-ui.aether-mobile-landscape .aether-report-builder-canvasframe :is(canvas,img,svg) {max-width:100%;max-height:100%;object-fit:contain}
+}
+/* Structural rail is entirely absent in portrait; it must not reserve map width. */
+.aether-landscape-rail{display:none}
+@media (orientation:landscape) and (max-height:360px) {
+  body.aether-mobile-ui.aether-mobile-landscape {--aether-landscape-head-h:74px;--aether-landscape-status-h:60px;--aether-landscape-transport-h:50px}
+  body.aether-mobile-ui.aether-mobile-landscape #joystick-wrapper {
+    left:calc(var(--aether-vv-left,0px) + (var(--aether-landscape-rail-w) - 72px) / 2)!important;
+    bottom:calc(var(--aether-vv-bottom,0px) + 7px)!important;
+    transform:scale(.62)!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-landscape-joystick-bay span {font-size:8px}
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-header-actions > button {height:31px!important;min-height:31px!important}
+}
+/* In the historic neutral theme #root #joystick-wrapper has an ID-scoped
+   z-index. It must sit above the new rail surface in landscape. */
+@media (orientation:landscape) {
+  body.aether-mobile-ui.aether-mobile-landscape #root #joystick-wrapper {z-index:2440!important;}
+}
+@media (orientation:landscape) {
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-product-settings {
+    box-sizing:border-box!important;
+    width:100%!important;
+    max-width:100%!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-statusrail {font-size:10px!important}
+}
+/* R220: video export already had the correct two panes on XL desktops; expose
+   those same functional panes for phone landscape without scaling the preview. */
+@media (orientation:landscape) and (max-width:1400px) and (max-height:850px) {
+  .video-export-workstation .video-export-main {
+    display:grid!important;
+    grid-template-columns:minmax(0,56%) minmax(0,44%)!important;
+    grid-template-rows:minmax(0,1fr)!important;
+    min-height:0!important;
+  }
+  .video-export-workstation .video-export-preview-column,
+  .video-export-workstation .video-export-config-column {
+    min-width:0!important;min-height:0!important;
+    overflow-y:auto!important;
+    padding:10px!important;
+    grid-column:auto!important;
+    grid-row:1!important;
+  }
+  .video-export-workstation .video-export-preview-column {border-bottom:0!important;border-right:1px solid #334052!important}
+  .video-export-workstation .video-export-preview-stage {min-height:0!important;padding:4px!important}
+  .video-export-workstation .video-export-preview-frame {
+    max-height:calc(100dvh - 155px)!important;
+    max-width:100%!important;
+    object-fit:contain!important;
+  }
+  .video-export-workstation > :first-child {padding-top:6px!important;padding-bottom:6px!important}
+  .video-export-workstation > :nth-child(2) {padding-top:4px!important;padding-bottom:4px!important}
+  body.aether-mobile-ui.aether-mobile-landscape .station-history-charts {
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .station-chart-frame {height:clamp(175px,46dvh,290px)!important}
+}
+
+/* ===========================================================================
+   R221 | Second-pass real landscape usability: safe areas, shortened display,
+   keyboard focus and touch geometry. Portrait and desktop remain untouched.
+   This section changes only the interface shell, never forecast canvas content.
+   =========================================================================== */
+@media (orientation:landscape) and (max-height:850px) {
+  body.aether-mobile-ui.aether-mobile-landscape {
+    /* The safe-area adds room instead of stealing 30px from the control rail. */
+    --aether-landscape-rail-w:max(clamp(158px,20vw,280px),calc(154px + env(safe-area-inset-left,0px)));
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-header,
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-statusrail {
+    padding-left:max(7px,env(safe-area-inset-left,0px))!important;
+    padding-right:7px!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-header-actions,
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-transport {min-width:0;box-sizing:border-box!important}
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-statusrail {
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));
+    grid-auto-flow:row;align-content:start!important;
+    gap:3px 5px!important;overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;scrollbar-width:thin;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-statusrail > :not(i) {
+    min-width:0;line-height:1.3!important;overflow-wrap:anywhere;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-transport {
+    margin-left:max(0px,calc(env(safe-area-inset-left,0px) - 5px))!important;
+    width:calc(var(--aether-landscape-rail-w) - max(12px,env(safe-area-inset-left,0px)))!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-landscape-joystick-bay {
+    left:max(7px,env(safe-area-inset-left,0px));
+  }
+  body.aether-mobile-ui.aether-mobile-landscape #joystick-wrapper {
+    /* Keep its geometry centered over the dedicated lower steering compartment.
+       VirtualJoystick converts scaled pointer events to logical coordinates. */
+    left:calc(var(--aether-vv-left,0px) + env(safe-area-inset-left,0px) + (var(--aether-landscape-rail-w) - env(safe-area-inset-left,0px) - 90px)/2)!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-timeline {
+    overscroll-behavior:contain;scrollbar-width:thin;
+    padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-tools-overflow {
+    /* Exposed actions and labels can be taller than short landscape screens. */
+    max-height:calc(var(--aether-vvh,100dvh) - 14px)!important;
+    overflow-y:auto!important;overscroll-behavior:contain;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-product-nav,
+  body.aether-mobile-ui.aether-mobile-landscape #control-drawer-tabs {
+    overscroll-behavior:contain;scrollbar-width:thin;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape :is(.aether-mobile-product-settings,#control-drawer-content) {
+    overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+    overflow-wrap:anywhere;
+  }
+  /* Full-width long reports stay readable, rather than shrinking preview fonts. */
+  body.aether-mobile-ui.aether-mobile-landscape .aether-report-builder-body {
+    grid-template-columns:clamp(210px,31vw,345px) minmax(0,1fr)!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-report-builder-controls {
+    padding:10px!important;overscroll-behavior:contain;
+  }
+}
+@media (orientation:landscape) and (max-height:340px) {
+  body.aether-mobile-ui.aether-mobile-landscape {
+    --aether-landscape-head-h:68px;
+    --aether-landscape-status-h:52px;
+    --aether-landscape-transport-h:46px;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-header-actions > button {
+    min-height:31px!important;height:31px!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-landscape-joystick-bay {
+    top:calc(var(--aether-landscape-head-h) + var(--aether-landscape-status-h) + var(--aether-landscape-transport-h) + 9px);
+  }
+  body.aether-mobile-ui.aether-mobile-landscape #joystick-wrapper {
+    bottom:calc(var(--aether-vv-bottom,0px) + 10px)!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-mobile-timeline {
+    max-height:calc(var(--aether-vvh,100dvh) - 10px)!important;
+  }
+}
+/* R221 | Operational report/observation workstations; real columns rather
+   than squeezed charts.  On extremely narrow landscape fall back to a single
+   scrollable chart at its readable original width. */
+@media (orientation:landscape) and (max-height:850px) and (max-width:1400px) {
+  body.aether-mobile-ui.aether-mobile-landscape .station-history-workstation {
+    height:calc(var(--aether-vvh,100dvh) - 12px)!important;
+    max-height:calc(var(--aether-vvh,100dvh) - 12px)!important;
+    width:calc(var(--aether-vvw,100vw) - 12px)!important;
+    max-width:none!important;min-width:0!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .station-history-header {
+    min-height:52px!important;padding:7px 12px!important;gap:7px!important;
+    flex:0 0 auto;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .station-history-header > div {
+    min-width:0!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .station-history-workstation > .flex-1 {
+    min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .station-history-charts {
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    align-items:start!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .station-chart-frame {
+    min-width:0!important;height:clamp(190px,57dvh,345px)!important;
+    overflow:hidden!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aircraft-recon-panel {
+    width:calc(var(--aether-vvw,100vw) - 12px)!important;
+    height:calc(var(--aether-vvh,100dvh) - 12px)!important;
+    max-height:none!important;min-width:0!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aircraft-recon-panel > header {
+    min-height:50px!important;padding:6px 12px!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aircraft-recon-report-content {
+    padding:10px!important;min-height:0!important;overflow-y:auto!important;
+    overscroll-behavior:contain;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aircraft-recon-report-layout {
+    display:grid!important;grid-template-columns:minmax(220px,43%) minmax(0,1fr)!important;
+    gap:10px!important;align-items:start!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aircraft-recon-report-layout > * {
+    min-width:0!important;max-width:100%!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-report-summary {
+    width:calc(var(--aether-vvw,100vw) - 14px)!important;
+    height:calc(var(--aether-vvh,100dvh) - 14px)!important;
+    max-height:none!important;margin:auto!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-report-summary-header {
+    min-height:50px!important;padding:6px 12px!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-report-summary-header h2 {
+    font-size:clamp(14px,2vw,20px)!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-report-summary-body {
+    overflow-y:auto!important;overscroll-behavior:contain;padding:10px!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-report-kpi-grid {
+    display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:8px!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-report-kpi-grid > div {
+    min-width:0!important;padding:10px!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-report-summary-body > .grid.grid-cols-1 {
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .station-ranking-page {
+    width:var(--aether-vvw,100vw)!important;height:var(--aether-vvh,100dvh)!important;
+    min-height:0!important;
+  }
+}
+@media (orientation:landscape) and (max-width:760px) and (max-height:850px) {
+  body.aether-mobile-ui.aether-mobile-landscape .station-history-charts {
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .station-chart-frame {
+    height:clamp(200px,75dvh,290px)!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aircraft-recon-report-layout {
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-report-kpi-grid {
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+  body.aether-mobile-ui.aether-mobile-landscape .aether-report-summary-body > .grid.grid-cols-1 {
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+}

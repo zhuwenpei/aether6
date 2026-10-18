@@ -12,10 +12,10 @@ import {NETWORK_FORECAST_STYLE, type NetworkFix, type NetworkForecast} from './T
 const FOREIGN_AGENCIES = ['日本','美国','韩国'] as const;
 function hash32(s:string):number {let h=2166136261>>>0;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),16777619)>>>0;}return h>>>0;}
 /** Assign each foreign display agency to ONE stable ensemble model MAIN/control
- * path. FNV3 and GENC (the GEM-labelled family in this codebase) are excluded.
+ * path. WNV3 and FNV3 are excluded. GEM remains available.
  * The assignment is stable for the storm and configuration seed across issues.
  */
-export const NETWORK_ALLOWED_MAIN_MODELS=AETHER_MODEL_SPECS.filter(spec=>spec.id!=='FNV3'&&spec.id!=='GEM');
+export const NETWORK_ALLOWED_MAIN_MODELS=AETHER_MODEL_SPECS.filter(spec=>spec.id!=='WNV3'&&spec.id!=='FNV3');
 export function selectNetworkAgencyModels(storm:Typhoon,config:SimulationConfig):Array<{agency:typeof FOREIGN_AGENCIES[number];modelId:(typeof AETHER_MODEL_SPECS)[number]['id']}> {
   const identity=`${config.seed||'AETHER'}|${storm.id||storm.name||storm.lat+','+storm.lon}|NETWORK-MAIN-R218`;
   const shuffled=NETWORK_ALLOWED_MAIN_MODELS.map(spec=>({modelId:spec.id,sort:hash32(identity+'|'+spec.id)}))

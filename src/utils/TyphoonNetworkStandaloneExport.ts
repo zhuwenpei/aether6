@@ -108,6 +108,41 @@ header button img{display:block;width:34px;height:34px;object-fit:contain;backgr
 #notice{position:absolute;left:50%;bottom:9px;transform:translateX(-50%);z-index:3;color:#415e6e;opacity:.65;white-space:nowrap;font-size:9px;pointer-events:none;text-align:center}
 @media(max-width:375px){header{grid-template-columns:42px minmax(0,1fr) repeat(3,32px);gap:2px}header button:not(#back){width:32px}header button img{width:30px;height:30px}header h1{font-size:clamp(18px,5.1vw,23px)}#ticker{font-size:clamp(11.5px,3.5vw,13.5px)}}
 @media(min-width:800px){header{height:54px;grid-template-columns:51px minmax(0,1fr) repeat(3,35px)}#back{width:51px;height:50px}#map{top:54px}#ref{top:54px}#prob{top:54px}#ticker{top:58px}}
+/* R220 offline snapshot: same native 1/5 left rail + 4/5 map layout. */
+@media(orientation:landscape) and (max-width:1400px) and (max-height:850px){
+body:before{content:"";position:absolute;z-index:1;left:0;top:0;bottom:0;width:clamp(158px,20vw,280px);background:#eaf4ff;border-right:1px solid #529cc4;pointer-events:none}
+header{width:clamp(158px,20vw,280px)!important;right:auto!important;height:135px!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-template-rows:42px 39px 42px!important;gap:3px!important;padding:5px!important}
+#back{grid-column:1!important;grid-row:1!important}header h1{grid-column:1/-1!important;grid-row:2!important;font-size:clamp(14px,1.8vw,21px)!important}#share{grid-column:1!important;grid-row:3!important}#reference{grid-column:2!important;grid-row:3!important}#history{grid-column:3!important;grid-row:3!important}
+#map{top:0!important;left:clamp(158px,20vw,280px)!important;right:0!important;bottom:0!important}
+#ticker{top:143px!important;left:0!important;right:auto!important;width:clamp(158px,20vw,280px)!important;max-height:calc(100% - 216px)!important;overflow-y:auto!important;text-align:left!important;font-size:11px!important;padding:4px 8px!important}
+#ticker>div{white-space:normal!important;overflow-wrap:anywhere!important;text-align:left!important}#state{text-align:left!important;font-size:15px!important}
+#left{left:calc((clamp(158px,20vw,280px) - 46px)/2)!important;bottom:12px!important}#right{right:10px!important;top:50%!important}
+#ref,#prob{top:0!important;left:clamp(158px,20vw,280px)!important;width:calc(100% - clamp(158px,20vw,280px))!important;right:0!important}
+#ref img{max-width:100%!important;width:100%!important;height:auto!important;object-fit:contain!important}
+#prob{display:none;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:8px 12px;padding:12px!important;overflow-x:hidden!important}
+#prob h2,#prob p,#probmissing{grid-column:1/-1!important}#prob h2{font-size:15px!important;margin:0!important}#prob p{font-size:11px!important;margin:0!important}
+#prob figure{width:100%!important;max-width:100%!important;min-width:0!important;margin:0!important;grid-column:auto!important}
+#prob figure img{width:100%!important;height:auto!important;max-width:100%!important;aspect-ratio:auto!important}
+.credit{left:calc(clamp(158px,20vw,280px) + 10px)!important;bottom:7px!important}
+#notice{left:calc(clamp(158px,20vw,280px) + (100vw - clamp(158px,20vw,280px))/2)!important}
+}
+/* R221 offline gallery parity: portrait stacked, wide landscape side-by-side,
+   short landscape one original-resolution image at a time. */
+#gallerytabs{display:none}
+@media(orientation:landscape) and (max-width:960px) and (max-height:850px){
+ #prob{grid-template-columns:minmax(0,1fr)!important;padding:8px 10px 15px!important;gap:6px!important}
+ #prob h2,#prob p,#probmissing{grid-column:1!important}
+ #gallerytabs{display:grid!important;grid-column:1!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;position:sticky;top:0;z-index:8;background:#000;padding:4px 0 6px;border-bottom:1px solid #666}
+ #gallerytabs button{min-height:39px;background:#292929;color:#fff;border:1px solid #777;border-radius:7px;font-size:12px}
+ #gallerytabs button.is-active{background:#138238;border-color:#48ca6b}
+ #prob figure.galleryfigure{display:none!important;grid-column:1!important;width:100%!important;margin:0!important}
+ #prob figure.galleryfigure.is-selected{display:block!important}
+}
+@media(orientation:landscape) and (max-width:960px) and (max-height:390px){
+ header{height:116px!important;grid-template-rows:35px 30px 35px!important;gap:2px!important}
+ #ticker{top:122px!important;max-height:calc(100% - 175px)!important;font-size:10px!important}
+ #state{font-size:13px!important}
+}
 </style></head><body>
 <script type="application/json" id="aether-data">__AETHER_EMBEDDED_PAYLOAD__</script>
 <header><button id="back" aria-label="返回地图"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="white" d="M23 3 1 24l22 21v-12h24V16H23Z"/></svg></button><h1 id="heading">健茂台风路径</h1><button id="share" title="导出当前 HTML" aria-label="保存"><img id="shareicon"></button><button id="reference" aria-label="台风参考"><img id="referenceicon"></button><button id="history" aria-label="历史图标"><img id="historyicon"></button></header>
@@ -117,7 +152,7 @@ header button img{display:block;width:34px;height:34px;object-fit:contain;backgr
 <div class="credit">模拟资料 · 本文件自带地图海岸线及 NMC 预报图，不请求地图瓦片</div><div id="detail"></div>
 <div id="notice">虚拟模拟 · 非官方预报</div>
 <div id="ref"><div class="error" id="referror"></div><img id="nmc" alt="NMC 模拟预报，长按保存"><button id="openprob">热带气旋概率</button></div>
-<div id="prob"><h2>【AETHER 模拟】热带气旋概率与集合预报</h2><p>数据为模拟资料，仅供参考 · 长按图片可保存</p><figure><img id="probstrike" alt="袭击概率图"><figcaption>袭击概率图</figcaption></figure><figure><img id="probcenters" alt="8 机构中心路径图"><figcaption>8 机构中心路径 · 经典集合预报</figcaption></figure><div id="probmissing"></div></div>
+<div id="prob"><h2>【AETHER 模拟】热带气旋概率与集合预报</h2><p>数据为模拟资料，仅供参考 · 长按图片可保存</p><div id="gallerytabs" role="group" aria-label="横屏双图切换"><button id="showstrike" type="button" class="is-active" aria-pressed="true">袭击概率图</button><button id="showcenters" type="button" aria-pressed="false">8机构中心路径</button></div><figure class="galleryfigure is-selected"><img id="probstrike" alt="袭击概率图"><figcaption>袭击概率图</figcaption></figure><figure class="galleryfigure"><img id="probcenters" alt="8 机构中心路径图"><figcaption>8 机构中心路径 · 经典集合预报</figcaption></figure><div id="probmissing"></div></div>
 <script>
 'use strict';
 const data=JSON.parse(document.getElementById('aether-data').textContent);
@@ -129,11 +164,19 @@ const mc=(a)=>Math.log(Math.tan(Math.PI/4+Math.max(-80,Math.min(80,a))*Math.PI/3
 function mapPoint(la,lo){const sx=w/(span/111.195/Math.max(.12,Math.cos(lat*Math.PI/180)));return [w/2+((lo-lon+540)%360-180)*sx,h/2-(mc(la)-mc(lat))*sx*180/Math.PI]}
 function resize(){const r=mapEl.getBoundingClientRect();w=r.width;h=r.height;dpr=Math.min(2,window.devicePixelRatio||1);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);draw()}
 function grade(v){return v<17.2?7:v<24.5?8:v<32.7?10:v<41.5?12:v<51?14:16}
-function color(p){const v=p.vmax;return !Number.isFinite(v)?'#888':v<17.2?'#00ce3a':v<24.5?'#0639f5':v<32.7?'#ff8b12':v<41.5?'#ff161d':v<51?'#eb08dd':'#8320d6'}
+function color(p){const v=p.vmax;return !Number.isFinite(v)?'#888':v<17.2?'#00bf00':v<24.5?'#0000ff':v<32.7?'#ff7400':v<41.5?'#ff0000':v<51?'#ff00ff':'#753fc9'}
 function drawLand(){ctx.fillStyle=night?'#242e35':'#fffdf7';ctx.strokeStyle=night?'#43545b':'#b0bbc3';ctx.lineWidth=.55;
   for(const feature of data.coastline?.features||[]){const g=feature.geometry;if(!g)continue;let polys=g.type==='Polygon'?[g.coordinates]:g.type==='MultiPolygon'?g.coordinates:[];for(const poly of polys){ctx.beginPath();for(const ring of poly){let first=true;for(let i=0;i<ring.length;i++){const p=ring[i],v=mapPoint(p[1],p[0]);if(first){ctx.moveTo(...v);first=false}else ctx.lineTo(...v)}ctx.closePath()}ctx.fill('evenodd');ctx.stroke()}}
 }
 function segment(a,b,stroke,width,dash=[]){const x=mapPoint(a.lat,a.lon),y=mapPoint(b.lat,b.lon);ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.setLineDash(dash);ctx.beginPath();ctx.moveTo(...x);ctx.lineTo(...y);ctx.stroke();ctx.setLineDash([])}
+function insideWarning24(la,lo){
+ if(!Number.isFinite(la)||!Number.isFinite(lo)||la<0)return false;
+ const lon=((lo+180)%360+360)%360-180,pts=data.warningLines?.h24||[];
+ if(pts.length<2)return false;
+ let edge=pts[pts.length-1][0];
+ for(let i=1;i<pts.length;i++){const [x0,y0]=pts[i-1],[x1,y1]=pts[i];if(la<=y1){edge=x0+(x1-x0)*Math.max(0,Math.min(1,(la-y0)/(y1-y0)));break}}
+ return lon<=edge;
+}
 function drawWarningLines(){for(const [verts,stroke,dashes] of [[data.warningLines?.h24||[],'#e1162d',[]],[data.warningLines?.h48||[],'#f9e12a',[4,5]]]){if(verts.length<2)continue;ctx.strokeStyle=stroke;ctx.lineWidth=1.75;ctx.setLineDash(dashes);ctx.beginPath();verts.forEach(([lon,lat],i)=>{const p=mapPoint(lat,lon);if(i===0)ctx.moveTo(...p);else ctx.lineTo(...p)});ctx.stroke();ctx.setLineDash([])}}
 function rings(f){for(const [key,stroke] of [['r7','#00ad2a'],['r10','#dfff6b'],['r12','#c41618']]){const rr=f[key];if(!rr)continue;const qs=['ne','se','sw','nw'];ctx.beginPath();let once=true;for(let j=0;j<4;j++){const r=Math.max(0,rr[qs[j]]||0);for(let i=0;i<=120;i++){const rad=(j*90+i*90/120)*Math.PI/180;const y=f.lat+r*Math.cos(rad)/111.195,x=f.lon+r*Math.sin(rad)/(111.195*Math.max(.12,Math.cos(f.lat*Math.PI/180)));const p=mapPoint(y,x);if(once){ctx.moveTo(...p);once=false}else ctx.lineTo(...p)}}ctx.closePath();ctx.strokeStyle=stroke;ctx.fillStyle=stroke;ctx.globalAlpha=.11;ctx.fill();ctx.globalAlpha=1;ctx.lineWidth=.8;ctx.stroke()}}
 function dot(f,size){const p=mapPoint(f.lat,f.lon);ctx.beginPath();ctx.arc(p[0],p[1],size/2,0,Math.PI*2);ctx.fillStyle=color(f);ctx.fill();ctx.strokeStyle='#ffffff65';ctx.lineWidth=.65;ctx.stroke()}
@@ -141,16 +184,23 @@ function draw(){if(!w||!h)return;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect
  for(let i=1;i<history.length;i++)segment(history[i-1],history[i],color(history[i]),2.1);
  for(const f of forecasts){let last=product.issue;for(const fix of f.fixes.filter(p=>[6,12,18,24,30,36,42,48,54,60,66,72,84,96,108,120].some(v=>Math.abs(v-(p.simHour-product.issue.simHour))<.01))){segment(last,fix,f.color,f.agency==='中国'?1.8:1.18,[2,5]);last=fix}}
  const fixed=history[Math.max(0,Math.min(frame,history.length-1))];if(fixed)rings(fixed);
- for(const p of history)dot(p,8.8);
- for(const f of forecasts.filter(f=>f.agency!=='中国').concat(forecasts.filter(f=>f.agency==='中国'))){for(const p of f.fixes.filter(p=>[6,12,18,24,30,36,42,48,54,60,66,72,84,96,108,120].some(v=>Math.abs(v-(p.simHour-product.issue.simHour))<.01))){dot(p,f.agency==='中国'?8.8:3.7);if(f.agency==='中国'){const pt=mapPoint(p.lat,p.lon),lead=Math.round(p.simHour-product.issue.simHour);ctx.save();ctx.font='600 9px Arial,Microsoft YaHei,sans-serif';ctx.lineWidth=1.1;ctx.strokeStyle='#303030';ctx.fillStyle='#fff';ctx.lineJoin='round';ctx.textBaseline='alphabetic';const label=lead+'h/'+(p.vmax>=56.1?'17级以上':grade(p.vmax)+'级');ctx.strokeText(label,pt[0]-26,pt[1]+16);ctx.fillText(label,pt[0]-26,pt[1]+16);ctx.restore()}}}
+ for(const p of history)dot(p,11);
+ for(const f of forecasts.filter(f=>f.agency!=='中国').concat(forecasts.filter(f=>f.agency==='中国'))){for(const p of f.fixes.filter(p=>[6,12,18,24,30,36,42,48,54,60,66,72,84,96,108,120].some(v=>Math.abs(v-(p.simHour-product.issue.simHour))<.01))){dot(p,f.agency==='中国'?11:3.7);if(f.agency==='中国'){const pt=mapPoint(p.lat,p.lon),lead=Math.round(p.simHour-product.issue.simHour);ctx.save();ctx.font='600 9px Arial,Microsoft YaHei,sans-serif';ctx.lineWidth=1.1;ctx.strokeStyle='#303030';ctx.fillStyle='#fff';ctx.lineJoin='round';ctx.textBaseline='alphabetic';const label=lead+'h/'+(p.vmax>=56.1?'17级以上':grade(p.vmax)+'级');ctx.strokeText(label,pt[0]-26,pt[1]+16);ctx.fillText(label,pt[0]-26,pt[1]+16);ctx.restore()}}}
  if(fixed){const pt=mapPoint(fixed.lat,fixed.lon);if(!playing&&cycloneImage.complete&&cycloneImage.naturalWidth){ctx.drawImage(cycloneImage,pt[0]-12,pt[1]-12,24,24)}dot(fixed,6.6)}
- if(selected){const pt=mapPoint(selected.fix.lat,selected.fix.lon);detail.style.left=Math.max(8,Math.min(w-detail.offsetWidth-8,pt[0]-detail.offsetWidth/2))+'px';detail.style.top=Math.max(60,Math.min(h-detail.offsetHeight-22,pt[1]-detail.offsetHeight-13))+'px'}
+ if(selected){const pt=mapPoint(selected.fix.lat,selected.fix.lon);detail.style.left=(mapEl.getBoundingClientRect().left+Math.max(8,Math.min(w-detail.offsetWidth-8,pt[0]-detail.offsetWidth/2)))+'px';detail.style.top=(mapEl.getBoundingClientRect().top+Math.max(8,Math.min(h-detail.offsetHeight-22,pt[1]-detail.offsetHeight-13)))+'px'}
 }
 const cycloneImage=new Image();cycloneImage.onload=draw;cycloneImage.src=data.art.cyclone||'';
 function tick(){const p=history[Math.min(frame,history.length-1)];if(!p)return;const date=new Date(Date.parse(data.startTimeISO)+p.simHour*3600000+8*3600000);const ts=date.getUTCFullYear()+'年'+(date.getUTCMonth()+1)+'月'+date.getUTCDate()+'日'+String(date.getUTCHours()).padStart(2,'0')+'时';document.getElementById('ticker').innerHTML='<div>第'+data.ordinal+'号　'+data.typhoonName+' '+ts+'</div><div>风级:'+grade(p.vmax)+'级　风速:'+Math.round(p.vmax)+'m/s 等级:'+grade(p.vmax)+'级　气压:'+Math.round(p.pmin)+'hPa</div><div>经纬度：'+p.lon.toFixed(1)+'°,'+p.lat.toFixed(1)+'°　移向/移速：'+Math.round(p.direction)+'°,'+Math.round(p.speed)+'公里/小时</div><div id="state">'+(p.dissipated?'【已停编】':'【生效中】')+'</div>'}
 function stop(){if(replayHandle!==null)cancelAnimationFrame(replayHandle);replayHandle=null;playing=false;frame=history.length-1;tick();draw()}
 function run(){if(replayHandle!==null)cancelAnimationFrame(replayHandle);if(!history.length)return;playing=true;frame=0;span=1000;detail.style.display='none';selected=null;lat=history[0].lat;lon=history[0].lon;tick();draw();let clock=history[0].simHour,previous=null;
- const step=(ts)=>{if(!playing)return;if(previous!==null)clock+=Math.max(0,Math.min(.12,(ts-previous)/1000))*32;previous=ts;
+ // Geometry-based entry is identical to the live Leaflet viewer.
+ const warningEntry=history.find(p=>insideWarning24(p.lat,p.lon))?.simHour??null;
+ const step=(ts)=>{if(!playing)return;
+ if(previous!==null){const dt=Math.max(0,Math.min(.12,(ts-previous)/1000));
+   if(warningEntry===null)clock+=32*dt;
+   else if(clock>=warningEntry)clock+=(32/3)*dt;
+   else {const before=(warningEntry-clock)/32;clock=dt<=before?clock+32*dt:warningEntry+(dt-before)*(32/3);}
+ }previous=ts;
  let next=frame;while(next<history.length-1&&history[next+1].simHour<=clock+1e-7)next++;
  if(next!==frame){frame=next;lat=history[frame].lat;lon=history[frame].lon;tick();draw()}
  if(frame>=history.length-1){stop();return}replayHandle=requestAnimationFrame(step)};
@@ -160,8 +210,12 @@ document.getElementById('night').onclick=()=>{night=!night;draw()};document.getE
 document.getElementById('traffic').onclick=()=>{};document.getElementById('history').onclick=()=>{};
 function showReference(show){document.getElementById('prob').style.display='none';document.getElementById('ref').style.display=show?'block':'none';document.getElementById('map').style.display=show?'none':'block';document.getElementById('ticker').style.display=show?'none':'block';document.getElementById('right').style.display=show?'none':'grid';document.getElementById('left').style.display=show?'none':'block';document.getElementById('heading').textContent=show?'台风参考':'健茂台风路径';if(!show)resize()}
 document.getElementById('reference').onclick=()=>{stop();showReference(true)};
-document.getElementById('openprob').onclick=()=>{document.getElementById('ref').style.display='none';document.getElementById('prob').style.display='block';document.getElementById('heading').textContent='热带气旋概率'};
-document.getElementById('back').onclick=()=>{if(document.getElementById('prob').style.display==='block')showReference(true);else showReference(false)};
+function syncProbabilityDisplay(){const prob=document.getElementById('prob');if(prob.style.display==='none'||!prob.style.display)return;prob.style.display=window.matchMedia('(orientation:landscape) and (max-width:1400px) and (max-height:850px)').matches?'grid':'block'}
+function setGalleryTab(id){const figures=[...document.querySelectorAll('#prob figure.galleryfigure')];figures.forEach((f,i)=>f.classList.toggle('is-selected',(id==='strike'?0:1)===i));for(const [name,button] of [['strike','showstrike'],['centers','showcenters']]){const b=document.getElementById(button),active=name===id;b.classList.toggle('is-active',active);b.setAttribute('aria-pressed',String(active))}}
+document.getElementById('showstrike').onclick=()=>setGalleryTab('strike');document.getElementById('showcenters').onclick=()=>setGalleryTab('centers');
+document.getElementById('openprob').onclick=()=>{document.getElementById('ref').style.display='none';document.getElementById('prob').style.display='block';syncProbabilityDisplay();setGalleryTab('strike');document.getElementById('heading').textContent='热带气旋概率'};
+window.addEventListener('resize',syncProbabilityDisplay);
+document.getElementById('back').onclick=()=>{if(['block','grid'].includes(document.getElementById('prob').style.display))showReference(true);else showReference(false)};
 document.getElementById('share').onclick=()=>{const blob=new Blob(['<!doctype html>\n'+document.documentElement.outerHTML],{type:'text/html;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='台风网模拟_离线快照.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),10000)};
 const nmc=document.getElementById('nmc');if(data.nmcImage)nmc.src=data.nmcImage;else document.getElementById('referror').textContent='此存档未能生成 NMC 图片';
 if(data.quietSimulationHints){const note=document.querySelector('#prob p');if(note)note.style.display='none';const title=document.querySelector('#prob h2');if(title)title.textContent='热带气旋概率 · 模拟';}
@@ -179,7 +233,7 @@ for(const f of forecasts.filter(f=>f.agency==='中国')){
     const found=choose(fix,'中国',7);if(found){best=found;break}}
   if(best)break;
 }
-if(!best){for(const fix of history){const found=choose(fix,null,4.5);if(found){best=found;break}}}
+if(!best){for(const fix of history){const found=choose(fix,null,5.5);if(found){best=found;break}}}
 if(!best){let closest=7;
   for(const f of forecasts.filter(f=>f.agency!=='中国')){
     for(const fix of f.fixes){if(!leads.includes(Math.round(fix.simHour-product.issue.simHour)))continue;

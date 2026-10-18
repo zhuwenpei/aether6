@@ -72,8 +72,14 @@ export default function VirtualJoystick({ compact = false, dx, dy, onChange, str
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
 
-    let deltaX = clientX - centerX;
-    let deltaY = clientY - centerY;
+    // R221: the compact landscape rail scales the visual joystick.  Convert
+    // viewport pointer coordinates back into its *logical* 116px coordinate
+    // system before applying the same steering radius in either orientation.
+    // Otherwise a 0.78x rendered joystick reaches only ~78% of its real range.
+    const visualScaleX = Math.max(0.1, rect.width / diameter);
+    const visualScaleY = Math.max(0.1, rect.height / diameter);
+    let deltaX = (clientX - centerX) / visualScaleX;
+    let deltaY = (clientY - centerY) / visualScaleY;
     const distance = Math.hypot(deltaX, deltaY);
 
     if (distance > maxDistance) {

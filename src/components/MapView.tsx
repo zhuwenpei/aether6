@@ -3572,6 +3572,29 @@ function getContinuousStationColor(wind: number): string {
     };
   }, [mapInitialized]);
 
+  // R220: the Leaflet map is a real 4/5-width sibling of the landscape side panel.
+  // A CSS-only resize without invalidating Leaflet leaves tiles, hit targets and
+  // canvas overlays projected against the previous full-screen dimensions.
+  useEffect(() => {
+    if (!mapInitialized || !mapRef.current) return;
+    const node = document.getElementById(viewportId);
+    if (!node || typeof ResizeObserver === "undefined") return;
+    let raf = 0;
+    const resize = () => {
+      if (raf) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const map = mapRef.current;
+        if (!map || !node.isConnected) return;
+        map.invalidateSize({ pan: false, animate: false });
+      });
+    };
+    const observer = new ResizeObserver(resize);
+    observer.observe(node);
+    resize();
+    return () => { observer.disconnect(); if (raf) cancelAnimationFrame(raf); };
+  }, [mapInitialized, viewportId]);
+
   return (
     <div className="relative w-full h-full select-none" id={viewportId}>
       {/* 1. Fullscreen Leaflet container */}

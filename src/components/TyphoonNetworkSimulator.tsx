@@ -11,9 +11,9 @@ import { drawNmcForecastProductCooperative } from '../utils/NmcForecastProduct';
 import {chooseSafeNmcWidth,detectNmcDeviceClass} from '../utils/NmcRenderSafety';
 import { loadNmcOptionalGeography } from '../utils/NmcOptionalGeography';
 import { buildNetworkForecastsWithEnsemble } from '../utils/NetworkAgencyEnsemble';
-import { NETWORK_WARNING_24H,NETWORK_WARNING_48H } from '../utils/NetworkWarningLines';
+import { NETWORK_WARNING_24H,NETWORK_WARNING_48H,insideNetwork24hWarning } from '../utils/NetworkWarningLines';
 import { buildSharedNetworkNmcForecast } from '../utils/NetworkNmcForecast';
-import { warningAdaptiveNetworkHistory, networkPointColor, networkHistorySegments, networkVisibleForecastFixes, networkForecastSegments, type NetworkFix, type NetworkProduct } from '../utils/TyphoonNetworkData';
+import { warningAdaptiveNetworkHistory, networkPointColor, advanceNetworkReplayClock, networkHistorySegments, networkVisibleForecastFixes, networkForecastSegments, type NetworkFix, type NetworkProduct } from '../utils/TyphoonNetworkData';
 import { createReferenceRasterLayer, referenceBasemapLocation, REFERENCE_RASTER_CREDIT } from '../utils/TyphoonNetworkReferenceRaster';
 import { downloadStandaloneNetworkHtml } from '../utils/TyphoonNetworkStandaloneExport';
 import './TyphoonNetworkSimulator.css';
@@ -98,8 +98,8 @@ function hurricaneSvg(size=40){return <img className="tn-reference-art" src="/ne
 export const NETWORK_CYCLONE_SIZE_PX=24;
 export function cycloneAsset(vmax:number,category?:string):string {
   const palette:Record<string,string>={
-    '#00ce3a':'weak','#0639f5':'storm','#ff8b12':'severe',
-    '#ff161d':'typhoon','#eb08dd':'intense','#8320d6':'super'
+    '#00bf00':'weak','#0000ff':'storm','#ff7400':'severe',
+    '#ff0000':'typhoon','#ff00ff':'intense','#753fc9':'super'
   };
   return `/network-icons/cyclone-${palette[networkPointColor(vmax,category)]||'unknown'}.webp`;
 }
@@ -146,7 +146,7 @@ export function networkForecastDotColor(fix:NetworkFix):string {
 /** Screenshot-calibrated *outer* diameter: CMA and history are peers;
  * other forecast agencies are lower-priority. Diameter includes the
  * deliberately faint R203 semi-transparent separation outline. */
-export const NETWORK_DOT_DIAMETER_PX=9;
+export const NETWORK_DOT_DIAMETER_PX=11;
 export const NETWORK_CMA_DOT_DIAMETER_PX=NETWORK_DOT_DIAMETER_PX;
 export const NETWORK_OTHER_AGENCY_DOT_DIAMETER_PX=3.7;
 export const NETWORK_HISTORY_DOT_STROKE_PX=0.65;
@@ -285,6 +285,7 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
   const [galleryBusy,setGalleryBusy]=useState(false);
   const [galleryError,setGalleryError]=useState('');
   const [galleryProgress,setGalleryProgress]=useState('');
+  const [galleryView,setGalleryView]=useState<'strike'|'centers'>('strike');
   const galleryJobRef=useRef<Promise<void>|null>(null);
   const [mapMessage,setMapMessage]=useState('');
   const [frame,setFrame]=useState(0);
@@ -294,6 +295,22 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
   const [exporting,setExporting]=useState(false);
   const rootMapRef=useRef<HTMLDivElement|null>(null);
   const leafletRef=useRef<L.Map|null>(null);
+  // R220: rescale the existing Leaflet scene when the portrait/landscape split changes.
+  // Do not recreate the map, overlays or animated forecast geometry during rotation.
+  useEffect(() => {
+    if (stage !== 'map' || !rootMapRef.current || typeof ResizeObserver === 'undefined') return;
+    let raf=0;
+    const refresh=()=>{
+      cancelAnimationFrame(raf);
+      raf=requestAnimationFrame(()=>{
+        if(leafletRef.current)leafletRef.current.invalidateSize({pan:false,animate:false});
+      });
+    };
+    const observer=new ResizeObserver(refresh);
+    observer.observe(rootMapRef.current);
+    refresh();
+    return ()=>{observer.disconnect();cancelAnimationFrame(raf);};
+  },[stage,product]);
   // Use ONE SVG overlay for dots, paths and wind radii: Canvas vector repaint can
   // lag behind Leaflet DOM markers when a phone pinches/zooms or drags rapidly.
   const networkSvgRendererRef=useRef<L.SVG|null>(null);
@@ -386,10 +403,9 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
   // OSM tiles are WGS84; Gaode tiles require GCJ-02 positions over mainland China.
   const displayPoint=(lon:number,lat:number):[number,number]=>
     basemap==='amap'?referenceBasemapLocation('amap',lon,lat,toAmapPosition):[lat,lon];
-  // R218: physical playback speed is 32 simulated hours per real second,
-  // independent of whether adjacent visible fixes are 3h or 1h apart.
-  // requestAnimationFrame uses elapsed virtual HOURS rather than one fixed
-  // delay per node, so adding hourly fixes does not slow down the storm.
+  // R219: maintain a consistent number of visible dots per real second.
+  // After the first 24h-warning historical point the virtual hour-clock
+  // slows to 1/3, compensating for the change from 3h to 1h dot spacing.
   useEffect(()=>{
     if(stage!=='map'||!product||!playing)return;
     const history=product.history;
@@ -398,8 +414,9 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
     let clock=history[Math.min(frame,history.length-1)].simHour;
     let previousTimestamp:number|null=null;
     let previousIndex=frame;
+    const entryHour=history.find(p=>insideNetwork24hWarning(p.lat,p.lon))?.simHour??null;
     const step=(timestamp:number)=>{
-      if(previousTimestamp!==null)clock+=Math.max(0,Math.min(.12,(timestamp-previousTimestamp)/1000))*32;
+      if(previousTimestamp!==null)clock=advanceNetworkReplayClock(clock,Math.max(0,Math.min(.12,(timestamp-previousTimestamp)/1000)),entryHour);
       previousTimestamp=timestamp;
       let next=previousIndex;
       while(next<history.length-1&&history[next+1].simHour<=clock+1e-7)next++;
@@ -650,6 +667,7 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
   },[]);
   const latest=product?.history[product.history.length-1]||null;
   const openProbability=()=>{
+    setGalleryView('strike');
     setStage('probability');
     if(gallery||galleryJobRef.current||!product||!config)return;
     setGalleryBusy(true);setGalleryError('');setGalleryProgress('准备 8 机构集合预报');
@@ -696,7 +714,7 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
     }catch(err){setMapMessage(`HTML 导出失败：${err instanceof Error?err.message:String(err)}`);}
     finally{setExporting(false);}
   };
-  return <div className="tn-viewport" role="dialog" aria-modal="true" aria-label="台风网模拟"
+  return <div className={`tn-viewport tn-stage-${stage}`} role="dialog" aria-modal="true" aria-label="台风网模拟"
     onClickCapture={event=>{
       if(!(event.target instanceof Element))return;
       if(event.target.closest('.tn-provider-wrapper'))return;
@@ -758,8 +776,12 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
         {galleryBusy&&<div className="tn-probability-loading" role="status">{galleryProgress||'生成气象图中，请稍候…'}</div>}
         {galleryError&&<div className="tn-reference-error" role="alert">{galleryError}<button type="button" onClick={()=>{setGalleryError('');openProbability();}}>重新生成</button></div>}
         {gallery&&<>
-          <figure><img className="tn-longpress-save" src={gallery.strike} alt="袭击概率模拟图，长按图片保存" title="长按图片保存"/><figcaption>袭击概率 · {chartSettings.strikeRadiusKm} km 半径</figcaption></figure>
-          <figure><img className="tn-longpress-save" src={gallery.centers} alt="八机构经典集合中心路径图，长按图片保存" title="长按图片保存"/><figcaption>8 机构中心路径 · 经典集合预报</figcaption></figure>
+          <div className="tn-gallery-switch" role="group" aria-label="横屏气象图切换">
+            <button type="button" className={galleryView==='strike'?'is-active':''} aria-pressed={galleryView==='strike'} onClick={()=>setGalleryView('strike')}>袭击概率图</button>
+            <button type="button" className={galleryView==='centers'?'is-active':''} aria-pressed={galleryView==='centers'} onClick={()=>setGalleryView('centers')}>8机构中心路径</button>
+          </div>
+          <figure className={`tn-gallery-figure${galleryView==='strike'?' is-selected':''}`}><img className="tn-longpress-save" src={gallery.strike} alt="袭击概率模拟图，长按图片保存" title="长按图片保存"/><figcaption>袭击概率 · {chartSettings.strikeRadiusKm} km 半径</figcaption></figure>
+          <figure className={`tn-gallery-figure${galleryView==='centers'?' is-selected':''}`}><img className="tn-longpress-save" src={gallery.centers} alt="八机构经典集合中心路径图，长按图片保存" title="长按图片保存"/><figcaption>8 机构中心路径 · 经典集合预报</figcaption></figure>
         </>}
       </main>}
     </>}

@@ -11,7 +11,7 @@ let shapeCalled=0,capCalled=0;const nmcEnv={exports:{},Math,Number,Infinity,Erro
  if(mod==='../simulation/PreSimulationReference')return {issuePreSimulationReference:()=>null};
  if(mod==='../simulation/NmcIntensityGuidance')return {limitNmcGenesisPeak:arr=>{capCalled++;return arr},shapeNmcPeakIntensity:(arr,target)=>{shapeCalled++;return arr.map(p=>({...p,vmax:target,pmin:900}))}};
  if(mod==='./NmcForecastProduct')return {selectNmcIssuedForecast:(cur,arr,issue,h)=>[cur,...arr.filter(p=>p.simHour<=issue+h)]};
- if(mod==='./TyphoonNetworkData')return {NETWORK_FORECAST_STYLE:[{agency:'中国',color:'#fa19da'}],sampleNetworkFix:(arr,h)=>({...arr[arr.length-1],simHour:h})};
+ if(mod==='./TyphoonNetworkData')return {NETWORK_FORECAST_STYLE:[{agency:'中国',color:'#fa19da'}],sampleNetworkFix:(arr,h)=>({...arr[arr.length-1],simHour:h}),cmaPublishedNetworkFix:p=>({...p,vmax:Math.round(p.vmax)})};
  throw Error('unexpected import '+mod);
 }};
 vm.runInNewContext(ts.transpileModule(read('src/utils/NetworkNmcForecast.ts'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,nmcEnv);
@@ -20,7 +20,7 @@ const issue={simHour:24,lat:17,lon:130,vmax:35,pmin:975},storm={history:[{...iss
 const options={forecastHours:72,nmcCustomPeakEnabled:true,nmcCustomPeak:56,nmcCoarseIntensity:true};
 let common;
 test('one NMC materialization produces China and image intensities',()=>{common=build(storm,issue,{},options);assert.equal(common.china.fixes.length,24);assert.equal(common.china.fixes[0].vmax,56);assert.equal(shapeCalled,1);assert.equal(capCalled,1);assert.equal(common.issuedEndHour,96);});
-test('NMC toggle off leaves native forecast peak and NO second reshaping',()=>{const raw=build(storm,issue,{}, {...options,nmcCustomPeakEnabled:false,nmcCoarseIntensity:false});assert.equal(raw.china.fixes[0].vmax,forecast[0].vmax);assert.equal(shapeCalled,1)});
+test('NMC toggle off leaves native forecast peak and NO second reshaping',()=>{const raw=build(storm,issue,{}, {...options,nmcCustomPeakEnabled:false,nmcCoarseIntensity:false});assert.equal(raw.china.fixes[0].vmax,Math.round(forecast[0].vmax));assert.equal(shapeCalled,1)});
 const specs=['WNV3','FNV3','ECMWF','AIFS','GEFS','AIGEPS','HGEFS','GEM'].map(id=>({id}));
 const agencyEnv={exports:{},Math,Number,DOMException,console,require(mod){
  if(mod==='../simulation/Engine')return {materializeForecastPath:()=>[],getLandMetrics:()=>({isLand:false})};
@@ -37,6 +37,6 @@ test('post-landfall cannot re-intensify even when a member returns offshore',()=
 test('without NMC reference agency retains its independent physical intensity',()=>{const out=physical(members,issue,{},()=>false);assert.equal(out[0].vmax,40)});
 const ui=read('src/components/NetworkEntrySettings.tsx'),component=read('src/components/TyphoonNetworkSimulator.tsx');
 test('entry does not add independent peak config/slider',()=>{assert(!ui.includes('setPeak'));assert(!ui.includes('forecastPeakIntensityEnabled:true'));});
-test('network NMC image and CMA use the exact same original fixes',()=>{assert.match(component,/const nmcPath=chinese\.fixes/);assert.match(component,/forecast:nmcPath,issuedEndHour:nmc\.issuedEndHour/);assert.match(component,/buildNetworkForecastsWithEnsemble\(nmc\.issue,storm,config,chinese/);});
-test('point and stroke halfway between R215 and R216',()=>{assert.match(component,/NETWORK_OTHER_AGENCY_DOT_DIAMETER_PX=3\.7/);assert.match(component,/weight:f\.agency==='中国'\?2\.3:1\.4/);assert.match(read('src/utils/TyphoonNetworkStandaloneExport.ts'),/agency==='中国'\?8\.8:3\.7/)});
+test('network NMC image and CMA use the exact same original fixes',()=>{assert.match(component,/const nmcPath=chinese\.fixes/);assert.match(component,/forecast:nmcPath,issuedEndHour:nmc\.issuedEndHour/);assert.match(component,/buildNetworkForecastsWithEnsemble\(issue,storm,config,chinese/);});
+test('point and stroke halfway between R215 and R216',()=>{assert.match(component,/NETWORK_OTHER_AGENCY_DOT_DIAMETER_PX=3\.7/);assert.match(component,/weight:f\.agency==='中国'\?2\.3:1\.4/);assert.match(read('src/utils/TyphoonNetworkStandaloneExport.ts'),/agency==='中国'\?11:3\.7/)});
 console.log(`R217 ${count}/${count} PASS`);

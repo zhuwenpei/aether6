@@ -187,7 +187,7 @@
 }
 #root .tn-viewport .tn-cyclone-eye{
   position:absolute;left:50%;top:50%;width:9px;height:9px;border-radius:50%;
-  transform:translate(-50%,-50%);background:var(--tn-intensity,#8320d6);
+  transform:translate(-50%,-50%);background:var(--tn-intensity,#753fc9);
   pointer-events:none;
 }
 @keyframes tn-cyclone-counterclockwise{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
@@ -258,7 +258,7 @@
   filter:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
   opacity:1!important;mix-blend-mode:normal!important;
 }
-#root .tn-viewport .tn-cyclone-eye{border-radius:50%!important;background:var(--tn-intensity,#8320d6)!important}
+#root .tn-viewport .tn-cyclone-eye{border-radius:50%!important;background:var(--tn-intensity,#753fc9)!important}
 #root .tn-viewport .tn-map .leaflet-marker-icon.tn-forecast-lead-icon {
   width:110px!important;height:23px!important;line-height:0!important;
   padding:0!important;outline:0!important;white-space:nowrap!important;overflow:visible!important;
@@ -782,3 +782,177 @@
 #root .tn-map-simulation-mark{position:absolute;left:8px;bottom:33px;z-index:390;pointer-events:none;
   font:600 10px/1.2 'Microsoft YaHei',sans-serif;letter-spacing:1px;
   color:#536974;background:#ffffffa8;border-radius:3px;padding:2px 4px}
+
+/* R220: landscape network display is a two-pane application, not the portrait
+   header compressed across a short screen. Map projection remains true Leaflet. */
+@media (orientation:landscape) and (max-width:1400px) and (max-height:850px) {
+  #root .tn-viewport {--tn-landscape-rail:clamp(158px,20vw,280px)}
+  #root .tn-viewport:not(.tn-stage-loading)::before {
+    content:"";position:absolute;top:0;left:0;bottom:0;
+    width:var(--tn-landscape-rail);z-index:9501;pointer-events:none;
+    background:linear-gradient(180deg,#d3e9fc,#eaf4fd 60%,#dceafa);
+    border-right:2px solid #59a9cd;
+  }
+  #root .tn-viewport .tn-header,
+  #root .tn-viewport .tn-header.tn-header-reference {
+    position:absolute!important;top:0!important;left:0!important;right:auto!important;
+    width:var(--tn-landscape-rail)!important;
+    height:148px!important;
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-template-rows:47px 42px 47px!important;
+    align-items:center!important;justify-items:center!important;
+    gap:4px!important;padding:5px 7px!important;
+    background:#00c91a!important;
+    box-sizing:border-box!important;
+    overflow:visible!important;
+  }
+  #root .tn-viewport .tn-header .tn-back {grid-column:1!important;grid-row:1!important;width:45px!important;height:43px!important}
+  #root .tn-viewport .tn-header .tn-provider-wrapper {grid-column:2!important;grid-row:1!important;width:auto!important;min-width:0}
+  #root .tn-viewport .tn-header .tn-header-title,
+  #root .tn-viewport .tn-header.tn-header-reference .tn-header-title {
+    grid-column:1/-1!important;grid-row:2!important;
+    font-size:clamp(14px,2vw,21px)!important;
+    line-height:1.25!important;width:100%!important;max-width:100%!important;
+    overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;
+  }
+  #root .tn-viewport .tn-header .tn-share-action {grid-column:1!important;grid-row:3!important}
+  #root .tn-viewport .tn-header .tn-reference-link {grid-column:2!important;grid-row:3!important}
+  #root .tn-viewport .tn-header .tn-history-action {display:none!important}
+  #root .tn-viewport .tn-map,
+  #root .tn-viewport .tn-baidu-map,
+  #root .tn-viewport .tn-petal-map {
+    position:absolute!important;top:0!important;bottom:0!important;
+    left:var(--tn-landscape-rail)!important;right:0!important;
+    width:calc(100% - var(--tn-landscape-rail))!important;height:100%!important;
+    min-width:0!important;border-left:1px solid #3788b0;
+  }
+  #root .tn-viewport .tn-ticker {
+    position:absolute!important;z-index:9502!important;
+    top:154px!important;left:0!important;right:auto!important;
+    width:var(--tn-landscape-rail)!important;
+    max-height:calc(100% - 231px)!important;
+    overflow-y:auto!important;pointer-events:none!important;
+    text-align:left!important;
+    padding:4px 9px!important;
+    font-size:clamp(10px,1.15vw,14px)!important;
+    line-height:1.35!important;
+    white-space:normal!important;
+  }
+  #root .tn-viewport .tn-ticker div {
+    white-space:normal!important;overflow-wrap:anywhere!important;
+    text-align:left!important;
+  }
+  #root .tn-viewport .tn-ticker b {
+    font-size:15px!important;text-align:left!important;
+    margin-top:7px!important;
+  }
+  #root .tn-viewport .tn-replay-button {
+    z-index:9504!important;left:calc((var(--tn-landscape-rail) - 46px)/2)!important;
+    right:auto!important;bottom:calc(13px + env(safe-area-inset-bottom,0px))!important;
+  }
+  #root .tn-viewport .tn-right-tools {right:12px!important;top:50%!important;transform:translateY(-35%)}
+  #root .tn-viewport .tn-map-simulation-mark {left:calc(var(--tn-landscape-rail) + 8px)!important;bottom:8px!important}
+  #root .tn-viewport .tn-osm-credit,
+  #root .tn-viewport .tn-osm-credit-after-status {
+    left:calc(var(--tn-landscape-rail) + 8px)!important;
+    top:8px!important;right:auto!important;
+  }
+  #root .tn-viewport .tn-map-error {left:calc(var(--tn-landscape-rail) + 12px)!important;top:12px!important;right:12px!important}
+  #root .tn-viewport .tn-reference-page {
+    inset:0 0 0 var(--tn-landscape-rail)!important;
+    width:calc(100% - var(--tn-landscape-rail))!important;
+    min-width:0!important;
+    overflow-x:hidden!important;overflow-y:auto!important;
+    background:#000!important;
+  }
+  #root .tn-viewport .tn-reference-page .tn-nmc-img {
+    display:block;width:100%!important;height:auto!important;
+    max-width:100%!important;max-height:none!important;
+    object-fit:contain!important;
+  }
+  #root .tn-viewport .tn-reference-actions {min-height:86px!important;padding:15px!important;justify-content:center}
+  #root .tn-viewport .tn-probability-page {
+    inset:0 0 0 var(--tn-landscape-rail)!important;
+    width:calc(100% - var(--tn-landscape-rail))!important;
+    min-width:0!important;max-width:none!important;
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-auto-rows:max-content!important;
+    align-content:start!important;
+    gap:8px 12px!important;
+    padding:12px!important;
+    overflow-x:hidden!important;overflow-y:auto!important;
+  }
+  #root .tn-viewport .tn-probability-page > :not(figure) {grid-column:1/-1!important}
+  #root .tn-viewport .tn-probability-page > figure {
+    grid-column:auto!important;
+    width:100%!important;max-width:100%!important;
+    min-width:0!important;margin:0!important;padding:0!important;
+    align-self:start!important;overflow:visible!important;
+  }
+  #root .tn-viewport .tn-probability-page figure img {
+    display:block!important;width:100%!important;height:auto!important;min-height:0!important;
+    max-width:100%!important;max-height:none!important;
+    aspect-ratio:auto!important;object-fit:contain!important;
+  }
+  #root .tn-viewport .tn-probability-page figure figcaption {font-size:11px!important;margin-top:3px}
+  #root .tn-viewport .tn-probability-caption {font-size:16px!important;margin:0!important}
+  #root .tn-viewport .tn-probability-page > p {font-size:11px!important;margin:0!important}
+  #root .tn-viewport .tn-map .leaflet-popup.tn-map-popup .leaflet-popup-content {
+    width:min(310px,calc(100vw - var(--tn-landscape-rail) - 24px))!important;
+  }
+}
+
+/* R221: Gallery images are never resized internally.  On a short, narrow
+   landscape device two 4:3 weather products side-by-side become unreadable.
+   Show one full-column image with accessible switches; wide landscape keeps
+   the original two-column comparison and portrait keeps its stacked layout. */
+#root .tn-gallery-switch {display:none}
+@media (orientation:landscape) and (max-height:850px) and (max-width:960px) {
+  #root .tn-viewport .tn-probability-page {
+    display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+    grid-auto-rows:max-content!important;align-content:start!important;
+    padding:8px 10px 14px!important;gap:6px!important;
+  }
+  #root .tn-viewport .tn-probability-page > :not(figure) {grid-column:1!important}
+  #root .tn-viewport .tn-gallery-switch {
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:6px;position:sticky;top:-8px;z-index:2;padding:5px 0 7px;
+    background:#000;border-bottom:1px solid #4b4b4b;
+  }
+  #root .tn-viewport .tn-gallery-switch button {
+    min-height:39px!important;min-width:0;border:1px solid #777!important;
+    background:#292929!important;color:#eee!important;border-radius:8px;
+    font-size:clamp(11px,1.5vw,14px);font-weight:650;
+  }
+  #root .tn-viewport .tn-gallery-switch button.is-active {
+    background:#138238!important;border-color:#48ca6b!important;color:#fff!important;
+  }
+  #root .tn-viewport .tn-probability-page > figure.tn-gallery-figure {
+    grid-column:1!important;display:none!important;
+    margin:0!important;max-width:100%!important;width:100%!important;
+  }
+  #root .tn-viewport .tn-probability-page > figure.tn-gallery-figure.is-selected {display:flex!important}
+  #root .tn-viewport .tn-probability-caption {font-size:13px!important}
+  #root .tn-viewport .tn-probability-page > p {font-size:10px!important}
+}
+/* The reference screenshot map stays georeferenced; the left panel may scroll
+   independently rather than clipping long agency/status text. */
+@media (orientation:landscape) and (max-height:390px) and (max-width:960px) {
+  #root .tn-viewport {--tn-landscape-rail:clamp(142px,21vw,186px)}
+  #root .tn-viewport .tn-header,#root .tn-viewport .tn-header.tn-header-reference {
+    height:116px!important;grid-template-rows:35px 31px 34px!important;
+    gap:2px!important;padding:4px!important;
+  }
+  #root .tn-viewport .tn-header .tn-back {width:39px!important;height:34px!important}
+  #root .tn-viewport .tn-header .tn-back svg {width:32px!important;height:32px!important}
+  #root .tn-viewport .tn-header .tn-header-title {font-size:13px!important}
+  #root .tn-viewport .tn-header .tn-share-action,
+  #root .tn-viewport .tn-header .tn-reference-link {height:34px!important;width:36px!important}
+  #root .tn-viewport .tn-header .tn-share-action img,
+  #root .tn-viewport .tn-header .tn-reference-link img {width:32px!important;height:32px!important;object-fit:contain!important}
+  #root .tn-viewport .tn-ticker {top:121px!important;max-height:calc(100% - 180px)!important;padding:3px 6px!important;font-size:10px!important}
+  #root .tn-viewport .tn-ticker b {font-size:12px!important;margin-top:3px!important}
+  #root .tn-viewport .tn-replay-button {bottom:8px!important}
+}

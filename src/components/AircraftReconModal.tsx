@@ -1342,8 +1342,8 @@ export default function AircraftReconModal({ isOpen, onClose, typhoon, currentHo
         </div>
       </header>
 
-      {reportMode ? <div className="flex-1 overflow-y-auto p-5 md:p-6">
-        <div className="grid lg:grid-cols-[1fr_1.15fr] gap-5">
+      {reportMode ? <div className="aircraft-recon-report-content flex-1 overflow-y-auto p-5 md:p-6">
+        <div className="aircraft-recon-report-layout grid lg:grid-cols-[1fr_1.15fr] gap-5">
           <div className="space-y-5">
             <section className="rounded-xl border border-slate-800 bg-slate-950/35 p-4 space-y-4">
               <h3 className="font-bold text-slate-100 flex items-center gap-2"><ImagePlus className="w-4 h-4 text-sky-400"/>图片参数</h3>
@@ -1359,8 +1359,8 @@ export default function AircraftReconModal({ isOpen, onClose, typhoon, currentHo
             <div className="flex-1 rounded-lg bg-black/40 flex items-center justify-center overflow-auto p-2">{generatedUrl ? <img src={generatedUrl} alt="飞机探空报告预览" className="max-w-full max-h-[70vh] object-contain shadow-2xl"/> : <div className="text-center text-slate-600"><ImagePlus className="w-12 h-12 mx-auto mb-3 opacity-50"/><div className="text-sm">设置参数后生成报告图</div></div>}</div>
           </div>
         </div>
-      </div> : crossSectionMode ? <div className="flex-1 overflow-y-auto p-5 md:p-6 touch-pan-y overscroll-contain">
-        <div className="grid lg:grid-cols-[0.9fr_1.35fr] gap-5">
+      </div> : crossSectionMode ? <div className="aircraft-recon-report-content flex-1 overflow-y-auto p-5 md:p-6 touch-pan-y overscroll-contain">
+        <div className="aircraft-recon-report-layout grid lg:grid-cols-[0.9fr_1.35fr] gap-5">
           <div className="space-y-5">
             <section className="rounded-xl border border-slate-800 bg-slate-950/35 p-4 space-y-4">
               <h3 className="font-bold text-slate-100 flex items-center gap-2"><BarChart3 className="w-4 h-4 text-cyan-400"/>剖面图参数</h3>

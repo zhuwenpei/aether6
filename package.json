@@ -9,6 +9,8 @@
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
+    "test:round220-landscape": "node scripts/round220_landscape_ui_regression.cjs",
+    "test:round221-landscape": "node scripts/round221_landscape_deep_regression.cjs && python scripts/round221_landscape_browser.py && python scripts/round221_reports_browser.py",
     "test:round110-artifact": "node scripts/round110_synoptic_artifact_regression.cjs",
     "test:rainfall": "tsx scripts/rainfall_mechanism_regression.ts",
     "test:core": "tsx scripts/core_structure_regression.ts",

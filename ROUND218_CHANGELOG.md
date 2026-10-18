@@ -5,7 +5,7 @@ R217 完整源码；保留 R217 中国预报与 NMC 图同一强度结果的机�
 
 ## 1. 外国机构固定映射集合“主路径”
 - `src/utils/NetworkAgencyEnsemble.ts`：采用正常经典集系产品相同的 `buildAetherCenterGuidance` deterministic/control paths，不再抽取扰动集合成员。
-- 日本、美国、韩国各分配一个模型家族，固定在同一台风身份 + seed；分配不重复。可选模型：WNV3、ECMWF、AIFS、GEFS、AIGEPS、HGEFS。排除 FNV3 和 GEM（项目内部与用户提及 GENC 对应的末位模式）。
+- 日本、美国、韩国各分配一个模型家族，固定在同一台风身份 + seed；分配不重复。可选模型：ECMWF、AIFS、GEFS、AIGEPS、HGEFS、GEM。排除 WNV3 和 FNV3（R218.1 用户纠正后的规则）。
 - 主路径使用与经典集系图一致的 168h 集成范围；台风网显示不超过 120h 的 3h 节点。各机构气压/风速在本机构主路径上演算，延续 R217 的 82% NMC 引导、18% 模型强度，以及独立登陆后不可重新增强约束。
 - 在打点详情中显示机构所对应的集合模型 ID；导出 HTML 同步保留这一字段。模拟国家机构名称不代表真实业务预报。
 

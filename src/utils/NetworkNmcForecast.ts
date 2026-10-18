@@ -7,7 +7,7 @@ import {materializeForecastPath} from '../simulation/Engine';
 import {issuePreSimulationReference} from '../simulation/PreSimulationReference';
 import {limitNmcGenesisPeak,shapeNmcPeakIntensity} from '../simulation/NmcIntensityGuidance';
 import {selectNmcIssuedForecast} from './NmcForecastProduct';
-import {sampleNetworkFix,NETWORK_FORECAST_STYLE,type NetworkFix,type NetworkForecast} from './TyphoonNetworkData';
+import {sampleNetworkFix,cmaPublishedNetworkFix,NETWORK_FORECAST_STYLE,type NetworkFix,type NetworkForecast} from './TyphoonNetworkData';
 import type {NetworkChartSettings} from '../components/NetworkEntrySettings';
 
 type NmcFix=NetworkFix & {category:TyphoonCategory;landed?:boolean};
@@ -69,5 +69,9 @@ export function buildSharedNetworkNmcForecast(storm:Typhoon,publicIssue:NetworkF
       Math.max(Math.ceil(issue.vmax),Math.round(settings.nmcCustomPeak)),issue.vmax)
       .map(p=>({...p,simHour:p.simHour+issue.simHour}));
   }
-  return {issue,issuedEndHour:end,china:{agency:'中国',color:NETWORK_FORECAST_STYLE[0].color,fixes:limited}};
+  // R219: quantise the common NMC-issued solution ONCE, so Chinese map
+  // points, their intensity categories and the network NMC plate consume the
+  // exact same published intensity, even after a custom-peak shape.
+  const published=limited.map(p=>cmaPublishedNetworkFix(p));
+  return {issue,issuedEndHour:end,china:{agency:'中国',color:NETWORK_FORECAST_STYLE[0].color,fixes:published}};
 }

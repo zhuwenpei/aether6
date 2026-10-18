@@ -4,7 +4,7 @@
  * No mutations are performed on the physical engine, histories or archive.
  */
 import type { Typhoon, TyphoonState, SimulationConfig } from '../types';
-import { getWindForceCategory, materializeForecastPath } from '../simulation/Engine';
+import { getAgencyIntensity, getWindForceCategory, materializeForecastPath } from '../simulation/Engine';
 import {insideNetwork24hWarning} from './NetworkWarningLines';
 
 export type NetworkFix = Pick<TyphoonState, 'lat'|'lon'|'vmax'|'pmin'|'speed'|'direction'|'rmw'|'r7'|'r10'|'r12'|'simHour'> & {
@@ -71,13 +71,13 @@ export function cmaBoundedNetworkHistory(storm:Typhoon, startDate:Date, currentH
     .slice().sort((a,b)=>a.simHour-b.simHour);
   if(!valid.length){
     const sole={...storm,simHour:Number.isFinite(storm.simHour)?storm.simHour:0} as NetworkFix;
-    return sole.simHour<=currentHour+1e-7?[{...sole,vmax:toCmaPublishedWindSpeed(sole.vmax)}]:[];
+    return sole.simHour<=currentHour+1e-7?[cmaPublishedNetworkFix(sole)]:[];
   }
   const first=valid[0].simHour;
   const cap=previousCmaPublicHour(startDate,currentHour,valid[valid.length-1].simHour);
   if(cap<first-1e-7){
     // Genesis can occur outside an advisory slot: show only genesis if that time is not in the future.
-    return first<=currentHour+1e-7?[{...valid[0],vmax:toCmaPublishedWindSpeed(valid[0].vmax)}]:[];
+    return first<=currentHour+1e-7?[cmaPublishedNetworkFix(valid[0])]:[];
   }
   const result:NetworkFix[]=[{...valid[0]}];
   const startBj=startDate.getTime()/3600000+first+8;
@@ -87,7 +87,7 @@ export function cmaBoundedNetworkHistory(storm:Typhoon, startDate:Date, currentH
     const fix=sampleNetworkFix(valid,h);
     if(fix.simHour<=currentHour+1e-7 && fix.simHour<=valid[valid.length-1].simHour+1e-7)result.push(fix);
   }
-  return result.map(fix=>({...fix,vmax:toCmaPublishedWindSpeed(fix.vmax)}));
+  return result.map(fix=>cmaPublishedNetworkFix(fix));
 }
 
 /** R218: keep the original 3h CMA-public-slot points until entry into the
@@ -118,24 +118,28 @@ export function warningAdaptiveNetworkHistory(storm:Typhoon,startDate:Date,curre
   for(const hour of hours){
     const fix=sampleNetworkFix(valid,hour);
     if(fix.simHour>kept[kept.length-1]?.simHour+1e-7 || !kept.length){
-      kept.push({...fix,vmax:toCmaPublishedWindSpeed(fix.vmax)});
+      kept.push(cmaPublishedNetworkFix(fix));
     }
   }
   return kept;
 }
 
-/** R193: color key sampled against the uploaded Petal reference (not agency colors).
+/** R219: strength-dot colors sampled from the uploaded 51757.jpg at filled
+ * dot centers. JPEG encoding means the hex values are screenshot-matched
+ * approximations rather than an authenticated upstream provider palette.
+ * Agency forecast dashed-line colors remain independent.
+ * Former R193 palette description:
  * Reference: 6-grade dots green; 8-grade dots deep blue; 10-grade orange;
  * 12/13-grade dots red; 14/15-grade pink. The highest grade is purple.
  * Only genuine weak dissipated/remnant fixes may be neutral gray; never let a
  * stale category label override an actual strong recorded wind speed. */
 export const NETWORK_STRENGTH_LEGEND = [
-  {min: 0, max: 17.2, color: '#00ce3a', label: '7级及以下'},
-  {min: 17.2, max: 24.5, color: '#0639f5', label: '8—9级'},
-  {min: 24.5, max: 32.7, color: '#ff8b12', label: '10—11级'},
-  {min: 32.7, max: 41.5, color: '#ff161d', label: '12—13级'},
-  {min: 41.5, max: 51, color: '#eb08dd', label: '14—15级'},
-  {min: 51, max: Infinity, color: '#8320d6', label: '16级及以上'}
+  {min: 0, max: 17.2, color: '#00bf00', label: '7级及以下'},
+  {min: 17.2, max: 24.5, color: '#0000ff', label: '8—9级'},
+  {min: 24.5, max: 32.7, color: '#ff7400', label: '10—11级'},
+  {min: 32.7, max: 41.5, color: '#ff0000', label: '12—13级'},
+  {min: 41.5, max: 51, color: '#ff00ff', label: '14—15级'},
+  {min: 51, max: Infinity, color: '#753fc9', label: '16级及以上'}
 ] as const;
 export function networkPointColor(vmax:number, category?:string):string {
   if (!Number.isFinite(vmax) || vmax < 0) return '#8e8e8e';
@@ -181,20 +185,49 @@ export function networkForecastSegments(issue:NetworkFix,forecast:NetworkForecas
  * or claims official advisories, and never changes physical storm histories.
  * Keep a broad span for strong systems rather than rounding to a uniform 5m/s grid. */
 export const CMA_PUBLIC_WIND_SPEED_LEVELS_MPS = [
-  0, 5, 8, 10, 12, 15, 18, 20, 23, 25, 28, 30, 33, 35, 38, 40,
-  42, 45, 48, 50, 52, 55, 58, 60, 62, 65, 68, 70, 75, 80, 85
+  5, 8, 10, 12, 15, 18, 20, 23, 25, 28, 30, 33, 35, 38, 40,
+  42, 45, 48, 50, 52, 55, 58, 60, 62, 65, 68, 70, 72, 75, 78,
+  80, 82, 85, 88, 90, 92, 95, 98, 100, 105, 110, 115
 ] as const;
+/** Delegate to the SAME published-CMA quantiser as the main forecast products.
+ * Avoid maintaining a competing short table that incorrectly snaps 72 or 88 m/s.
+ */
 export function toCmaPublishedWindSpeed(vmax:number):number {
-  if(!Number.isFinite(vmax))return 0;
-  const speed=Math.max(0,vmax);
-  if(speed>=85)return Math.round(speed/5)*5;
-  // A stable upward tie-break avoids a counterintuitive weakening at midpoints.
-  let best:number=CMA_PUBLIC_WIND_SPEED_LEVELS_MPS[0];
-  for(const level of CMA_PUBLIC_WIND_SPEED_LEVELS_MPS){
-    if(Math.abs(speed-level)<=Math.abs(speed-best))best=level;
-  }
-  return best;
+  return getAgencyIntensity(vmax,'CMA','public').value;
 }
+/** The published category is derived AFTER speed discretisation, never from
+ * the old continuous intensity label. Preserve genuinely non-tropical states.
+ */
+export function cmaPublishedCategory(vmax:number,previous?:string):string {
+  if(['温带气旋','ET','extratropical_cyclone','已消散','残留低压','RL','DS'].includes(previous||''))return previous!;
+  if(vmax>=51)return '超强台风';
+  if(vmax>=41.5)return '强台风';
+  if(vmax>=32.7)return '台风';
+  if(vmax>=24.5)return '强热带风暴';
+  if(vmax>=17.2)return '热带风暴';
+  return '热带低压';
+}
+export function cmaPublishedNetworkFix(fix:NetworkFix):NetworkFix {
+  const vmax=toCmaPublishedWindSpeed(fix.vmax);
+  return {...fix,vmax,category:cmaPublishedCategory(vmax,fix.category)};
+}
+
+/** Replay measured as visible nodes/second: pre-warning is 3h per fix,
+ * post-warning 1h per fix. The elapsed-time clock slows by exactly one third
+ * after the FIRST displayed historical fix inside the 24h warning region.
+ * Handles a crossing within one animation frame without a timing jump.
+ */
+export const NETWORK_PRE_WARNING_HOURS_PER_SECOND = 32;
+export const NETWORK_POST_WARNING_HOURS_PER_SECOND = NETWORK_PRE_WARNING_HOURS_PER_SECOND/3;
+export function advanceNetworkReplayClock(clock:number,dtSeconds:number,entryHour:number|null):number {
+  const dt=Math.max(0,dtSeconds);
+  if(entryHour===null)return clock+dt*NETWORK_PRE_WARNING_HOURS_PER_SECOND;
+  if(clock>=entryHour)return clock+dt*NETWORK_POST_WARNING_HOURS_PER_SECOND;
+  const secondsToEntry=(entryHour-clock)/NETWORK_PRE_WARNING_HOURS_PER_SECOND;
+  if(dt<=secondsToEntry)return clock+dt*NETWORK_PRE_WARNING_HOURS_PER_SECOND;
+  return entryHour+(dt-secondsToEntry)*NETWORK_POST_WARNING_HOURS_PER_SECOND;
+}
+
 export const networkWindForce = (vmax:number) => getWindForceCategory(vmax);
 
 export function buildNetworkForecasts(issue:NetworkFix, storm:Typhoon, config?:SimulationConfig, chinaOnly=false):NetworkForecast[]{

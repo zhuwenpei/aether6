@@ -6,6 +6,7 @@
  */
 import { getAgencyIntensity, getWindForceCategory } from '../simulation/Engine';
 import { getSimulationBeijingDate } from '../simulation/CmaOperationalClock';
+import { insideNetwork24hWarning } from './NetworkWarningLines';
 /** Official NMC history fixes requested for this plate (Beijing time; 05 excluded). */
 export const NMC_HISTORY_HOURS = [2, 8, 11, 14, 17, 20, 23] as const;
 export function isNmcHistoryFix(startDate: Date, simHour: number): boolean {
@@ -529,21 +530,58 @@ function renderEnvelope(ctx: CanvasRenderingContext2D, track: NmcChartPoint[], p
   ctx.drawImage(mask,MAP.x,MAP.y);
   ctx.restore();
 }
-function drawHistory(ctx: CanvasRenderingContext2D, o:NmcChartOptions, project:(lat:number,lon:number)=>XY, wrap:(lon:number)=>number) {
-  const track = o.history.filter(p=>valid(p)&&p.simHour<=o.issueHour).sort((a,b)=>a.simHour-b.simHour);
-  if (track.length) {
-    ctx.beginPath(); track.forEach((p,i)=>{ const a=project(p.lat,wrap(p.lon)); if(i)ctx.lineTo(a.x,a.y); else ctx.moveTo(a.x,a.y); });
-    ctx.strokeStyle = '#ee677d'; ctx.lineWidth = 1.7; ctx.stroke();
+/** R219: return precisely the NMC dots that will be drawn AND connected.
+ * Pre-warning: original NMC advisory hours; from the first actual historical
+ * fix inside the 24h warning line: one fix per simulated hour. Never use
+ * intervening ten-minute / raw points as invisible curved-path vertices.
+ * Interpolate only when the supplied physical archive lacks that exact hour.
+ */
+export function nmcVisibleHistoricalFixes(history:readonly NmcChartPoint[],startDate:Date,issueHour:number):NmcChartPoint[]{
+  const raw=history.filter(p=>valid(p)&&p.simHour<=issueHour+1e-6).slice()
+    .sort((a,b)=>a.simHour-b.simHour);
+  if(raw.length<2)return raw;
+  const source=raw.filter((p,i)=>i===0||Math.abs(p.simHour-raw[i-1].simHour)>1e-7);
+  const firstCross=source.find(p=>insideNetwork24hWarning(p.lat,p.lon));
+  const crossing=firstCross?.simHour??Infinity;
+  const last=source[source.length-1].simHour;
+  const hours:number[]=[source[0].simHour];
+  for(const p of source){
+    if(p.simHour>=crossing-1e-7)break;
+    if(isNmcHistoryFix(startDate,p.simHour))hours.push(p.simHour);
   }
-  // 3-hour observed dots. If the archive uses a different step, still render
-  // key analysis points; a cloud of ten-minute dots hides the track.
-  let lastHour = -Infinity;
-  for (let i=0;i<track.length;i++) {
-    const p=track[i];
-    if (!isNmcHistoryFix(o.startDate,p.simHour)) continue;
-    if (Math.abs(p.simHour-lastHour)<0.01) continue;
-    const a=project(p.lat,wrap(p.lon)); pin(ctx,a.x,a.y,5.4,cmaNmcAssessment(p.vmax,p.category).color,'',0);
-    lastHour=p.simHour;
+  if(firstCross){
+    hours.push(crossing);
+    for(let h=Math.floor(crossing+1e-7)+1;h<=last+1e-7;h++)hours.push(h);
+  }
+  hours.push(last);
+  const times=[...new Set(hours.filter(h=>h>=source[0].simHour-1e-7&&h<=last+1e-7)
+    .map(h=>Math.round(h*1e6)/1e6))].sort((a,b)=>a-b);
+  const sampled:NmcChartPoint[]=[];
+  let index=0;
+  for(const time of times){
+    while(index<source.length-1&&source[index].simHour<time-1e-7)index++;
+    const right=source[index],left=source[Math.max(0,index-1)];
+    if(Math.abs(right.simHour-time)<1e-6||index===0){sampled.push({...right});continue;}
+    const t=clamp((time-left.simHour)/(right.simHour-left.simHour),0,1);
+    let delta=right.lon-left.lon;
+    if(delta>180)delta-=360;else if(delta< -180)delta+=360;
+    sampled.push({...left,simHour:time,lat:left.lat+(right.lat-left.lat)*t,
+      lon:left.lon+delta*t,vmax:left.vmax+(right.vmax-left.vmax)*t,
+      category:t<.5?left.category:right.category});
+  }
+  return sampled;
+}
+function drawHistory(ctx: CanvasRenderingContext2D, o:NmcChartOptions, project:(lat:number,lon:number)=>XY, wrap:(lon:number)=>number) {
+  const dots=nmcVisibleHistoricalFixes(o.history,o.startDate,o.issueHour);
+  if(dots.length) {
+    ctx.beginPath();
+    dots.forEach((p,i)=>{const xy=project(p.lat,wrap(p.lon));if(i)ctx.lineTo(xy.x,xy.y);else ctx.moveTo(xy.x,xy.y);});
+    ctx.strokeStyle='#ee677d';ctx.lineWidth=1.7;ctx.stroke();
+  }
+  // Every corner of this polyline has one visible corresponding history dot.
+  for(const p of dots){
+    const xy=project(p.lat,wrap(p.lon));
+    pin(ctx,xy.x,xy.y,5.4,cmaNmcAssessment(p.vmax,p.category).color,'',0);
   }
 }
 function interpolateForecastPoint(track:NmcChartPoint[], hour:number): NmcChartPoint|null {
