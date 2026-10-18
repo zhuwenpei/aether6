@@ -1,0 +1,42 @@
+AETHER / TyphoonSIM 4.1.3 validation
+Date: 2026-09-16
+
+Constraints followed:
+- No npm install
+- No npm run
+- No npx
+- No node_modules or dist added
+
+Validation performed:
+1. TypeScript syntax transpilation (system TypeScript 5.8.3):
+   - 70 files under src/**/*.ts, src/**/*.tsx
+   - errors: 0
+
+2. node scripts/release_4_1_3_regression.cjs
+   PASS
+   Yagi-like broad intense core:
+   - max dBZ: 49.5595
+   - fraction >=45 dBZ: 0.00097545
+   - fraction >=50 dBZ: 0
+   - fraction >=55 dBZ: 0
+   - fraction >=60 dBZ: 0
+   Compact violent T8 core:
+   - max dBZ: 63.5753
+   - fraction >=45 dBZ: 0.00658408
+   - fraction >=50 dBZ: 0.00311877
+   - fraction >=55 dBZ: 0.00164602
+   - fraction >=60 dBZ: 0.000779693
+   - clear-eye center dBZ: 0
+
+3. node scripts/release_ui_regression.cjs
+   PASS
+
+4. node scripts/tutorial_usage_physics_regression.cjs
+   PASS
+   land48 0.838 -> 0.896
+   cold12 release 0.052 -> 0.025
+
+Notes:
+- Historical version-pinned release scripts (for example release_3_7_8_regression.cjs and release_4_1_2_regression.cjs)
+  intentionally assert their old package version and are not used as current-version release gates.
+- No full Vite production build was run because the user explicitly requested no npm workflow.

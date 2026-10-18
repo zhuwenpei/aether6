@@ -1,0 +1,10 @@
+Round149 internal regression:
+- Three synoptic reference styles, five output ratios: PASS
+- Horizontal/right legend and portrait/bottom legend geometry: PASS
+- EPSG:3857 crop edge and intermediate latitude mapping: PASS
+- Warm-core radial profile for 952/898 hPa examples: PASS (synthetic source states)
+- Smooth repaired 2D wind core and non-zero eyewall wind: PASS
+- Image/video/UI geometry hooks: PASS
+- Standalone strict TypeScript modules: PASS
+- Existing core targeted regressions: PASS
+- Entire dependency-bearing Vite build and mobile visual testing: NOT RUN (dependencies unavailable)

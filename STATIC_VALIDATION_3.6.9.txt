@@ -1,0 +1,49 @@
+TyphoonSIM 3.6.9 — final static validation
+Date: 2026-09-05
+
+Execution constraints
+- No npm command was executed.
+- No dependency installation was performed.
+- Vite/application runtime was not started.
+- node_modules is absent from the source tree.
+
+Baseline
+- 3.6.9 is based directly on TyphoonSIM 3.6.8.
+- The abandoned 3.7.0 season-mode branch is not part of this source package.
+
+TypeScript parsing
+Command:
+  tsc --noEmit --noCheck --project tsconfig.json
+Result:
+  PASS (exit 0, 0 diagnostics)
+
+Full TypeScript check
+Command:
+  tsc --noEmit --project tsconfig.json
+Result:
+  124 output lines / exit 2.
+  Remaining diagnostics are caused by the intentionally absent dependency/type environment
+  (React/JSX runtime, lucide-react, recharts, Leaflet, Turf, rbush, mp4-muxer, Vite/Node types, etc.).
+  ForecastImageModal.tsx has only the same missing React/lucide/recharts/JSX-runtime diagnostics;
+  no new source-level diagnostic from the 3.6.9 changes is present.
+
+Targeted 3.6.9 checks
+PASS - Weather-product selector contains separate "集合预报路径" and "袭击概率图" entries.
+PASS - Legacy hidden combined ensemble selector is not exposed; old `ensemble` storage migrates to ensemble_tracks.
+PASS - Ensemble member default is 50, with 64/100/200 options.
+PASS - Ensemble trajectory horizon is 360 h.
+PASS - Members independently perturb initial motion, subtropical ridge, westerlies, beta drift,
+       shear, SST, humidity, intensification and persistent steering/noise terms.
+PASS - A user-drawn broad forecast framework is separately and smoothly perturbed for each member.
+PASS - Member tracks may terminate independently after sustained weak/dissipated solutions.
+PASS - Strike probability uses equal-weight member events: centre passes within 120 km at any
+       time in the 360 h forecast; no radial probability score replaces member counting.
+PASS - Ensemble path and strike-probability graphics are separate render modes sharing one member run.
+PASS - Reference institution logo/name/source URL/audit number are not reproduced in ensemble products.
+PASS - NMC callout layout uses outward grouping plus ordered route gates.
+PASS - NMC callout leader rendering uses target -> gate -> bubble-tail routing, with 48 px design tail.
+PASS - Engine.ts / core intensity, track integration and precipitation physics were not modified for 3.6.9.
+
+Source inventory
+- TS/TSX files: 53
+- TS/TSX source lines: 49,582

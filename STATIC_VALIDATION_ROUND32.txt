@@ -1,0 +1,44 @@
+AETHER 4.3.16 / Round 32 static validation
+
+Date: 2026-09-25
+
+PASS  node scripts/round32_regression.cjs
+      - version / npm script
+      - explicit 60 fps live-centre deadline cadence
+      - legacy 35/40 fps mobile target removed
+      - mobile live wind-radii circle fast path
+      - follow-camera dead-band optimization
+      - mobile whole-tree commit budget
+      - fixed 10-minute physics-step invariant
+      - all 8 new reference ensemble product style IDs
+      - environment / pressure / paired-cycle renderer wiring
+      - product-centre style selector, persistence, and member auto-calculation wiring
+
+PASS  node scripts/release_ui_regression.cjs
+
+TYPE CHECK NOTE
+`tsc --noEmit --pretty false` was executed. The uploaded source package does not contain node_modules,
+so TypeScript cannot resolve React, Leaflet, lucide-react, recharts, react/jsx-runtime and other
+external packages. The compiler therefore exits non-zero with the expected missing-module diagnostics.
+There are no diagnostics in the new `src/utils/EnsembleReferenceProducts.ts`; the Round 32 touched
+App/MapView/ForecastImageModal diagnostics are limited to those unresolved external modules / JSX runtime.
+A full dependency-backed Vite build cannot be certified in this sandbox without the package dependencies.
+
+HISTORICAL REGRESSION NOTE
+Older round scripts intentionally assert their own historical version or implementation details. For
+example Round 30 requires 4.3.14, and Round 31 asserts the old high-refresh frame-divisor strategy that
+Round 32 deliberately replaces with an explicit 60 fps deadline accumulator. Those old scripts are not
+used as Round 32 acceptance criteria.
+
+REFERENCE PRODUCT CLASSIFICATION IMPLEMENTED
+1. Track + wind/MSLP/R34 diagnostic stack
+2. Two-model intensity/track/shear/SST/RH matrix
+3. Deterministic multi-model track overview
+4. Peak-intensity-coloured member spaghetti + member list
+5. Member spaghetti + ensemble mean + 24h labels
+6. Three-model intensity/track/shear/SST/RH matrix
+7. Basin-wide MSLP-bin member spaghetti
+8. Current / synthetic previous-cycle MSLP + ACE comparison
+
+All eight new chart layouts consume AETHER simulated guidance / environment / ensemble data. They do not
+embed or claim the original organizations' operational model data, branding, URLs or approval numbers.

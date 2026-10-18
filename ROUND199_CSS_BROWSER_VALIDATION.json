@@ -1,0 +1,252 @@
+{
+  "passed": 3,
+  "total": 3,
+  "sizes": {
+    "360": {
+      ".tn-reference-link": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 44
+      },
+      ".tn-reference-art": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 39
+      },
+      ".tn-cyclone-icon": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 31
+      },
+      ".tn-cyclone-center": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 31
+      },
+      ".tn-cyclone-spin": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 39.06353759765625
+      },
+      ".tn-cyclone-eye": {
+        "bg": "rgb(235, 8, 221)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 9
+      },
+      ".tn-forecast-lead-icon": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 110
+      },
+      ".tn-ticker": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 360
+      }
+    },
+    "390": {
+      ".tn-reference-link": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 44
+      },
+      ".tn-reference-art": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 39
+      },
+      ".tn-cyclone-icon": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 31
+      },
+      ".tn-cyclone-center": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 31
+      },
+      ".tn-cyclone-spin": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 42.882965087890625
+      },
+      ".tn-cyclone-eye": {
+        "bg": "rgb(235, 8, 221)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 9
+      },
+      ".tn-forecast-lead-icon": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 110
+      },
+      ".tn-ticker": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 390
+      }
+    },
+    "430": {
+      ".tn-reference-link": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 44
+      },
+      ".tn-reference-art": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 39
+      },
+      ".tn-cyclone-icon": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 31
+      },
+      ".tn-cyclone-center": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 31
+      },
+      ".tn-cyclone-spin": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 42.882354736328125
+      },
+      ".tn-cyclone-eye": {
+        "bg": "rgb(235, 8, 221)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 9
+      },
+      ".tn-forecast-lead-icon": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 110
+      },
+      ".tn-ticker": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "backdrop": "none",
+        "boxShadow": "none",
+        "opacity": "1",
+        "border": "0px",
+        "filter": "none",
+        "width": 430
+      }
+    }
+  }
+}

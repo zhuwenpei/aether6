@@ -1,0 +1,57 @@
+TyphoonSIM 3.6.13 — final static validation
+
+Constraints respected
+- No npm command executed.
+- No dependency installation performed.
+- Vite/project runtime was not started.
+- No npm build/test/dev/preview command was executed.
+- Deliverable is the complete 3.6.13 source tree, not a source patch.
+
+Version markers
+PASS - package.json version: 3.6.13
+PASS - README current version: TyphoonSIM 3.6.13
+PASS - index.html title: TyphoonSIM 3.6.13
+PASS - UPDATE_NOTES_3.6.13.md and RESEARCH_BASIS_3.6.13.md present.
+
+TypeScript parsing
+Command:
+  tsc --noEmit --noCheck --project tsconfig.json
+Result:
+  PASS — exit 0, 0 diagnostics.
+
+Full TypeScript check
+Command:
+  tsc --noEmit --project tsconfig.json
+Result:
+  Exit 2 with 124 diagnostic lines because this source-only tree intentionally has no node_modules.
+  A fresh full check of the delivered 3.6.12 source tree also produced 124 lines.
+  After normalizing source line/column locations, the 3.6.13 and 3.6.12 diagnostic lists are identical.
+  Diagnostic families remain: TS2307=82, TS2875=32, TS2580=6, TS2339=2, TS2304=1, TS4112=1.
+  These are the established missing dependency/type-environment diagnostics (React/Leaflet/Recharts/Turf/RBush/Vite/mp4-muxer/Node typings and cascades), not new 3.6.13 source diagnostics.
+
+Targeted 3.6.13 checks
+PASS - Clicking ensemble calculation can paint a fixed full-screen progress overlay before the heavy 360 h work begins.
+PASS - Ensemble setup/control/member/result phases publish explicit progress values; the member phase maps completed members through approximately 8–98%, with 99/100% finalization.
+PASS - Ensemble batch size is one member, so 50/64/100/200-member modes expose many intermediate percentage states instead of only 50%/100%.
+PASS - Full-screen ensemble dialog shows completed member count, remaining member count and a cancel button.
+PASS - Ensemble calculation owns an AbortController; cancellation is checked between members and an aborted controller remains registered until its scheduled batch acknowledges cleanup, preventing stale-task writeback.
+PASS - Ensemble map framing now matches geographic physical aspect to map-pixel aspect using lonSpan*cos(midLat)/latSpan and expands bounds rather than independently stretching longitude and latitude.
+PASS - Live ET begins precursor interaction on the southern flank of the westerlies and combines westerly ingress, shear, translation, cold-ocean support, structural erosion and tropical-core resistance.
+PASS - Live ET growth time scale is adaptive to baroclinic support/core resistance; a conditional deep-baroclinic completion floor prevents systematic late/high-latitude completion.
+PASS - 120/360 h calculateForecastPath() mirrors the ET precursor/baroclinic/structural/resistance formulation with forecast-available proxies.
+PASS - etEnabled=false explicitly suppresses ET in both live and forecast chains.
+PASS - Return-to-centre mode keeps already-manual cyclones in explicit manual-zero state and sets lastVelocityU/V to zero, so centred joystick means 0 km/h rather than environmental minimum speed.
+PASS - Switching the release mode from hold to return while a cyclone is moving immediately clears persisted joystick dx/dy, dragging state, live lastVelocityU/V and displayed current speed.
+PASS - Simulation-panel help text documents the 0 km/h return-to-centre semantics.
+PASS - UPDATE_NOTES_3.6.13.md, RESEARCH_BASIS_3.6.13.md and MODIFICATION_NOTES.md describe all four requested changes.
+
+Compatibility / behavior notes
+- Ensemble members still use the existing calculateForecastPath() physical forecast chain; progress/cancellation only changes task scheduling and UI lifecycle.
+- Cancellation is intentionally cooperative at member boundaries; it does not interrupt the middle of one synchronous member integration and therefore cannot publish a half-generated member.
+- Map aspect preservation may add geographic margin for very elongated plumes; this is intentional and preferable to distorting coastlines.
+- Joystick return-to-centre remains optional and disabled by default. Cyclones that have never entered manual steering continue to use environmental steering.
+- Real-time integration cadence remains 10 minutes; deterministic/ensemble forecast integration cadence remains as established by calculateForecastPath().
+
+Source inventory
+- 53 TS/TSX files
+- 50,077 TS/TSX source lines

@@ -1,0 +1,205 @@
+[
+  {
+    "test": "rollback",
+    "command": "node scripts/rollback_round185_three_domains.cjs",
+    "status": "PASS",
+    "duration_sec": 1.018,
+    "output": "ROUND185 ROLLBACK PASS: 15 files equal Round184; native guidance math equals Round184; 11 unrelated R185 modules bit-identical; 127 TS/TSX parsed; 366 relative imports valid; no feature residues\n"
+  },
+  {
+    "test": "round180-nmc",
+    "command": "node scripts/round180_nmc_coastline_fill_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.524,
+    "output": "ROUND180 PASS: exact bundled coastline data used by NMC land fills and strokes; tint constrained; browser pixel fixture ready\n"
+  },
+  {
+    "test": "round181-nmc",
+    "command": "node scripts/round181_nmc_manual_cma_public_bins_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.488,
+    "output": "ROUND181 PASS: manual peaks preserve exact NMC-only physics, CMA public bins for all callouts, 17/17+ and typhoon category consistent (17 bin boundaries)\n"
+  },
+  {
+    "test": "round182-nmc",
+    "command": "node scripts/round182_nmc_white_crash_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.386,
+    "output": "ROUND182 NMC safety static + numeric: PASS\n"
+  },
+  {
+    "test": "native-ensemble-guidance",
+    "command": "node scripts/aether_guidance_numeric_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.693,
+    "output": "aether_guidance_numeric_regression: PASS centers=8 members=100 endSpread=1449km\n"
+  },
+  {
+    "test": "round51-guidance",
+    "command": "node scripts/round51_guidance_curvature_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.925,
+    "output": "Round 51 guidance curvature regression: PASS maxSameSignTurn=139.4deg maxNodeTurn=37.0deg minEndSpread=54.6km RMS\n"
+  },
+  {
+    "test": "round185-intel",
+    "command": "node scripts/round185_ensemble_intel_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.446,
+    "output": "round185_ensemble_intel_regression: PASS, quantiles, colors, unknown, native-grid and member peaks\n"
+  },
+  {
+    "test": "round185-ensemble-utc",
+    "command": "node scripts/round185_ensemble_utc_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.207,
+    "output": "ROUND185 ENSEMBLE UTC PASS: Beijing wall clock -> explicit UTC including date rollover\n"
+  },
+  {
+    "test": "round185-calibration",
+    "command": "node scripts/round185_ensemble_calibration.cjs --self-test",
+    "status": "PASS",
+    "duration_sec": 0.281,
+    "output": "round185_ensemble_calibration: PASS, quantiles, RI, fork, dateline, coverage, ranks, truth requirements (synthetic fixtures only)\n"
+  },
+  {
+    "test": "strike-basic",
+    "command": "node scripts/strike_probability_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.357,
+    "output": "strike_probability_regression: all checks passed (segment, 50%, once-per-member, grid, dateline, cancel, UI, styles, sites)\n"
+  },
+  {
+    "test": "strike-reference",
+    "command": "node scripts/strike_probability_reference_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.431,
+    "output": "strike_probability_reference_regression: calibrated palette, reference footprint, plate-carree, async coasts OK\n"
+  },
+  {
+    "test": "strike-endmode",
+    "command": "node scripts/round185_strike_endmode_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.302,
+    "output": "round185_strike_endmode_regression: PASS, normal cutoff, 14–24h residual, horizon and determinism\n"
+  },
+  {
+    "test": "strike-scanline",
+    "command": "node scripts/round185_strike_scanline_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.366,
+    "output": "round185_strike_scanline_regression: PASS, 200 members × 3321 grid cells, mismatch=0, adaptive and AbortSignal\n"
+  },
+  {
+    "test": "strike-site",
+    "command": "node scripts/round185_strike_site_index_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.684,
+    "output": "ROUND185 STRIKE SITE INDEX PASS: 14,400 exact comparisons, 133 members, seam, multiple radii\n"
+  },
+  {
+    "test": "strike-smoothing",
+    "command": "node scripts/round185_strike_physical_smoothing_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.41,
+    "output": "ROUND185 STRIKE SMOOTHING PASS: four meshes, two smoothing levels, symmetric, source unchanged\n"
+  },
+  {
+    "test": "strike-stripe",
+    "command": "node scripts/round185_strike_stripe_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.391,
+    "output": "ROUND185 STRIKE STREAM PASS: full-grid equality, smoothing path, AbortSignal, 80m cap and small-frame 0.0025°\n"
+  },
+  {
+    "test": "strike-wiring",
+    "command": "node scripts/round185_strike_stream_wiring_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.027,
+    "output": "ROUND185 STRIKE STREAM WIRING PASS: striped engine, renderer sampling, exact coast, UI caps and cleanup\n"
+  },
+  {
+    "test": "rain-hotspot",
+    "command": "node scripts/round185_rain_hotspot_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.81,
+    "output": "{\n  \"status\": \"PASS\",\n  \"spikes\": {\n    \"before\": 975,\n    \"after\": 0\n  },\n  \"coastalCliff\": {\n    \"before\": 1898,\n    \"after\": 189,\n    \"total\": 2091,\n    \"remainingRatio\": 0.0904\n  },\n  \"peaks\": [\n    {\n      \"label\": \"台湾中央山脉\",\n      \"old\": 4460,\n      \"now\": 3211,\n      \"retained\": 72\n    },\n    {\n      \"label\": \"吕宋山脉\",\n      \"old\": 4410,\n      \"now\": 3175,\n      \"retained\": 72\n    },\n    {\n      \"label\": \"日本阿尔卑斯\",\n      \"old\": 3710,\n      \"now\": 2635,\n      \"retained\": 71\n    }\n  ],\n  \"noiseCorrelation\": 0.0082,\n  \"rate\": [\n    2.0564628334572874,\n    2.4994856512220034\n  ]\n}\n"
+  },
+  {
+    "test": "rain-synthetic",
+    "command": "node scripts/round185_rain_synthetic_paths_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 7.913,
+    "output": "{\n  \"method\": \"synthetic rainfall, ETOPO proxy footprint (not full engine)\",\n  \"result\": [\n    {\n      \"site\": \"温州近岸\",\n      \"n\": 25,\n      \"medianRatio\": 0.969,\n      \"over2_5\": 0,\n      \"recurrence\": 0,\n      \"totalRange\": [\n        0,\n        98.6\n      ]\n    },\n    {\n      \"site\": \"浙闽近岸\",\n      \"n\": 21,\n      \"medianRatio\": 1.147,\n      \"over2_5\": 0,\n      \"recurrence\": 0,\n      \"totalRange\": [\n        0,\n        98.8\n      ]\n    }\n  ]\n}\n"
+  },
+  {
+    "test": "rain-diagnostic",
+    "command": "node scripts/round185_rain_hotspot_diagnostic.cjs",
+    "status": "PASS",
+    "duration_sec": 0.063,
+    "output": "ROUND185 terrain / rainfall diagnostic (baseline, NOT a fix)\n  packed grid: 361 × 281; proxy spikes: 975; raw-zero coastal jumps >34 m/km: 1898/2091\n  浙闽沿海: 27°N 120.25°E = 3880 m proxy\n  长江口外海: 30.75°N 122°E = 1500 m proxy\n  台湾中央山脉: 23.75°N 121.5°E = 4460 m proxy\n  吕宋中央山脉: 16°N 121.75°E = 4410 m proxy\n  日本阿尔卑斯: 35.5°N 136°E = 3710 m proxy\n  STATUS: detection reproduced; proper cleaning/physics recalibration still pending.\n"
+  },
+  {
+    "test": "archive-presim",
+    "command": "node scripts/round185_archive_presim_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.261,
+    "output": "round185_archive_presim_regression: PASS, relocation, no mutation, invalid ref not silently accepted\n"
+  },
+  {
+    "test": "archive-resume",
+    "command": "node scripts/round178_archive_resume_performance_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.344,
+    "output": "ROUND178 ARCHIVE RESUME: PASS\nJSON/gzip re-export after 120 continued hours: PASS, one issue only; simulated invalid prior copy rejected; local recovery size decisions checked; archive=199861 bytes\n"
+  },
+  {
+    "test": "realistic-geometry",
+    "command": "node scripts/round185_realistic_motion_geometry_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.314,
+    "output": "round185_realistic_motion_geometry: PASS, seeded geometry, birth/exit/multi-landfall anchors, trend, 24h speed, intensity invariance (not live integration)\n"
+  },
+  {
+    "test": "realistic-dateline",
+    "command": "node scripts/round185_realistic_dateline_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.298,
+    "output": "ROUND185 DATELINE PASS: wrap-safe movement, anchor distances, deterministic multi-landfall replay\n"
+  },
+  {
+    "test": "realistic-archive",
+    "command": "node scripts/round185_realistic_archive_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.273,
+    "output": "ROUND185 REALISTIC ARCHIVE PASS: legacy, 7 malformed fields, JSON export/import round-trip\n"
+  },
+  {
+    "test": "agency-branding",
+    "command": "node scripts/round185_agency_branding_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.228,
+    "output": "round185_agency_branding_regression: PASS, defaults, scope, limit and control-character stripping\n"
+  },
+  {
+    "test": "agency-global",
+    "command": "node scripts/round185_branding_global_regression.cjs",
+    "status": "PASS",
+    "duration_sec": 0.235,
+    "output": "ROUND185 BRAND GLOBAL PASS: global precedence, stale overrides, failed-write atomicity, blank footer, reset, sanitation\n"
+  },
+  {
+    "test": "nmc-chromium",
+    "command": "python scripts/round182_nmc_browser_canvas_regression.py",
+    "status": "PASS",
+    "duration_sec": 12.201,
+    "output": "ROUND182 NMC CHROMIUM CANVAS: PASS {'duration': 1579, 'progressEvents': 19, 'completed': True, 'ocean': [223, 240, 250], 'blobSize': 162640, 'cancelled': True, 'highReady': True, 'highBlobSize': 655300, 'blankRejected': True}\n"
+  },
+  {
+    "test": "ensemble-chromium",
+    "command": "python scripts/round185_browser_ensemble_smoke.py --output validation/ensemble_browser_smoke.png",
+    "status": "PASS",
+    "duration_sec": 2.305,
+    "output": "{\n  \"test\": \"browser seven-panel smoke (synthetic members; mock probability)\",\n  \"result\": \"PASS\",\n  \"browser\": \"Chromium\",\n  \"image\": \"validation/ensemble_browser_smoke.png\",\n  \"imageBytes\": 514572,\n  \"width\": 1988,\n  \"height\": 1871,\n  \"elapsedMs\": 456.19999999995343,\n  \"progress\": [\n    30,\n    65,\n    80,\n    100\n  ]\n}\n"
+  }
+]

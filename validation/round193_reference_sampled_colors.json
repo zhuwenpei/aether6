@@ -1,0 +1,28 @@
+{
+  "sources": [
+    "51425.jpg",
+    "51424.jpg"
+  ],
+  "method": "Pillow most-frequent RGB pixel values in representative white-land and open-sea regions; borders are approximate design values rather than a licensed map style.",
+  "palette": {
+    "sea": {
+      "rgb": [
+        161,
+        210,
+        253
+      ],
+      "hex": "#a1d2fd"
+    },
+    "land": {
+      "rgb": [
+        255,
+        255,
+        255
+      ],
+      "hex": "#ffffff"
+    },
+    "coastline": "#a1c1d1",
+    "country_boundaries": "#bc999d"
+  },
+  "notes": "Map geometry is packaged AETHER GeoJSON; screenshots are used only as color references and never as map tiles. Offline first-use still loads same-origin packaged assets; a disconnected browser requires the app and these assets to be present/cached."
+}

@@ -1,0 +1,32 @@
+AETHER 4.3.20 round40 修改摘要
+================================
+
+本轮已完成：
+1. 移除除“图层”以外的雷达图相关功能入口
+   - 删除预报出图器中的“雷达图/实时追踪雷达产品”选项与生成逻辑
+   - 删除站点历史弹窗中的“雷达图”按钮与独立站点雷达弹窗入口
+   - 删除以下源文件：
+     * src/components/RadarProductControls.tsx
+     * src/components/StationRadarModal.tsx
+     * src/utils/RadarProductRenderer.ts
+   - 说明：地图图层本身未删除，符合“除了图层外删除所有雷达图功能”的要求
+
+2. 在“气象图产品选择 / 集合产品”中新增参考图样式
+   - 多模式强度指导图（model_intensity_guidance）
+   - 集合强度概率预报（ensemble_intensity_forecast）
+   - 位置：ForecastImageModal -> 集合路径/多模式出图 -> 参考样式
+
+3. 新增两套对应绘图机制
+   - 多模式强度指导图：
+     * 背景按 Saffir-Simpson 分级着色
+     * 各模式强度曲线单独绘制并在右侧直接标注模型名称
+   - 集合强度概率预报：
+     * 计算 mean / median / P25-P75 / P10-P90 / min-max
+     * 叠加参考官方曲线风格的折线
+
+仍建议下一轮继续处理：
+1. 把“生命周期诊断三联图”正式并入台风报告页面导出器
+2. 针对 ECMWF 风压场、Patricia 生命周期样式继续做更细的复刻
+3. 完整安装依赖后进行一次正式 build / 运行联调验证
+
+本轮由于容器环境缺少项目依赖，无法完成 vite build 联调，但已尽量保证源代码层面的改动集中且可继续迭代。

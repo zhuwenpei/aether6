@@ -1,0 +1,24 @@
+{
+  "version": "R206",
+  "checks": 21,
+  "passed": 21,
+  "colors": [
+    "#00ad2a",
+    "#dfff6b",
+    "#c41618"
+  ],
+  "nonCmaDiameter": 4,
+  "cmaDiameter": 10,
+  "cycloneDiameter": 24,
+  "base": "R205",
+  "r204SvgMountRegression": "9/9 PASS",
+  "nmcCrashRegression": "PASS",
+  "r188ThreeHourParameters": "PASS",
+  "r189WindRadiiPreserved": "PASS",
+  "tsTranspile": "PASS",
+  "viteBuild": "NOT VERIFIED — vite missing",
+  "tsc": "DEPENDENCY ERRORS — React and Leaflet not installed",
+  "chromiumGlobalStyles": "TIMEOUT — not counted as pass",
+  "realMobileGestureTest": "NOT TESTED",
+  "mapProvider": "Gaode raster only"
+}

@@ -1,0 +1,63 @@
+{
+  "pass": 13,
+  "total": 14,
+  "tests": [
+    {
+      "name": "Full TSX parser diagnostics clean",
+      "pass": true
+    },
+    {
+      "name": "Exactly one back button with dedicated ID",
+      "pass": true
+    },
+    {
+      "name": "Exactly one map switch button with dedicated ID",
+      "pass": true
+    },
+    {
+      "name": "Provider switch menu and original event retained",
+      "pass": true
+    },
+    {
+      "name": "Map switch displays two distinct labels, no BR",
+      "pass": true
+    },
+    {
+      "name": "Reference icon and interaction remain unchanged",
+      "pass": true
+    },
+    {
+      "name": "Back navigation retained",
+      "pass": true
+    },
+    {
+      "name": "White outline for left two buttons",
+      "pass": true
+    },
+    {
+      "name": "Borderless reference",
+      "pass": true
+    },
+    {
+      "name": "Fixed square button (mobile + desktop)",
+      "pass": true
+    },
+    {
+      "name": "No glass behind controls",
+      "pass": true
+    },
+    {
+      "name": "Labels independently styleable",
+      "pass": true
+    },
+    {
+      "name": "Other TSX unchanged after removal of two scoped markup edits",
+      "pass": false,
+      "error": "AssertionError [ERR_ASSERTION]: '/** Round190: standalone read-only typhoon-network simulation, styled to user-provided screenshots. */\\n' +\n  \"import { useEffect, useRef, useState } from 'react';\\n\" +\n  \"import { renderToStaticMarkup } from 'react-dom/server';\\n\" +\n  \"import L from 'leaflet';\\n\" +\n  \"import 'leaflet/dist/leaflet.css';\\n\" +\n  \"import type { Typhoon, SimulationConfig } from '../types';\\n\" +\n  \"import { getTyphoonDisplayName, getTyphoonOrdinalNumber } from '../utils/TyphoonDisplayName';\\n\" +\n  \"import { getWindForceCateg... == '/** Round190: standalone read-only typhoon-network simulation, styled to user-provided screenshots. */\\n' +\n  \"import { useEffect, useRef, useState } from 'react';\\n\" +\n  \"import { renderToStaticMarkup } from 'react-dom/server';\\n\" +\n  \"import L from 'leaflet';\\n\" +\n  \"import 'leaflet/dist/leaflet.css';\\n\" +\n  \"import type { Typhoon, SimulationConfig } from '../types';\\n\" +\n  \"import { getTyphoonDisplayName, getTyphoonOrdinalNumber } from '../utils/TyphoonDisplayName';\\n\" +\n  \"import { getWindForceCateg..."
+    },
+    {
+      "name": "CSS only appended",
+      "pass": true
+    }
+  ]
+}

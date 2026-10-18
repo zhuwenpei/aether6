@@ -1,0 +1,14 @@
+# AETHER 4.3.6 Round 22 — timeline, cloud lifecycle, navigation and charcoal product center
+
+Base: Round21, version unchanged at 4.3.6.
+
+- **Cloud lifecycle:** Remove the visual rain shield that was silently present even without dry-air exposure. Wet-flank/dry-slot/low-level swirl are now conditional on diagnosed dry intrusion and LLCC exposure. Landfall shield and trailing cloud are conditional on terrain damage and supported by transported moisture and updraft; bearings follow terrain/shear diagnostics, not the user-defined storm heading. Weak developing storms have stronger localized convection and gradually organizing rainbands, while fully mature CDO continuity is preserved. This is a parameterized, evolving synthetic IR model, not learned machine weights or actual satellite retrieval.
+- **Intensity playback:** Reuse cached full-life path geometry; clip the visible line at current simulated hour, position the playhead/active dot at the current historical snapshot and prevent hover from exposing future points. Actual hover tooltip appears only under mouse pointer.
+- **Draw mode wheel behavior:** While playing, wheel controls user-drawn track speed. Paused/ended/replay states let native Leaflet wheel zoom work normally, synchronized with the map wheel handler. Zoom has modest native debounce/precision tuning.
+- **Navigation performance:** Middle pan CSS translations are coalesced to requestAnimationFrame; normal map gestures and timeline scrubbing temporarily disable oversized glass-panel blur during movement; static raster/radar redraws are throttled during drag. Historical Leaflet point filtering switched to binary-search prefix selection; timeline slider updates immediately with bounded heavyweight seek dispatch. No simulation accuracy/resolution is deliberately sacrificed.
+- **Report:** Data report preview no longer eagerly loads global GIS. Product coastlines are loaded lazily for map-dependent report types. Existing lightweight live previews retained; full resolution occurs on export.
+- **Product center:** Scoped dark charcoal/glass CSS for selector/sidebar/options/workstation; generated meteorological canvas stays its intended colors and background.
+- **Top status:** Use simulated UTC+8 hour (`HH:00`) rather than elapsed `T+...h`. Shared status text prioritizes eyewall replacement, extratropical transition and disruption, otherwise derives continuous intensity tendency (rapid strengthening/strengthening/weakening/rapid weakening/steady). Pause and replay have distinct labels.
+- **Sidebar:** Desktop collapse now retracts completely; a small reveal handle appears when hovering near left screen edge, then hides when mouse leaves. Portrait layout preserves compact bar.
+
+Validation: see `ROUND22_TEST_RESULTS.txt`. Runtime browser FPS/visual validation and full Vite build require installed frontend dependencies and target hardware; static checks alone cannot establish a measured improvement.

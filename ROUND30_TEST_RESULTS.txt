@@ -1,0 +1,15 @@
+AETHER 4.3.14 / Round 30 test results
+=====================================
+
+PASS  node scripts/round30_regression.cjs
+PASS  node scripts/release_ui_regression.cjs
+PASS  TypeScript 5.x syntax/transpile pass over every src/**/*.ts and src/**/*.tsx file.
+PASS  package.json JSON parse.
+
+Dependency-resolved production build note
+----------------------------------------
+The supplied source archive does not include node_modules, and dependency installation was not
+available in this sandbox session. A full Vite production build could therefore not be executed.
+A global `tsc --noEmit` pass was also run for signal; after excluding missing dependency/type
+resolution diagnostics, the remaining errors are the expected cascades from absent React/@types-node
+(ErrorBoundary React base types, process/__dirname), not source syntax errors introduced by Round 30.

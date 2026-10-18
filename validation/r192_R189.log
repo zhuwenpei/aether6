@@ -1,0 +1,20 @@
+{
+  "result": "PASS",
+  "checks": 24,
+  "samples": [
+    {
+      "name": "达维",
+      "hours": 187
+    },
+    {
+      "name": "卡努",
+      "hours": 379
+    }
+  ],
+  "windCircles": [
+    "r7",
+    "r10",
+    "r12",
+    "rmw"
+  ]
+}

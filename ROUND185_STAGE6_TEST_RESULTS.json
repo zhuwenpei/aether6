@@ -1,0 +1,345 @@
+[
+  {
+    "test": "test:round185-ensemble-intel",
+    "command": "node scripts/round185_ensemble_intel_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.71,
+    "message": "round185_ensemble_intel_regression: PASS, quantiles, colors, unknown, native-grid and member peaks"
+  },
+  {
+    "test": "test:round185-nmc-style",
+    "command": "node scripts/round185_nmc_style_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.35,
+    "message": "round185_nmc_style_regression: PASS, style API, UI persistence, constant-time longitude wrapping"
+  },
+  {
+    "test": "test:round185-strike-endmode",
+    "command": "node scripts/round185_strike_endmode_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.39,
+    "message": "round185_strike_endmode_regression: PASS, normal cutoff, 14–24h residual, horizon and determinism"
+  },
+  {
+    "test": "test:round185-strike-scanline",
+    "command": "node scripts/round185_strike_scanline_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.57,
+    "message": "round185_strike_scanline_regression: PASS, 200 members × 3321 grid cells, mismatch=0, adaptive and AbortSignal"
+  },
+  {
+    "test": "test:round185-agency-branding",
+    "command": "node scripts/round185_agency_branding_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.23,
+    "message": "round185_agency_branding_regression: PASS, defaults, scope, limit and control-character stripping"
+  },
+  {
+    "test": "test:round185-numeric-field",
+    "command": "node scripts/round185_numeric_field_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.27,
+    "message": "round185_numeric_field_regression: PASS, clear/edit/commit, clamp, decimals, custom keypad"
+  },
+  {
+    "test": "test:round185-dialog-scan",
+    "command": "node scripts/round185_dialog_scan.cjs",
+    "status": "PASS",
+    "seconds": 0.08,
+    "message": "round185_dialog_scan: PASS, zero native blocking window dialogs, in-app confirmation portal exists (IME and selectors NOT checked)"
+  },
+  {
+    "test": "test:round185-nmc-overlay",
+    "command": "node scripts/round185_nmc_overlay_stress_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.34,
+    "message": "round185_nmc_overlay_stress_regression: PASS, finite geographic input budget and type rejection (browser performance unverified)"
+  },
+  {
+    "test": "test:round185-archive-presim",
+    "command": "node scripts/round185_archive_presim_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.47,
+    "message": "round185_archive_presim_regression: PASS, relocation, no mutation, invalid ref not silently accepted"
+  },
+  {
+    "test": "test:round185-nmc-cone",
+    "command": "node scripts/round185_nmc_cone_geometry_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.3,
+    "message": "ROUND185 NMC cone: PASS; both versions smooth and finite, exact issued fixes and end radii"
+  },
+  {
+    "test": "test:round185-rain-diagnostic",
+    "command": "node scripts/round185_rain_hotspot_diagnostic.cjs",
+    "status": "PASS",
+    "seconds": 0.09,
+    "message": "ROUND185 terrain / rainfall diagnostic (baseline, NOT a fix)\n  packed grid: 361 × 281; proxy spikes: 975; raw-zero coastal jumps >34 m/km: 1898/2091\n  浙闽沿海: 27°N 120.25°E = 3880 m proxy\n  长江口外海: 30.75°N 122°E = 1500 m proxy\n  台湾中央山脉: 23.75°N 121.5°E = 4460 m proxy\n  吕宋中央山脉: 16°N 121.75°E = 4410 m proxy\n  日本阿尔卑斯: 35.5°N 136°E = 3710 m proxy\n  STATUS: detection reproduced; proper cleaning/physics recalibration still pending."
+  },
+  {
+    "test": "test:strike-reference",
+    "command": "node scripts/strike_probability_reference_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.48,
+    "message": "strike_probability_reference_regression: calibrated palette, reference footprint, plate-carree, async coasts OK"
+  },
+  {
+    "test": "test:round180",
+    "command": "node scripts/round180_nmc_coastline_fill_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.66,
+    "message": "ROUND180 PASS: exact bundled coastline used; bounded destination-in land tint replaces giant clip; browser pixel fixture ready"
+  },
+  {
+    "test": "test:round179",
+    "command": "node scripts/round179_main_history_route_decimal_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.63,
+    "message": "ROUND179 PASS: all recorded issues exact, cursor-independent copy, stale references cleared, terminal continuation seeded at +272, NMC public-bin labels"
+  },
+  {
+    "test": "test:round178",
+    "command": "node scripts/round178_archive_resume_performance_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.35,
+    "message": "ROUND178 ARCHIVE RESUME: PASS\nJSON/gzip re-export after 120 continued hours: PASS, one issue only; simulated invalid prior copy rejected; local recovery size decisions checked; archive=199861 bytes"
+  },
+  {
+    "test": "old:strike",
+    "command": "node scripts/strike_probability_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.4,
+    "message": "strike_probability_regression: all checks passed (segment, 50%, once-per-member, grid, dateline, cancel, UI, styles, sites)"
+  },
+  {
+    "test": "old:strike-reference",
+    "command": "node scripts/strike_probability_reference_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.43,
+    "message": "strike_probability_reference_regression: calibrated palette, reference footprint, plate-carree, async coasts OK"
+  },
+  {
+    "test": "old:nmc180",
+    "command": "node scripts/round180_nmc_coastline_fill_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.61,
+    "message": "ROUND180 PASS: exact bundled coastline used; bounded destination-in land tint replaces giant clip; browser pixel fixture ready"
+  },
+  {
+    "test": "old:nmc181",
+    "command": "node scripts/round181_nmc_manual_cma_public_bins_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.61,
+    "message": "ROUND181 PASS: manual peaks preserve exact NMC-only physics, CMA public bins for all callouts, 17/17+ and typhoon category consistent (17 bin boundaries)"
+  },
+  {
+    "test": "old:nmc182",
+    "command": "node scripts/round182_nmc_white_crash_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.47,
+    "message": "ROUND182 NMC safety static + numeric: PASS"
+  },
+  {
+    "test": "test:round185-rain-hotspot",
+    "command": "node scripts/round185_rain_hotspot_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.82,
+    "message": "{\n  \"status\": \"PASS\",\n  \"spikes\": {\n    \"before\": 975,\n    \"after\": 0\n  },\n  \"coastalCliff\": {\n    \"before\": 1898,\n    \"after\": 189,\n    \"total\": 2091,\n    \"remainingRatio\": 0.0904\n  },\n  \"peaks\": [\n    {\n      \"label\": \"台湾中央山脉\",\n      \"old\": 4460,\n      \"now\": 3211,\n      \"retained\": 72\n    },\n    {\n      \"label\": \"吕宋山脉\",\n      \"old\": 4410,\n      \"now\": 3175,\n      \"retained\": 72\n    },\n    {\n      \"label\": \"日本阿尔卑斯\",\n      \"old\": 3710,\n      \"now\": 2635,\n      \"retained\": 71\n    }\n  ],\n  \"noiseCorrelation\": 0.0082,\n  \"rate\": [\n    2.0564628334572874,\n    2.4994856512220034\n  ]\n}"
+  },
+  {
+    "test": "test:round185-auxiliary-routes",
+    "command": "node scripts/round185_auxiliary_routes_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.27,
+    "message": "round185_auxiliary_routes_regression PASS: exact 300/125/75, locked controls, deterministic/reseed, waypoint sampling\nround185_auxiliary_routes_regression PASS: draggable boundary constraints and 60-line preview quotas"
+  },
+  {
+    "test": "test:round185-rain-synthetic",
+    "command": "node scripts/round185_rain_synthetic_paths_regression.cjs",
+    "status": "PASS",
+    "seconds": 8.22,
+    "message": "{\n  \"method\": \"synthetic rainfall, ETOPO proxy footprint (not full engine)\",\n  \"result\": [\n    {\n      \"site\": \"温州近岸\",\n      \"n\": 25,\n      \"medianRatio\": 0.969,\n      \"over2_5\": 0,\n      \"recurrence\": 0,\n      \"totalRange\": [\n        0,\n        98.6\n      ]\n    },\n    {\n      \"site\": \"浙闽近岸\",\n      \"n\": 21,\n      \"medianRatio\": 1.147,\n      \"over2_5\": 0,\n      \"recurrence\": 0,\n      \"totalRange\": [\n        0,\n        98.8\n      ]\n    }\n  ]\n}"
+  },
+  {
+    "test": "test:round185-multipath-isolation",
+    "command": "node scripts/round185_multipath_isolation_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.03,
+    "message": "round185_multipath_isolation: PASS, alternative path inputs isolated to ensemble member generation (structural audit only)"
+  },
+  {
+    "test": "test:round185-calibration-metrics",
+    "command": "node scripts/round185_ensemble_calibration.cjs --self-test",
+    "status": "PASS",
+    "seconds": 0.29,
+    "message": "round185_ensemble_calibration: PASS, quantiles, RI, fork, dateline, coverage, ranks, truth requirements (synthetic fixtures only)"
+  },
+  {
+    "test": "test:round185-auxiliary-archive",
+    "command": "node scripts/round185_auxiliary_archive_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.28,
+    "message": "round185_auxiliary_archive: PASS, legacy absent fields, valid routes, malformed ids/colors/positions/weights/issue hour"
+  },
+  {
+    "test": "test:round185-realistic-geometry",
+    "command": "node scripts/round185_realistic_motion_geometry_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.3,
+    "message": "round185_realistic_motion_geometry: PASS, seeded geometry, birth/exit/multi-landfall anchors, trend, 24h speed, intensity invariance (not live integration)"
+  },
+  {
+    "test": "test:round185-nmc-mask",
+    "command": "node scripts/round185_nmc_mask_watchdog_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.45,
+    "message": "ROUND185 NMC MASK PASS: bounded offscreen compositing, no giant clip, cleanup/cancel, watchdog fallback"
+  },
+  {
+    "test": "test:round185-keyboard-pinyin",
+    "command": "node scripts/round185_keyboard_pinyin_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.03,
+    "message": "ROUND185 INPUT MODE PASS: text uses system IME; composition is protected; only numbers use the in-app keypad\nround185_keyboard_pinyin_regression: SUPERSEDED by system IME requirement (stage 4)"
+  },
+  {
+    "test": "test:round185-dialog-input",
+    "command": "node scripts/round185_dialog_prompt_select_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.02,
+    "message": "round185_dialog_prompt_select_regression: PASS, in-app confirmation/selection, native IME for text, numeric-only keypad"
+  },
+  {
+    "test": "test:round185-ensemble-utc",
+    "command": "node scripts/round185_ensemble_utc_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.22,
+    "message": "ROUND185 ENSEMBLE UTC PASS: Beijing wall clock -> explicit UTC including date rollover"
+  },
+  {
+    "test": "regression:round180-nmc",
+    "command": "node scripts/round180_nmc_coastline_fill_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.59,
+    "message": "ROUND180 PASS: exact bundled coastline used; bounded destination-in land tint replaces giant clip; browser pixel fixture ready"
+  },
+  {
+    "test": "regression:round181-nmc",
+    "command": "node scripts/round181_nmc_manual_cma_public_bins_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.51,
+    "message": "ROUND181 PASS: manual peaks preserve exact NMC-only physics, CMA public bins for all callouts, 17/17+ and typhoon category consistent (17 bin boundaries)"
+  },
+  {
+    "test": "regression:round182-nmc",
+    "command": "node scripts/round182_nmc_white_crash_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.41,
+    "message": "ROUND182 NMC safety static + numeric: PASS"
+  },
+  {
+    "test": "test:round185-keyboard-mode",
+    "command": "node scripts/round185_keyboard_mode_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.02,
+    "message": "ROUND185 INPUT MODE PASS: text uses system IME; composition is protected; only numbers use the in-app keypad"
+  },
+  {
+    "test": "test:round185-numeric-keypad",
+    "command": "node scripts/round185_numeric_keypad_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.25,
+    "message": "ROUND185 NUMERIC KEYPAD PASS: decimal, integer, erase, clear, negative, length and rejecting letters"
+  },
+  {
+    "test": "test:round185-strike-site-index",
+    "command": "node scripts/round185_strike_site_index_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.66,
+    "message": "ROUND185 STRIKE SITE INDEX PASS: 14,400 exact comparisons, 133 members, seam, multiple radii"
+  },
+  {
+    "test": "test:round185-strike-physical-smoothing",
+    "command": "node scripts/round185_strike_physical_smoothing_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.37,
+    "message": "ROUND185 STRIKE SMOOTHING PASS: four meshes, two smoothing levels, symmetric, source unchanged"
+  },
+  {
+    "test": "test:round185-strike-stripes",
+    "command": "node scripts/round185_strike_stripe_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.4,
+    "message": "ROUND185 STRIKE STREAM PASS: full-grid equality, smoothing path, AbortSignal, 80m cap and small-frame 0.0025°"
+  },
+  {
+    "test": "test:round185-strike-stream-wiring",
+    "command": "node scripts/round185_strike_stream_wiring_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.03,
+    "message": "ROUND185 STRIKE STREAM WIRING PASS: striped engine, renderer sampling, exact coast, UI caps and cleanup"
+  },
+  {
+    "test": "test:round185-branding-global",
+    "command": "node scripts/round185_branding_global_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.23,
+    "message": "ROUND185 BRAND GLOBAL PASS: global precedence, stale overrides, failed-write atomicity, blank footer, reset, sanitation"
+  },
+  {
+    "test": "test:round185-numeric-migration",
+    "command": "node scripts/round185_numeric_migration_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.04,
+    "message": "ROUND185 NUMERIC MIGRATION PASS: native numeric inputs removed, NumericField reused, system IME preserved"
+  },
+  {
+    "test": "test:round185-realistic-dateline",
+    "command": "node scripts/round185_realistic_dateline_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.29,
+    "message": "ROUND185 DATELINE PASS: wrap-safe movement, anchor distances, deterministic multi-landfall replay"
+  },
+  {
+    "test": "test:round185-realistic-archive",
+    "command": "node scripts/round185_realistic_archive_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.27,
+    "message": "ROUND185 REALISTIC ARCHIVE PASS: legacy, 7 malformed fields, JSON export/import round-trip"
+  },
+  {
+    "test": "stage6:nmc-city-filter",
+    "command": "node scripts/round185_nmc_city_filter_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.4,
+    "message": "round185_nmc_city_filter: PASS; path proximity, 2019/2024 limits, empty tracks, wraparound"
+  },
+  {
+    "test": "stage6:ensemble-calibration",
+    "command": "node scripts/round185_ensemble_calibration.cjs --self-test",
+    "status": "PASS",
+    "seconds": 0.3,
+    "message": "round185_ensemble_calibration: PASS, quantiles, RI, fork, dateline, coverage, ranks, truth requirements (synthetic fixtures only)"
+  },
+  {
+    "test": "stage6:realistic-geometry",
+    "command": "node scripts/round185_realistic_motion_geometry_regression.cjs",
+    "status": "PASS",
+    "seconds": 0.33,
+    "message": "round185_realistic_motion_geometry: PASS, seeded geometry, birth/exit/multi-landfall anchors, trend, 24h speed, intensity invariance (not live integration)"
+  },
+  {
+    "test": "stage6:browser-ensemble",
+    "command": "python scripts/round185_browser_ensemble_smoke.py --output validation/ensemble_browser_smoke.png",
+    "status": "PASS",
+    "seconds": 3.3,
+    "message": "{\n  \"test\": \"browser seven-panel smoke (synthetic members; mock probability)\",\n  \"result\": \"PASS\",\n  \"browser\": \"Chromium\",\n  \"image\": \"validation/ensemble_browser_smoke.png\",\n  \"imageBytes\": 514572,\n  \"width\": 1988,\n  \"height\": 1871,\n  \"elapsedMs\": 606.3999999999942,\n  \"progress\": [\n    30,\n    65,\n    80,\n    100\n  ]\n}"
+  },
+  {
+    "test": "stage6:browser-nmc",
+    "command": "python scripts/round185_browser_nmc_smoke.py",
+    "status": "PASS",
+    "seconds": 2.46,
+    "message": "{\n  \"kind\": \"NMC renderer smoke, synthetic tracks, stub geography\",\n  \"results\": [\n    {\n      \"style\": \"nmc2019\",\n      \"good\": true,\n      \"width\": 1295,\n      \"height\": 1103,\n      \"elapsedMs\": 177.90000000000873\n    },\n    {\n      \"style\": \"nmc2024\",\n      \"good\": true,\n      \"width\": 1295,\n      \"height\": 1103,\n      \"elapsedMs\": 106.89999999999418\n    }\n  ]\n}"
+  }
+]

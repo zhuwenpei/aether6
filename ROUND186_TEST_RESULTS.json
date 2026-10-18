@@ -1,0 +1,59 @@
+{
+  "projectVersion": "6.0.49",
+  "base": "R185 rollback + NMC crash safety",
+  "tests": [
+    {
+      "script": "round185_realistic_motion_geometry_regression.cjs",
+      "status": "PASS",
+      "output": "round185_realistic_motion_geometry: PASS, seeded geometry, birth/exit/multi-landfall anchors, trend, 24h speed, intensity invariance (not live integration)\n"
+    },
+    {
+      "script": "round185_realistic_dateline_regression.cjs",
+      "status": "PASS",
+      "output": "ROUND185 DATELINE PASS: wrap-safe movement, anchor distances, deterministic multi-landfall replay\n"
+    },
+    {
+      "script": "round186_realistic_motion_integration_regression.cjs",
+      "status": "PASS",
+      "output": "ROUND186 INTEGRATION PASS: real edits, 145 hourly station rebuilds, cancel, undo, cache invalidation, future-harmonic continuity\n"
+    },
+    {
+      "script": "round186_realistic_motion_archive_regression.cjs",
+      "status": "PASS",
+      "output": "ROUND186 ARCHIVE PASS: synthetic hours=160, restored original journal and six-hour continuation\n"
+    },
+    {
+      "script": "round186_rollback_preservation.cjs",
+      "status": "PASS",
+      "output": "ROUND186 PRESERVATION PASS: reverted ensemble/multiweight, dialog/keyboard and NMC style unchanged; NMC safety remains separate\n"
+    },
+    {
+      "script": "round185_nmc_crash_safety_retained_regression.cjs",
+      "status": "PASS",
+      "output": "ROUND185 NMC CRASH RETENTION: PASS — Round184 style, nonfinite/huge longitude, offscreen mask, watchdog, SPA HTML/404/bad-coordinates/timeout degraded and cached\n"
+    },
+    {
+      "script": "round185_ensemble_intel_regression.cjs",
+      "status": "PASS",
+      "output": "round185_ensemble_intel_regression: PASS, quantiles, colors, unknown, native-grid and member peaks\n"
+    },
+    {
+      "script": "round185_strike_endmode_regression.cjs",
+      "status": "PASS",
+      "output": "round185_strike_endmode_regression: PASS, normal cutoff, 14–24h residual, horizon and determinism\n"
+    },
+    {
+      "script": "round185_strike_scanline_regression.cjs",
+      "status": "PASS",
+      "output": "round185_strike_scanline_regression: PASS, 200 members × 3321 grid cells, mismatch=0, adaptive and AbortSignal\n"
+    },
+    {
+      "script": "round185_archive_presim_regression.cjs",
+      "status": "PASS",
+      "output": "round185_archive_presim_regression: PASS, relocation, no mutation, invalid ref not silently accepted\n"
+    }
+  ],
+  "build": "NOT RUN: missing front-end dependencies",
+  "browserUI": "NOT VERIFIED",
+  "coastlineGeography": "NOT VERIFIED"
+}

@@ -1,0 +1,26 @@
+AETHER 4.3.14 / Round 30 static validation
+============================================
+
+PASS  scripts/round30_regression.cjs
+PASS  scripts/release_ui_regression.cjs
+PASS  TypeScript syntax/transpile validation for every src/**/*.ts and src/**/*.tsx file using TypeScript 5.x parser.
+PASS  package.json JSON parse.
+
+Key checks:
+- touchFirst is component-scoped in MapView; no `touchFirst is not defined` path remains.
+- undeclared `Typhoon.displayName` accesses in MapView were removed.
+- Leaflet attribution control is disabled, removing the lower-right Leaflet wording.
+- mobile header subtitle is removed and motion speed uses km/h.
+- collapsed transport is previous-time / play-pause / stop-or-report / expand; the old next-time key is gone.
+- joystick uses direct requestAnimationFrame visual transforms while high-rate React commits are throttled.
+- station markers are incrementally reused instead of clear/recreate on every weather update.
+- dynamic raster, synoptic, historical-path and wind-radii display work has touch/interacting adaptive budgets.
+- legacy StationVideoModal + StationVideoRenderer are removed; StationRadarModal is wired instead.
+- product center contains radar_product and shared RadarProductControls UI.
+- radar UI supports image/video mode, FPS, output duration, start/end time and local persistence; no rendering/encoding backend is invoked.
+
+Environment note:
+The supplied archive contains no node_modules. Dependency installation was unavailable in this sandbox
+session, so a dependency-resolved Vite production build could not be completed. Syntax-level TypeScript
+transpilation and project static regressions passed. A global tsc pass showed only missing dependency/type
+resolution cascades after filtering (React base types, @types/node/process/__dirname).

@@ -1,0 +1,50 @@
+[
+  {
+    "name": "WNP 0.1°",
+    "syntheticMembers": 12,
+    "mode": "full",
+    "rows": 606,
+    "columns": 698,
+    "actualCellDeg": 0.1,
+    "cells": 422988,
+    "bands": 1,
+    "seconds": 0.034,
+    "maxRssMiB": 92.1
+  },
+  {
+    "name": "5°×5° 0.0025°",
+    "syntheticMembers": 12,
+    "mode": "stripes",
+    "rows": 2001,
+    "columns": 2001,
+    "actualCellDeg": 0.0025,
+    "cells": 4004001,
+    "bands": 3,
+    "seconds": 0.238,
+    "maxRssMiB": 143.9
+  },
+  {
+    "name": "10°×10° 0.0025°",
+    "syntheticMembers": 12,
+    "mode": "stripes",
+    "rows": 4001,
+    "columns": 4001,
+    "actualCellDeg": 0.0025,
+    "cells": 16008001,
+    "bands": 14,
+    "seconds": 0.763,
+    "maxRssMiB": 156.6
+  },
+  {
+    "name": "WNP requested 0.0025° (80m cap)",
+    "syntheticMembers": 12,
+    "mode": "stripes",
+    "rows": 8328,
+    "columns": 9587,
+    "actualCellDeg": 0.007270925451674152,
+    "cells": 79840536,
+    "bands": 66,
+    "seconds": 2.61,
+    "maxRssMiB": 172.9
+  }
+]

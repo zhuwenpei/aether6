@@ -1,0 +1,32 @@
+{
+  "version": "R207",
+  "basis": "R206",
+  "project_version": "6.0.49",
+  "changes": {
+    "other_forecast_visible_diameter_css_px": 4,
+    "other_forecast_hit_diameter_css_px": 14,
+    "replay_horizontal_width_km": 1000,
+    "replay_speed": "32x",
+    "animated_center_icon": "hide blue outer icon; show intensity dot",
+    "after_replay": "restore blue rotating icon",
+    "history_stroke_css_px": 0.48,
+    "cma_stroke_css_px": 0.48,
+    "other_stroke_css_px": 0.28,
+    "outline_opacity": 0.34
+  },
+  "tests": {
+    "new_static_and_geometry": "29/29 PASS",
+    "chromium_isolated_svg": "3/3 mobile widths PASS",
+    "round204_svg_mount": "9/9 PASS",
+    "nmc_crash_retained": "PASS",
+    "round188_parameters": "PASS",
+    "round189_radii": "PASS",
+    "vite_build": "NOT RUN (dependencies absent)",
+    "real_mobile_map": "NOT TESTED"
+  },
+  "scope": [
+    "src/components/TyphoonNetworkSimulator.tsx",
+    "README.md",
+    "new tests and changelog"
+  ]
+}

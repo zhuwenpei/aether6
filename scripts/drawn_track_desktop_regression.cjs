@@ -1,0 +1,45 @@
+// Run with: npm run test:drawn-track (requires the project's TypeScript dev dependency).
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const vm = require('node:vm');
+const ts = require('typescript');
+const root = path.resolve(__dirname, '..');
+const read = rel => fs.readFileSync(path.join(root, rel), 'utf8');
+const src = read('src/simulation/DrawnTrack.ts');
+const compiled = ts.transpileModule(src, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } });
+const sandbox = { exports: {} };
+vm.runInNewContext(compiled.outputText, sandbox, { timeout: 2000 });
+const { advanceDrawnTrack } = sandbox.exports;
+const near = (actual, expected, eps = 1e-5) => assert.ok(Math.abs(actual - expected) < eps, `${actual} ≠ ${expected}`);
+const simple = [{lat: 15, lon: 130}, {lat: 16, lon: 130}];
+assert.equal(advanceDrawnTrack([], 0, 20), null);
+assert.equal(advanceDrawnTrack([simple[0]], 0, 20), null);
+assert.equal(advanceDrawnTrack([simple[0], simple[0]], 0, 20), null);
+const first = advanceDrawnTrack(simple, 0, 60, 1);
+near(first.progressKm, 60); near(first.lat, 15 + 60 / 111.12);
+near(first.lon, 130); near(first.speedKmh, 60); assert.equal(first.finished, false);
+const pause = advanceDrawnTrack(simple, first.progressKm, 0, 1);
+near(pause.progressKm, 60); near(pause.lat, first.lat); near(pause.speedKmh, 0);
+const finish = advanceDrawnTrack(simple, first.progressKm, 100, 1);
+near(finish.lat, 16); assert.equal(finish.finished, true);
+const terminal = advanceDrawnTrack(simple, finish.progressKm, 100, 1);
+near(terminal.lat, 16); near(terminal.speedKmh, 0);
+// Segments must be traversed in the user's order, even when one step crosses a corner.
+const bend = [{lat: 15,lon:130}, {lat: 16,lon:130}, {lat: 16,lon:131}];
+const corner = advanceDrawnTrack(bend, 0, 150, 1);
+near(corner.lat, 16); assert.ok(corner.lon > 130 && corner.lon < 131); assert.equal(corner.direction, 90);
+let progress = 0; let previous = 15;
+for(let t = 0; t < 24; t++) {const result = advanceDrawnTrack(simple, progress, 20);assert.ok(result.lat >= previous); progress = result.progressKm; previous = result.lat;}
+near(progress, 80);
+const mustContain = (file, text) => assert.ok(read(file).includes(text), `${file}: missing ${text}`);
+mustContain('src/simulation/Engine.ts', 'advanceDrawnTrack(config.drawnTrackRoute');
+mustContain('src/simulation/Engine.ts', 'drawnRouteProgressKm: drawnStep?.progressKm');
+mustContain('src/App.tsx', 'setDrawRoutePhase("drawing")');
+mustContain('src/App.tsx', 'const completeDrawnTrack = (syncForecast: boolean)');
+mustContain('src/components/MapView.tsx', 'map.dragging.disable()');
+mustContain('src/components/MapView.tsx', 'pane: "trackHitPane"');
+mustContain('src/components/VirtualJoystick.tsx', 'setPointerCapture(e.pointerId)');
+mustContain('src/components/AetherIntensityPanel.tsx', '{hoverIndex !== null && <div className="storminc-chart-tooltip"');
+assert.ok(!read('src/components/TyphoonStatusCard.tsx').includes('<AetherLocalAdvisory'));
+console.log('drawn_track_desktop_regression: PASS | route, pause, turns, terminal, pointers, UI wiring');

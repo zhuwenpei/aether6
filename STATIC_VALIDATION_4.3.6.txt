@@ -1,0 +1,7 @@
+AETHER 4.3.6 static validation
+
+- node scripts/round21_regression.cjs -> PASS
+- Confirmed package.json version, index.html title, Engine.ts request headers updated to 4.3.6
+- HurricaneTrackerPort.ts transpiles via TypeScript transpileModule with the new White-Dolphin cloud realism signals:
+  moistShieldEnvelope, drySlotHook, exposedSpiral, landfallShield, deformationTail
+- Manual code review: retained prior popup/radar fixes; no radar heading-locked rotating rainband reintroduced

@@ -1,0 +1,20 @@
+{
+  "version": "R205",
+  "base": "R204",
+  "new_regression": {
+    "round": 205,
+    "passed": 11,
+    "total": 11
+  },
+  "nmc_pixel_check": {
+    "provinceChangedPixels": 755,
+    "riverChangedPixels": 31937
+  },
+  "nmc_chromium_overlay_cases": 5,
+  "r203_regression_passed": 12,
+  "r204_svg_regression_passed": 9,
+  "nmc_safety_regression": "PASS",
+  "build": "NOT RUN: vite not installed",
+  "province_asset": "Not bundled: execution environment has no external DNS; prebuild and runtime CDN fallback present",
+  "river_asset": "Bundled 4,842 original features"
+}

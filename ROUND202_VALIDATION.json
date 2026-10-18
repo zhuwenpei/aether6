@@ -1,0 +1,24 @@
+{
+  "round": "R202",
+  "baseline": "R201",
+  "version": "6.0.49",
+  "changes": [
+    "center svg geographic glyph",
+    "CMA SVG geographic labels",
+    "transparent icon and text",
+    "no dot strokes for history/forecast/Petal"
+  ],
+  "tests": {
+    "round202_source_checks": "9/9 PASS",
+    "chromium_isolated_shared_svg_transform": "PASS",
+    "round188_parameters": "PASS",
+    "round189_radii_preservation": "PASS",
+    "round185_nmc_crash_safety": "PASS",
+    "engine_nmc_forecast_data_sha256": "unchanged"
+  },
+  "limitations": [
+    "Vite production build not verified: dependencies missing",
+    "Full mobile Leaflet pinch gesture not tested",
+    "Historical source-string assertions for divIcons/white strokes intentionally obsolete"
+  ]
+}

@@ -1,0 +1,50 @@
+TyphoonSIM 3.6.4 — final static validation
+Local date: 2026-09-04
+
+Execution policy
+----------------
+- No npm command was executed.
+- No dependency installation was performed.
+- Vite/application runtime was not started.
+- No project business/simulation code was executed.
+
+TypeScript parse validation
+---------------------------
+Command:
+  tsc --noEmit --noCheck --project tsconfig.json
+Result:
+  PASS (exit 0, 0 diagnostics)
+
+Full type-check environment note
+--------------------------------
+Command:
+  tsc --noEmit --project tsconfig.json
+Result:
+  exit 2; 124 diagnostic lines.
+The source package contains no node_modules. The diagnostics are missing external
+module/type declarations (React/JSX runtime, Leaflet, Turf, Recharts, lucide-react,
+mp4-muxer, Vite/Node typings, etc.) and cascades from those missing declarations.
+No dependencies were installed to suppress these environment errors.
+
+Final 3.6.4 NMC renderer checks
+-------------------------------
+- Standard NMC canvas aspect is derived from 1295:1103 instead of the generic 4:3 canvas.
+- Probability cone starts at the analysis position with 0.0-degree half-width.
+- Cone width uses calibrated lead-time knots through 120 h for both rendering and framing.
+- Far-end cone closure uses a rounded forward cap.
+- Forecast intensity dots are scheduled every 6 h through 120 h.
+- Standard information boxes are scheduled every 12 h through 120 h:
+  +12/+24/+36/+48/+60/+72/+84/+96/+108/+120 h, plus the analysis/current box.
+- Standard palette uses #DFF1FB ocean and #FFECCE land.
+- Probability fill uses rgba(129,81,97,0.48).
+- Wind-force text supports "17级以上" at/above the configured threshold.
+- Standard renderer draws no TRMC string, official institution name, audit number,
+  GS approval number, official logo or production badge.
+- No simulation physics, forecast-track calculation, intensity integration or precipitation
+  algorithm was changed for this task.
+
+Source/package inventory
+------------------------
+- TS/TSX files under src: 53
+- TS/TSX source lines: 49,197
+- node_modules: absent
