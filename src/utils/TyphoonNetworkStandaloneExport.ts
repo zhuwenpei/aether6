@@ -11,6 +11,7 @@ export type StandaloneNetworkPayload = {
   ordinal: number | string;
   startTimeISO: string;
   nmcImage: string | null;
+  galleryImages?: {strike:string;centers:string}|null;
 };
 
 async function urlToDataUri(url: string): Promise<string> {
@@ -88,18 +89,23 @@ header button img{display:block;width:34px;height:34px;object-fit:contain;backgr
 #ticker>div{white-space:nowrap}#state{color:#e50019;text-align:center;font-weight:500;font-size:clamp(15px,3.6vw,18px);margin-top:5px}
 #right{position:absolute;right:9px;top:67%;display:flex;flex-direction:column;gap:5px;z-index:4;background:transparent!important}
 #left{position:absolute;left:9px;bottom:calc(52px + env(safe-area-inset-bottom,0px));z-index:4;background:transparent!important}
-.control{appearance:none;display:grid;place-items:center;cursor:pointer;border:0!important;background:transparent!important;background-image:none!important;box-shadow:none!important;filter:none!important;backdrop-filter:none!important;padding:0;margin:0;width:38px;height:38px;min-width:38px;min-height:38px;border-radius:9px;overflow:hidden}
-.control img{display:block;width:100%;height:100%;object-fit:fill;aspect-ratio:1/1;background:transparent!important;box-shadow:none!important}
+.control{appearance:none;display:grid;place-items:center;cursor:pointer;border:0!important;background:transparent!important;background-image:none!important;box-shadow:none!important;filter:none!important;backdrop-filter:none!important;padding:0;margin:0;width:38px;height:38px;min-width:38px;min-height:38px;border-radius:0;overflow:visible}
+.control img{display:block;width:100%;height:100%;object-fit:contain;aspect-ratio:auto;background:transparent!important;box-shadow:none!important}
 #left .control{width:46px;height:46px;min-width:46px;min-height:46px;border-radius:50%}
 .credit{position:absolute;left:7px;bottom:calc(9px + env(safe-area-inset-bottom,0px));font:400 9px/1.1 Arial,sans-serif;color:#3b5360;opacity:.58;pointer-events:none;z-index:2}
 #detail{position:absolute;z-index:5;background:#fff;color:#161616;padding:10px 12px;border:1px solid #999;border-radius:6px;box-shadow:0 2px 8px #0003;min-width:230px;max-width:calc(100vw - 24px);font-size:13px;white-space:pre-line;display:none;pointer-events:auto}
 #detail button{float:right;background:transparent;border:none;color:#888;font-size:17px}#detail:after{content:'';position:absolute;bottom:-9px;left:calc(50% - 9px);border-left:9px solid transparent;border-right:9px solid transparent;border-top:9px solid white}
-#ref{display:none;position:absolute;top:46px;bottom:0;overflow:auto;width:100%;background:#000;text-align:center;z-index:3}#ref img{max-width:100%;height:auto;display:block;margin:0 auto}#ref .error{color:#fff;padding:22px}
+#ref{display:none;position:absolute;top:46px;bottom:0;overflow:auto;width:100%;background:#000;text-align:center;z-index:3}#ref img{max-width:100%;height:auto;display:block;margin:0 auto;-webkit-touch-callout:default}#ref .error{color:#fff;padding:22px}
+#prob{display:none;position:absolute;top:46px;bottom:0;overflow:auto;width:100%;background:#000;color:#fff;z-index:5;padding:16px 0 25px;text-align:center}
+#prob h2{font-size:clamp(16px,4vw,24px);color:#b9df45;padding:0 12px}#prob p{font-size:12px;color:#dce2df;padding:0 12px}
+#prob figure{display:block;margin:22px 12px 30px}#prob img{width:100%;height:auto;display:block;touch-action:auto;-webkit-touch-callout:default}
+#prob figcaption{font-size:12px;margin-top:10px;color:#ddd}
+#openprob{display:block;color:#fff;background:#333;border:2px solid #999;border-radius:8px;font-size:18px;padding:14px 18px;margin:36px 12px}
 /* A quiet export disclaimer replaces the fixed information panel that used
    to overlap the map and has no equivalent in the reference screenshots. */
 #notice{position:absolute;left:50%;bottom:9px;transform:translateX(-50%);z-index:3;color:#415e6e;opacity:.65;white-space:nowrap;font-size:9px;pointer-events:none;text-align:center}
 @media(max-width:375px){header{grid-template-columns:42px minmax(0,1fr) repeat(3,32px);gap:2px}header button:not(#back){width:32px}header button img{width:30px;height:30px}header h1{font-size:clamp(18px,5.1vw,23px)}#ticker{font-size:clamp(11.5px,3.5vw,13.5px)}}
-@media(min-width:800px){header{height:54px;grid-template-columns:51px minmax(0,1fr) repeat(3,35px)}#back{width:51px;height:50px}#map{top:54px}#ref{top:54px}#ticker{top:58px}}
+@media(min-width:800px){header{height:54px;grid-template-columns:51px minmax(0,1fr) repeat(3,35px)}#back{width:51px;height:50px}#map{top:54px}#ref{top:54px}#prob{top:54px}#ticker{top:58px}}
 </style></head><body>
 <script type="application/json" id="aether-data">__AETHER_EMBEDDED_PAYLOAD__</script>
 <header><button id="back" aria-label="返回地图"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="white" d="M23 3 1 24l22 21v-12h24V16H23Z"/></svg></button><h1 id="heading">健茂台风路径</h1><button id="share" title="导出当前 HTML" aria-label="保存"><img id="shareicon"></button><button id="reference" aria-label="台风参考"><img id="referenceicon"></button><button id="history" aria-label="历史图标"><img id="historyicon"></button></header>
@@ -108,7 +114,8 @@ header button img{display:block;width:34px;height:34px;object-fit:contain;backgr
 <div id="left"><button class="control" id="replay" title="重新播放"><img id="replayicon"></button></div>
 <div class="credit">模拟资料 · 本文件自带地图海岸线及 NMC 预报图，不请求地图瓦片</div><div id="detail"></div>
 <div id="notice">虚拟模拟 · 非官方预报</div>
-<div id="ref"><div class="error" id="referror"></div><img id="nmc"></div>
+<div id="ref"><div class="error" id="referror"></div><img id="nmc" alt="NMC 模拟预报，长按保存"><button id="openprob">热带气旋概率</button></div>
+<div id="prob"><h2>【AETHER 模拟】热带气旋概率与集合预报</h2><p>数据为模拟资料，仅供参考 · 长按图片可保存</p><figure><img id="probstrike" alt="袭击概率图"><figcaption>袭击概率图</figcaption></figure><figure><img id="probcenters" alt="8 机构中心路径图"><figcaption>8 机构中心路径 · 经典集合预报</figcaption></figure><div id="probmissing"></div></div>
 <script>
 'use strict';
 const data=JSON.parse(document.getElementById('aether-data').textContent);
@@ -132,7 +139,7 @@ function draw(){if(!w||!h)return;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect
  for(const f of forecasts){let last=product.issue;for(const fix of f.fixes.filter(p=>[6,12,18,24,30,36,42,48,54,60,66,72,84,96,108,120].some(v=>Math.abs(v-(p.simHour-product.issue.simHour))<.01))){segment(last,fix,f.color,f.agency==='中国'?1.8:1.3,[2,5]);last=fix}}
  const fixed=history[Math.max(0,Math.min(frame,history.length-1))];if(fixed)rings(fixed);
  for(const p of history)dot(p,8.8);
- for(const f of forecasts){for(const p of f.fixes.filter(p=>[6,12,18,24,30,36,42,48,54,60,66,72,84,96,108,120].some(v=>Math.abs(v-(p.simHour-product.issue.simHour))<.01))){dot(p,f.agency==='中国'?8.8:4);if(f.agency==='中国'){const pt=mapPoint(p.lat,p.lon),lead=Math.round(p.simHour-product.issue.simHour);ctx.save();ctx.font='600 9px Arial,Microsoft YaHei,sans-serif';ctx.lineWidth=.85;ctx.strokeStyle='#303030';ctx.fillStyle='#fff';ctx.lineJoin='round';ctx.textBaseline='alphabetic';const label=lead+'h/'+(p.vmax>=56.1?'17级以上':grade(p.vmax)+'级');ctx.strokeText(label,pt[0]-26,pt[1]+16);ctx.fillText(label,pt[0]-26,pt[1]+16);ctx.restore()}}}
+ for(const f of forecasts.filter(f=>f.agency!=='中国').concat(forecasts.filter(f=>f.agency==='中国'))){for(const p of f.fixes.filter(p=>[6,12,18,24,30,36,42,48,54,60,66,72,84,96,108,120].some(v=>Math.abs(v-(p.simHour-product.issue.simHour))<.01))){dot(p,f.agency==='中国'?8.8:4);if(f.agency==='中国'){const pt=mapPoint(p.lat,p.lon),lead=Math.round(p.simHour-product.issue.simHour);ctx.save();ctx.font='600 9px Arial,Microsoft YaHei,sans-serif';ctx.lineWidth=1.1;ctx.strokeStyle='#303030';ctx.fillStyle='#fff';ctx.lineJoin='round';ctx.textBaseline='alphabetic';const label=lead+'h/'+(p.vmax>=56.1?'17级以上':grade(p.vmax)+'级');ctx.strokeText(label,pt[0]-26,pt[1]+16);ctx.fillText(label,pt[0]-26,pt[1]+16);ctx.restore()}}}
  if(fixed){const pt=mapPoint(fixed.lat,fixed.lon);if(!playing&&cycloneImage.complete&&cycloneImage.naturalWidth){ctx.drawImage(cycloneImage,pt[0]-12,pt[1]-12,24,24)}dot(fixed,6.6)}
  if(selected){const pt=mapPoint(selected.fix.lat,selected.fix.lon);detail.style.left=Math.max(8,Math.min(w-detail.offsetWidth-8,pt[0]-detail.offsetWidth/2))+'px';detail.style.top=Math.max(60,Math.min(h-detail.offsetHeight-22,pt[1]-detail.offsetHeight-13))+'px'}
 }
@@ -143,15 +150,35 @@ function run(){if(replayHandle)clearInterval(replayHandle);if(!history.length)re
 function recenter(){stop();const p=history[history.length-1];if(p){lat=p.lat;lon=p.lon;draw()}}
 document.getElementById('night').onclick=()=>{night=!night;draw()};document.getElementById('locate').onclick=recenter;document.getElementById('replay').onclick=run;
 document.getElementById('traffic').onclick=()=>{};document.getElementById('history').onclick=()=>{};
-function showReference(show){document.getElementById('ref').style.display=show?'block':'none';document.getElementById('map').style.display=show?'none':'block';document.getElementById('ticker').style.display=show?'none':'block';document.getElementById('right').style.display=show?'none':'grid';document.getElementById('left').style.display=show?'none':'block';document.getElementById('heading').textContent=show?'台风参考':'健茂台风路径';if(!show)resize()}
-document.getElementById('reference').onclick=()=>{stop();showReference(true)};document.getElementById('back').onclick=()=>showReference(false);
+function showReference(show){document.getElementById('prob').style.display='none';document.getElementById('ref').style.display=show?'block':'none';document.getElementById('map').style.display=show?'none':'block';document.getElementById('ticker').style.display=show?'none':'block';document.getElementById('right').style.display=show?'none':'grid';document.getElementById('left').style.display=show?'none':'block';document.getElementById('heading').textContent=show?'台风参考':'健茂台风路径';if(!show)resize()}
+document.getElementById('reference').onclick=()=>{stop();showReference(true)};
+document.getElementById('openprob').onclick=()=>{document.getElementById('ref').style.display='none';document.getElementById('prob').style.display='block';document.getElementById('heading').textContent='热带气旋概率'};
+document.getElementById('back').onclick=()=>{if(document.getElementById('prob').style.display==='block')showReference(true);else showReference(false)};
 document.getElementById('share').onclick=()=>{const blob=new Blob(['<!doctype html>\n'+document.documentElement.outerHTML],{type:'text/html;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='台风网模拟_离线快照.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),10000)};
 const nmc=document.getElementById('nmc');if(data.nmcImage)nmc.src=data.nmcImage;else document.getElementById('referror').textContent='此存档未能生成 NMC 图片';
+if(data.galleryImages){document.getElementById('probstrike').src=data.galleryImages.strike;document.getElementById('probcenters').src=data.galleryImages.centers;}
+else document.getElementById('probmissing').textContent='本次快照未附带集合预报图片';
 let pDown=null;canvas.addEventListener('pointerdown',e=>{if(playing)stop();pDown={x:e.clientX,y:e.clientY,lon,lat};canvas.setPointerCapture(e.pointerId)});
 canvas.addEventListener('pointermove',e=>{if(!pDown)return;const k=span/111.195/Math.max(.12,Math.cos(lat*Math.PI/180))/w;lon=pDown.lon-(e.clientX-pDown.x)*k;lat=pDown.lat+(e.clientY-pDown.y)*k;draw()});
-canvas.addEventListener('pointerup',e=>{const a=pDown;pDown=null;if(!a||Math.hypot(e.clientX-a.x,e.clientY-a.y)>8)return;const rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top;let best=null,dist=18;
-for(const f of forecasts){for(const fix of f.fixes){if(![6,12,18,24,30,36,42,48,54,60,66,72,84,96,108,120].includes(Math.round(fix.simHour-product.issue.simHour)))continue;const pt=mapPoint(fix.lat,fix.lon);const d=Math.hypot(pt[0]-x,pt[1]-y);if(d<dist){dist=d;best={fix,agency:f.agency}}}}
-for(const fix of history){const pt=mapPoint(fix.lat,fix.lon),d=Math.hypot(pt[0]-x,pt[1]-y);if(d<dist){dist=d;best={fix,agency:null}}}
+canvas.addEventListener('pointerup',e=>{const a=pDown;pDown=null;if(!a||Math.hypot(e.clientX-a.x,e.clientY-a.y)>8)return;const rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top;// Tap arbitration matches the live Leaflet map: within overlapping hit ranges,
+// CMA always wins. Then history markers; other agency hit disks are last.
+let best=null;
+const leads=[6,12,18,24,30,36,42,48,54,60,66,72,84,96,108,120];
+const choose=(fix,agency,limit)=>{const pt=mapPoint(fix.lat,fix.lon);return Math.hypot(pt[0]-x,pt[1]-y)<=limit?{fix,agency}:null};
+for(const f of forecasts.filter(f=>f.agency==='中国')){
+  for(const fix of f.fixes){if(!leads.includes(Math.round(fix.simHour-product.issue.simHour)))continue;
+    const found=choose(fix,'中国',7);if(found){best=found;break}}
+  if(best)break;
+}
+if(!best){for(const fix of history){const found=choose(fix,null,4.5);if(found){best=found;break}}}
+if(!best){let closest=7;
+  for(const f of forecasts.filter(f=>f.agency!=='中国')){
+    for(const fix of f.fixes){if(!leads.includes(Math.round(fix.simHour-product.issue.simHour)))continue;
+      const pt=mapPoint(fix.lat,fix.lon),d=Math.hypot(pt[0]-x,pt[1]-y);
+      if(d<closest){closest=d;best={fix,agency:f.agency}}
+    }
+  }
+}
 selected=best;if(best){const f=best.fix;detail.textContent='';const close=document.createElement('button');close.textContent='×';close.onclick=()=>{selected=null;detail.style.display='none'};detail.appendChild(close);const content=document.createElement('div');content.textContent=(best.agency?'预测机构：【'+best.agency+'】':data.typhoonName)+'\n中心位置：'+f.lon.toFixed(1)+'°E，'+f.lat.toFixed(1)+'°N\n最大风力：'+Math.round(f.vmax)+'米/秒\n中心气压：'+Math.round(f.pmin)+'百帕\n模拟资料 · 仅供娱乐与分析';detail.appendChild(content);detail.style.display='block';draw()}else detail.style.display='none';});
 canvas.addEventListener('wheel',e=>{e.preventDefault();if(playing)stop();span=Math.max(100,Math.min(24000,span*(e.deltaY>0?1.25:.8)));draw()},{passive:false});
 window.addEventListener('resize',resize);resize();tick();draw();

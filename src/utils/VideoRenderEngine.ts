@@ -1,3 +1,4 @@
+import {threeHourlyReportNodes} from "./ThreeHourlyReportNodes";
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -2296,6 +2297,7 @@ function drawEndReport(
   exportConfig: VideoExportConfig
 ) {
   const history = typhoon.history || [];
+  const chartHistory = threeHourlyReportNodes(history,point=>Number(point.simHour));
   if (!history.length) return;
   const maxVmax = Math.max(...history.map((h) => h.vmax));
   const intensityAgency = exportConfig.intensityAgency || "CMA";
@@ -2398,7 +2400,7 @@ function drawEndReport(
     ctx.lineWidth = Math.max(1.5, (dashed ? 1.6 : 2.3) * uiScale);
     ctx.setLineDash(dashed ? [7 * uiScale, 5 * uiScale] : []);
     ctx.beginPath();
-    history.forEach((h, i) => {
+    chartHistory.forEach((h, i) => {
       const x = xFor(h.simHour);
       const y = yFn(selector(h));
       if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);

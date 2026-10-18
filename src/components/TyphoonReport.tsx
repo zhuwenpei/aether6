@@ -9,6 +9,7 @@ import { getTyphoonDisplayName, getTyphoonOfficialNumber } from "../utils/Typhoo
 import { DEFAULT_CONFIG } from "../config/DefaultSettings";
 import { aceOf, casualtiesOf, estimatedLossBillionCny, formatReportTime, peakOf, scanLandExtremes, type LandExtremes } from "../utils/TyphoonReportMetrics";
 import { nearestKnownCityName, stationCityDisplayName, stationCityName } from "../utils/CityNames";
+import {threeHourlyReportNodes} from "../utils/ThreeHourlyReportNodes";
 
 const cleanLandName = (rawName: string) => {
   return rawName
@@ -31,17 +32,6 @@ interface TyphoonReportProps {
   onClose: () => void;
   onOpenVideoExport?: (typhoon: Typhoon) => void;
   onOpenReportModal?: (typhoon: Typhoon) => void;
-}
-
-function getTurbulenceJitter(t: number, seed: number = 1.0): number {
-  const envelope = 0.5 + 0.5 * Math.sin(t * 0.23 + seed * 1.1);
-  const signal = (
-    Math.sin(t * 2.1 + seed * 3.7) * 0.40 +
-    Math.cos(t * 4.7 - seed * 1.9) * 0.30 +
-    Math.sin(t * 11.3 + seed * 5.3) * 0.20 +
-    Math.cos(t * 23.7 - seed * 7.1) * 0.10
-  );
-  return signal * envelope;
 }
 
 export default function TyphoonReport({ typhoon, startDate, config, onClose, onOpenVideoExport, onOpenReportModal }: TyphoonReportProps) {
@@ -103,77 +93,15 @@ export default function TyphoonReport({ typhoon, startDate, config, onClose, onO
     return () => { cancelled = true; window.clearTimeout(timer); };
   }, [typhoon.id]);
 
-  // R188: edited observations are literal three-hour nodes, never decorate them with hourly jitter.
-  const threeHourParameters = typhoon.realisticMotion?.version === 2;
-  // Unedited archives retain their legacy report-only sensor jitter.
-  let maxWind = 0;
-  let minPressure = 1013;
-
-  const rawData = typhoon.history.map((h) => {
-    if (h.vmax > maxWind) maxWind = h.vmax;
-    if (h.pmin < minPressure) minPressure = h.pmin;
-    return {
-      time: h.simHour,
-      wind: h.vmax,
-      pressure: h.pmin,
-      speed: h.speed
-    };
-  });
-
-  // Identify key node indices (peaks / minimums / boundaries) to ensure key points remain 100% exact
-  const maxWindIndices: number[] = [];
-  const minPressureIndices: number[] = [];
-
-  rawData.forEach((d, idx) => {
-    if (Math.abs(d.wind - maxWind) < 0.05) maxWindIndices.push(idx);
-    if (Math.abs(d.pressure - minPressure) < 0.1) minPressureIndices.push(idx);
-  });
-
-  const historyData = rawData.map((d, i, arr) => {
-    if (threeHourParameters) return { time:d.time, wind:d.wind, pressure:d.pressure, speed:d.speed };
-    // Boundary endpoints
-    if (i === 0 || i === arr.length - 1) {
-      return {
-        time: d.time,
-        wind: Number(d.wind.toFixed(1)),
-        pressure: Number(d.pressure.toFixed(1)), speed:d.speed
-      };
-    }
-
-    // Distance in steps to nearest peak wind index and min pressure index
-    const minDistMaxWind = Math.min(...maxWindIndices.map(idx => Math.abs(idx - i)));
-    const minDistMinPressure = Math.min(...minPressureIndices.map(idx => Math.abs(idx - i)));
-
-    // Dampening weight: 0 at key extrema node, smoothly grows to 1.0 away from key node
-    const wWindKey = Math.min(1.0, Math.pow(minDistMaxWind / 3.0, 1.2));
-    const wPressKey = Math.min(1.0, Math.pow(minDistMinPressure / 3.0, 1.2));
-
-    // Natural meteorological jitter
-    const windJitter = getTurbulenceJitter(d.time, 1.7) * 1.1 * wWindKey;
-    const pressJitter = getTurbulenceJitter(d.time, 3.1) * 0.8 * wPressKey;
-
-    let finalWind = d.wind + windJitter;
-    let finalPressure = d.pressure + pressJitter;
-
-    // Enforce bounds: jitter must never exceed peak maxWind or drop below minPressure
-    finalWind = Math.min(maxWind, Math.max(0, finalWind));
-    finalPressure = Math.max(minPressure, finalPressure);
-
-    // Hard pin exact key nodes
-    if (minDistMaxWind === 0) finalWind = maxWind;
-    if (minDistMinPressure === 0) finalPressure = minPressure;
-
-    return {
-      time: d.time,
-      wind: Number(finalWind.toFixed(1)),
-      pressure: Number(finalPressure.toFixed(1)), speed:d.speed
-    };
-  });
-
-  // Restrict the report to the exact three-hour nodes. The full hourly
-  // simulation record remains available to maps, weather stations and rewind.
-  const chartHistoryData = threeHourParameters ? historyData.filter((d,i)=>
-    i===0 || i===historyData.length-1 || Math.abs(((d.time-historyData[0].time)%3+3)%3)<1e-6) : historyData;
+  // R214: all report curves use unmodified three-hour physical nodes,
+  // including older archived cyclones. Never inject presentation-only jitter.
+  const rawData = (typhoon.history||[]).map(h=>({
+    time:h.simHour,wind:h.vmax,pressure:h.pmin,speed:h.speed
+  }));
+  const maxWind = rawData.reduce((v,d)=>Math.max(v,d.wind),0);
+  const minPressure = rawData.reduce((v,d)=>Math.min(v,d.pressure),1013);
+  const chartHistoryData = threeHourlyReportNodes(rawData,d=>d.time);
+  const threeHourParameters = true;
 
   // Calculate Landfalls
   const landfalls: { lat: number; lon: number; wind: number; time: number; region: string }[] = [];
@@ -448,7 +376,7 @@ export default function TyphoonReport({ typhoon, startDate, config, onClose, onO
                       contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '8px', fontSize: '13px' }}
                       labelFormatter={(val) => `第 ${val} 小时`}
                     />
-                    <Line type={threeHourParameters?"linear":"monotone"} dataKey="wind" name="中心风速" stroke="#06b6d4" strokeWidth={2.5} dot={threeHourParameters?{r:2}:false} />
+                    <Line type="linear" dataKey="wind" name="中心风速" stroke="#06b6d4" strokeWidth={2.5} dot={{r:2}} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -482,7 +410,7 @@ export default function TyphoonReport({ typhoon, startDate, config, onClose, onO
                       contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '8px', fontSize: '13px' }}
                       labelFormatter={(val) => `第 ${val} 小时`}
                     />
-                    <Line type={threeHourParameters?"linear":"monotone"} dataKey="pressure" name="最低气压" stroke="#a855f7" strokeWidth={2.5} dot={threeHourParameters?{r:2}:false} />
+                    <Line type="linear" dataKey="pressure" name="最低气压" stroke="#a855f7" strokeWidth={2.5} dot={{r:2}} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -498,7 +426,7 @@ export default function TyphoonReport({ typhoon, startDate, config, onClose, onO
                     <XAxis dataKey="time" stroke="#64748b" tick={{fill:'#94a3b8',fontSize:12}} tickFormatter={(v)=>`${v}h`} />
                     <YAxis stroke="#64748b" tick={{fill:'#94a3b8',fontSize:12}} />
                     <Tooltip contentStyle={{backgroundColor:'#0f172a',borderColor:'#334155',fontSize:'13px'}} labelFormatter={(v)=>`第 ${v} 小时`} />
-                    <Line type={threeHourParameters?"linear":"monotone"} dataKey="speed" name="移动速度" stroke="#f59e0b" strokeWidth={2.5} dot={threeHourParameters?{r:2}:false}/>
+                    <Line type="linear" dataKey="speed" name="移动速度" stroke="#f59e0b" strokeWidth={2.5} dot={{r:2}}/>
                   </LineChart>
                 </ResponsiveContainer>
               </div>

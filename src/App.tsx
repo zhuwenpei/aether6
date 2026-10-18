@@ -22,6 +22,7 @@ import TyphoonReportModal from "./components/TyphoonReportModal";
 import VideoExportModal from "./components/VideoExportModal";
 import ForecastImageModal from "./components/ForecastImageModal";
 import TyphoonNetworkSimulator from "./components/TyphoonNetworkSimulator";
+import NetworkEntrySettings, {type NetworkChartSettings} from "./components/NetworkEntrySettings";
 import SeasonReport from "./components/SeasonReport";
 import VirtualJoystick from "./components/VirtualJoystick";
 import ForecastPreSimulation from "./components/ForecastPreSimulation";
@@ -348,6 +349,8 @@ export default function App() {
   const [reportModalTyphoon, setReportModalTyphoon] = useState<Typhoon | null>(null);
   const [forecastModalOpen, setForecastModalOpen] = useState(false);
   const [typhoonNetworkOpen,setTyphoonNetworkOpen] = useState(false);
+  const [typhoonNetworkSetupOpen,setTyphoonNetworkSetupOpen] = useState(false);
+  const [networkEntryOptions,setNetworkEntryOptions] = useState<{config:SimulationConfig;settings:NetworkChartSettings}|null>(null);
   // A wind-field crop is chosen on the live Leaflet map, not on a static preview.
   const [synopticSelecting, setSynopticSelecting] = useState(false);
   const synopticCropTargetRef = useRef<"forecast" | "record">("forecast");
@@ -4791,13 +4794,22 @@ export default function App() {
             mobileMode={useLegacyMobileUi}
             onBeforeHeavyGeneration={persistSimulationState}
             onAfterHeavyGeneration={persistSimulationState}
-            onOpenTyphoonNetwork={() => { isPlayingRef.current = false; setIsPlaying(false); setForecastModalOpen(false); setTyphoonNetworkOpen(true); }}
+            onOpenTyphoonNetwork={() => { isPlayingRef.current = false; setIsPlaying(false); setForecastModalOpen(false); setTyphoonNetworkSetupOpen(true); }}
           />
         )}
 
-        {typhoonNetworkOpen && typhoons[0] && (
+        {typhoonNetworkSetupOpen && (
+          <NetworkEntrySettings config={config}
+            onCancel={() => {setTyphoonNetworkSetupOpen(false);setForecastModalOpen(true);}}
+            onConfirm={(networkConfig,settings) => {
+              setNetworkEntryOptions({config:networkConfig,settings});
+              setTyphoonNetworkSetupOpen(false);setTyphoonNetworkOpen(true);
+            }}/>
+        )}
+        {typhoonNetworkOpen && typhoons[0] && networkEntryOptions && (
           <TyphoonNetworkSimulator storm={typhoons[0]} startDate={startDate} currentHour={currentHour}
-            config={config} onClose={() => { setTyphoonNetworkOpen(false); setForecastModalOpen(true); }} />
+            config={networkEntryOptions.config} chartSettings={networkEntryOptions.settings}
+            onClose={() => { setTyphoonNetworkOpen(false); setForecastModalOpen(true); }} />
         )}
 
         <RealisticParameterDialog open={!!realisticDialogMode} mode={realisticDialogMode||'apply'}

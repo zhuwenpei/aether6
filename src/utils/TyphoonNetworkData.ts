@@ -70,13 +70,13 @@ export function cmaBoundedNetworkHistory(storm:Typhoon, startDate:Date, currentH
     .slice().sort((a,b)=>a.simHour-b.simHour);
   if(!valid.length){
     const sole={...storm,simHour:Number.isFinite(storm.simHour)?storm.simHour:0} as NetworkFix;
-    return sole.simHour<=currentHour+1e-7?[sole]:[];
+    return sole.simHour<=currentHour+1e-7?[{...sole,vmax:toCmaPublishedWindSpeed(sole.vmax)}]:[];
   }
   const first=valid[0].simHour;
   const cap=previousCmaPublicHour(startDate,currentHour,valid[valid.length-1].simHour);
   if(cap<first-1e-7){
     // Genesis can occur outside an advisory slot: show only genesis if that time is not in the future.
-    return first<=currentHour+1e-7?[{...valid[0]}]:[];
+    return first<=currentHour+1e-7?[{...valid[0],vmax:toCmaPublishedWindSpeed(valid[0].vmax)}]:[];
   }
   const result:NetworkFix[]=[{...valid[0]}];
   const startBj=startDate.getTime()/3600000+first+8;
@@ -86,7 +86,7 @@ export function cmaBoundedNetworkHistory(storm:Typhoon, startDate:Date, currentH
     const fix=sampleNetworkFix(valid,h);
     if(fix.simHour<=currentHour+1e-7 && fix.simHour<=valid[valid.length-1].simHour+1e-7)result.push(fix);
   }
-  return result;
+  return result.map(fix=>({...fix,vmax:toCmaPublishedWindSpeed(fix.vmax)}));
 }
 
 /** R193: color key sampled against the uploaded Petal reference (not agency colors).
@@ -141,6 +141,25 @@ export function networkForecastSegments(issue:NetworkFix,forecast:NetworkForecas
   }
   return result;
 }
+/** CMA-publication-style representative whole-m/s values seen in CMA bulletins.
+ * This only discretises SIMULATED CMA-labelled network products; it never fetches
+ * or claims official advisories, and never changes physical storm histories.
+ * Keep a broad span for strong systems rather than rounding to a uniform 5m/s grid. */
+export const CMA_PUBLIC_WIND_SPEED_LEVELS_MPS = [
+  0, 5, 8, 10, 12, 15, 18, 20, 23, 25, 28, 30, 33, 35, 38, 40,
+  42, 45, 48, 50, 52, 55, 58, 60, 62, 65, 68, 70, 75, 80, 85
+] as const;
+export function toCmaPublishedWindSpeed(vmax:number):number {
+  if(!Number.isFinite(vmax))return 0;
+  const speed=Math.max(0,vmax);
+  if(speed>=85)return Math.round(speed/5)*5;
+  // A stable upward tie-break avoids a counterintuitive weakening at midpoints.
+  let best:number=CMA_PUBLIC_WIND_SPEED_LEVELS_MPS[0];
+  for(const level of CMA_PUBLIC_WIND_SPEED_LEVELS_MPS){
+    if(Math.abs(speed-level)<=Math.abs(speed-best))best=level;
+  }
+  return best;
+}
 export const networkWindForce = (vmax:number) => getWindForceCategory(vmax);
 
 export function buildNetworkForecasts(issue:NetworkFix, storm:Typhoon, config?:SimulationConfig):NetworkForecast[]{
@@ -156,12 +175,27 @@ export function buildNetworkForecasts(issue:NetworkFix, storm:Typhoon, config?:S
   });
   return NETWORK_FORECAST_STYLE.map(style=>({agency:style.agency,color:style.color,fixes:sampled.map(p=>{
     const lead=p.simHour;
-    // Internal deterministic model-visualization separation, NEVER an actual agency feed.
-    const km=(Math.sin(lead/14+style.offset*2.1)*11+Math.sin(lead/33+style.offset)*12)*Math.min(1,lead/36);
-    const perpendicular=(style.offset-1.5)*km*0.9;
-    const lat=p.lat+perpendicular/111.2;
-    const lon=normLon(p.lon+(style.offset-1.5)*km/(111.2*Math.max(.2,Math.cos(p.lat*Math.PI/180))));
-    const vmax=Math.max(0,p.vmax+(style.offset-1.5)*Math.sin(lead/18)*3);
+    // Agency-dependent, lead-time-growing *deterministic* guidance differences.
+    // Forecast thermodynamics (including the entry peak aspiration) come from
+    // materializeForecastPath. That physical path supplies >= 85% of intensity;
+    // agency deviations depend on steering, lead time and system maturity.
+    // Neither raw physical history nor the main simulator is rewritten.
+    const spread=Math.min(1,Math.pow(lead/96,0.8));
+    const direction=(issue.direction||0)*Math.PI/180;
+    const forwardBiasKm=(style.offset-1.5)*11*spread;
+    const lateralBiasKm=(style.offset-1.5)*27*spread+
+      Math.sin(lead/34+style.offset*1.65)*(6+12*spread)*spread;
+    const northKm=forwardBiasKm*Math.cos(direction)-lateralBiasKm*Math.sin(direction);
+    const eastKm=forwardBiasKm*Math.sin(direction)+lateralBiasKm*Math.cos(direction);
+    const lat=p.lat+northKm/111.2;
+    const lon=normLon(p.lon+eastKm/(111.2*Math.max(.2,Math.cos(p.lat*Math.PI/180))));
+    const maturity=Math.min(1,Math.max(0,(lead-6)/54));
+    const agencyBias=[0,-2.0,2.7,-1.2][style.offset];
+    const rawVmax=Math.max(0,0.92*p.vmax+0.08*issue.vmax+agencyBias*maturity+
+      (style.offset-1.5)*Math.sin(lead/35)*1.15*spread);
+    // China: public discrete CMA values. Foreign simulated agencies keep
+    // their own continuous response to the same high-weight model reference.
+    const vmax=style.agency==='中国'?toCmaPublishedWindSpeed(rawVmax):rawVmax;
     return {...p,lat,lon,vmax,pmin:Math.max(850,p.pmin-(vmax-p.vmax)*1.2),simHour:issue.simHour+lead};
   })}));
 }

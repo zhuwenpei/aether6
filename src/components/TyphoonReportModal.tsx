@@ -1,6 +1,7 @@
+import {threeHourlyReportNodes} from "../utils/ThreeHourlyReportNodes";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Download, Sliders, X, Map as MapIcon, Activity, CloudRain } from "lucide-react";
-import { SimulationConfig, Typhoon } from "../types";
+import { SimulationConfig, Typhoon, TyphoonCategory } from "../types";
 import { getAgencyIntensity, getLandMetrics, getStandardAverageWindRadii, isMinorIslandOperationalIgnored, JTWC_SSHWS_BANDS } from "../simulation/Engine";
 import { checkPointOnLandGeoJson, productLandGeoJson as landGeoJson, loadProductNaturalEarthData } from "../simulation/NaturalEarthLoader";
 import { strokeProductCoastlineRing } from "../utils/ProductCoastlineDrawing";
@@ -124,91 +125,6 @@ function drawLinePath(
   ctx.restore();
 }
 
-function reportNoiseHash(i: number, seed: number): number {
-  let x = Math.imul((i | 0) ^ seed, 0x45d9f3b);
-  x = Math.imul(x ^ (x >>> 16), 0x45d9f3b);
-  x ^= x >>> 16;
-  return ((x >>> 0) / 4294967295) * 2 - 1;
-}
-
-function smoothValueNoise(x: number, seed: number): number {
-  const i = Math.floor(x);
-  const f = x - i;
-  const u = f * f * (3 - 2 * f);
-  const a = reportNoiseHash(i, seed);
-  const b = reportNoiseHash(i + 1, seed);
-  return a + (b - a) * u;
-}
-
-function drawNaturalizedLinePath(
-  ctx: CanvasRenderingContext2D,
-  data: HistoryPoint[],
-  xForTime: (time: number) => number,
-  yForValue: (value: number) => number,
-  valueKey: "wind" | "pressure",
-  color: string,
-  width: number,
-  scale: number
-) {
-  if (data.length < 2) return;
-  const values = data.map((d) => d[valueKey]);
-  const globalMin = Math.min(...values);
-  const globalMax = Math.max(...values);
-  const globalRange = Math.max(0.001, globalMax - globalMin);
-  const sharedSeed = 541;
-  const sign = valueKey === "pressure" ? -1 : 1;
-
-  ctx.save();
-  ctx.strokeStyle = color;
-  ctx.lineWidth = width * scale;
-  ctx.lineJoin = "round";
-  ctx.lineCap = "round";
-  ctx.beginPath();
-  ctx.moveTo(xForTime(data[0].time), yForValue(data[0][valueKey]));
-
-  for (let i = 1; i < data.length; i++) {
-    const a = data[i - 1];
-    const b = data[i];
-    const va = a[valueKey];
-    const vb = b[valueKey];
-    const segmentDelta = Math.abs(vb - va);
-    const prevV = i >= 2 ? data[i - 2][valueKey] : va;
-    const nextV = i + 1 < data.length ? data[i + 1][valueKey] : vb;
-    const localCurvature = Math.abs((vb - va) - (va - prevV)) + Math.abs((nextV - vb) - (vb - va));
-    const dynamicFactor = 0.78 + 0.62 * Math.min(1, (segmentDelta + 0.32 * localCurvature) / Math.max(0.5, globalRange * 0.10));
-    const baseAmplitude = valueKey === "pressure"
-      ? Math.min(1.10, Math.max(0.18, globalRange * 0.015))
-      : Math.min(0.72, Math.max(0.10, globalRange * 0.013));
-
-    // Draw a true broken-line path instead of a smoothed spline, but enrich each hourly segment
-    // with a few correlated kinks so the chart keeps realistic high-frequency wobble. Wind and
-    // pressure reuse the same underlying perturbation field, with pressure mirrored in sign, so the
-    // two diagnostics continue to reinforce each other physically.
-    const subdivisions = 5;
-    for (let sub = 1; sub <= subdivisions; sub++) {
-      const f = sub / subdivisions;
-      const t = a.time + (b.time - a.time) * f;
-      const base = va + (vb - va) * f;
-      const endpointEnvelope = Math.pow(Math.sin(Math.PI * f), 1.04);
-      const correlatedNoise =
-        0.56 * smoothValueNoise(t * 1.95 + i * 0.21, sharedSeed) +
-        0.29 * smoothValueNoise(t * 4.4 + i * 0.48, sharedSeed + 37) +
-        0.15 * reportNoiseHash(i * 17 + sub * 7, sharedSeed + 101);
-      const directionalBias = 0.18 * Math.tanh((vb - va) / Math.max(valueKey === "pressure" ? 4 : 2.2, globalRange * 0.06));
-      const jitter = sign * baseAmplitude * dynamicFactor * endpointEnvelope * (correlatedNoise + directionalBias);
-
-      // Never manufacture a new global extreme between real simulation samples.
-      const guard = Math.max(0.0001, globalRange * 0.0008);
-      const value = sub === subdivisions
-        ? vb
-        : Math.max(globalMin + guard, Math.min(globalMax - guard, base + jitter));
-      ctx.lineTo(xForTime(t), yForValue(value));
-    }
-  }
-  ctx.stroke();
-  ctx.restore();
-}
-
 function drawScientificPanel(
   ctx: CanvasRenderingContext2D,
   opts: {
@@ -315,19 +231,12 @@ function drawScientificPanel(
     tickIndex++;
   }
 
-  // Draw a kinked operational-style polyline. Natural sub-hour variability is injected between
-  // true samples while every real data point and extreme remains exact.
-  if (threeHourlyParameters) {
-    // R188: exactly straight segments between three-hour observations; no
-    // intermediate noise, Bezier smoothing, or additional sensor jitter.
-    const start=data[0]?.time??0;
-    const knots=data.filter((p,i)=>i===0||i===data.length-1||Math.abs(((p.time-start)%3+3)%3)<1e-6);
-    drawLinePath(ctx,knots,xForTime,yForValue,valueKey,"#262626",valueKey==="pressure"?2.75:2.45,scale);
-    ctx.fillStyle="#262626";
-    knots.forEach(p=>{ctx.beginPath();ctx.arc(xForTime(p.time),yForValue(p[valueKey]),2.5*scale,0,Math.PI*2);ctx.fill();});
-  } else {
-    drawNaturalizedLinePath(ctx, data, xForTime, yForValue, valueKey, "#262626", valueKey === "pressure" ? 2.75 : 2.45, scale);
-  }
+  // R214: all exported report curves are literal three-hour node segments.
+  // Old sensor jitter, sub-hour subdivisions and Bezier smoothing are removed.
+  const knots=threeHourlyReportNodes(data,p=>p.time);
+  drawLinePath(ctx,knots,xForTime,yForValue,valueKey,"#262626",valueKey==="pressure"?2.75:2.45,scale);
+  ctx.fillStyle="#262626";
+  knots.forEach(p=>{ctx.beginPath();ctx.arc(xForTime(p.time),yForValue(p[valueKey]),2.5*scale,0,Math.PI*2);ctx.fill();});
 
   // Extreme annotation lives in a dedicated header strip above the plot.
   // A leader connects it to the actual extremum so the numeric label can never cover the curve.
@@ -386,7 +295,7 @@ function drawScientificPanel(
   ctx.lineTo(legendX + 24 * scale, legendY);
   ctx.stroke();
   ctx.fillStyle = "#3a3a3a";
-  ctx.fillText(threeHourlyParameters?"3 小时折线节点":"连续模拟", legendX + 31 * scale, legendY);
+  ctx.fillText("3 小时折线节点", legendX + 31 * scale, legendY);
 
   ctx.restore();
 }
@@ -452,7 +361,7 @@ function drawLifecycleDiagnosticReport(
   displayName: string
 ) {
   const scale = width / 1600;
-  const history = typhoon.history?.length ? typhoon.history : [{ simHour:0, vmax:typhoon.vmax, pmin:typhoon.pmin, r7:(typhoon as any).r7 } as any];
+  const history = threeHourlyReportNodes(typhoon.history?.length ? typhoon.history : [{ simHour:0, vmax:typhoon.vmax, pmin:typhoon.pmin, r7:(typhoon as any).r7 } as any],h=>Number(h.simHour));
   const wind = historyData.map(p=>({time:p.time,value:Number(getAgencyIntensity(p.wind,"JTWC","continuous").value)}));
   const pressure = historyData.map(p=>({time:p.time,value:p.pressure}));
   const radius = history.map((p:any)=>{
@@ -486,7 +395,7 @@ function drawPatriciaStyleLifecycleReport(
   displayName: string
 ) {
   const scale=width/1600;
-  const history=(typhoon.history?.length?typhoon.history:[{simHour:0,vmax:typhoon.vmax,pmin:typhoon.pmin,lat:typhoon.lat,lon:typhoon.lon} as any]).slice().sort((a,b)=>Number(a.simHour)-Number(b.simHour));
+  const history=threeHourlyReportNodes(typhoon.history?.length?typhoon.history:[{simHour:0,vmax:typhoon.vmax,pmin:typhoon.pmin,lat:typhoon.lat,lon:typhoon.lon} as any],p=>Number(p.simHour));
   const rows=history.map((p:any,i:number)=>{
     let speedMph=0;
     if(i>0){ const prev:any=history[i-1]; const dt=Math.max(1e-6,Number(p.simHour)-Number(prev.simHour)); speedMph=geoDistanceKm(prev,p)/dt*0.621371; }
@@ -1704,10 +1613,8 @@ export default function TyphoonReportModal({ typhoon, startDate, config, onClose
     if (!typhoon.history?.length) {
       return [{ time: 0, wind: typhoon.vmax, pressure: typhoon.pmin }];
     }
-    return typhoon.history.map((h) => ({
-      time: Number(h.simHour),
-      wind: Number(h.vmax),
-      pressure: Number(h.pmin)
+    return threeHourlyReportNodes(typhoon.history,h=>Number(h.simHour)).map(h=>({
+      time:Number(h.simHour),wind:Number(h.vmax),pressure:Number(h.pmin)
     }));
   }, [typhoon.history, typhoon.vmax, typhoon.pmin]);
 
@@ -1893,7 +1800,7 @@ export default function TyphoonReportModal({ typhoon, startDate, config, onClose
           valueKey: panel,
           yLabel: panel === "pressure" ? "中心气压 (hPa)" : "最大风速 (m/s)",
           showSynopticNodes: false,
-          threeHourlyParameters:typhoon.realisticMotion?.version===2,
+          threeHourlyParameters:true,
           scale
         });
       });

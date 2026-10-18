@@ -713,3 +713,52 @@
 }
 #root .tn-viewport .tn-ticker b.tn-status-active,
 #root .tn-viewport .tn-ticker b.tn-status-ended{font-weight:500!important}
+
+/* R213: safeguard the header artworks from unrelated global R126 modal rules.
+   Extra ID specificity matches the pre-existing reference artwork exception;
+   both the button and its image must remain alpha-only. */
+#root .tn-viewport .tn-header #tn-network-share,
+#root .tn-viewport .tn-header #tn-network-history,
+#root .tn-viewport .tn-header #tn-network-share:is(:hover,:active,:focus-visible),
+#root .tn-viewport .tn-header #tn-network-history:is(:hover,:active,:focus-visible){
+  background:transparent!important;background-color:transparent!important;
+  background-image:none!important;border:0!important;box-shadow:none!important;
+  filter:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  outline:0!important;opacity:1!important;
+}
+#root .tn-viewport .tn-header #tn-network-share img,
+#root .tn-viewport .tn-header #tn-network-history img{
+  background:transparent!important;background-image:none!important;
+  box-shadow:none!important;filter:none!important;backdrop-filter:none!important;
+}
+#root .tn-viewport .tn-header :is(#tn-network-share,#tn-network-history)::before,
+#root .tn-viewport .tn-header :is(#tn-network-share,#tn-network-history)::after{
+  content:none!important;display:none!important;
+}
+/* R213: never clip user-supplied rounded frame edges (traffic/day/night/locate).
+   'fill' stretched non-square PNGs and the overflow clipping shaved off borders. */
+#root .tn-viewport .tn-floating-button{
+  overflow:visible!important;border-radius:0!important;
+  background:transparent!important;box-shadow:none!important;
+}
+#root .tn-viewport .tn-floating-button img{
+  display:block!important;width:100%!important;height:100%!important;
+  object-fit:contain!important;aspect-ratio:auto!important;
+  overflow:visible!important;
+}
+/* A slightly stronger outline keeps the forecast text legible on any basemap. */
+#root .tn-viewport .tn-map svg .tn-geo-lead{stroke-width:1.10px!important}
+/* R214 screenshot-inspired reference gallery, with real simulation image content. */
+#root .tn-viewport .tn-reference-page{background:#000!important;gap:0;overscroll-behavior:contain}
+#root .tn-viewport .tn-reference-actions{min-height:150px;padding:36px 13px;display:flex;align-items:flex-start;background:#000}
+#root .tn-viewport .tn-reference-actions button{background:#303030!important;color:#f2f2f2!important;border:2px solid #999!important;border-radius:7px!important;box-shadow:2px 3px 0 #151515!important;padding:13px 17px;font-size:17px;font-weight:500}
+#root .tn-viewport .tn-probability-page{position:absolute;inset:54px 0 0;z-index:4;overflow-y:auto;overscroll-behavior:contain;background:#000!important;color:#fff!important;display:flex;flex-direction:column;padding:16px 0 26px;gap:18px}
+#root .tn-viewport .tn-probability-caption{text-align:center;color:#b9df45;font-size:clamp(15px,3.9vw,24px);font-weight:700;margin:3px 10px 0}
+#root .tn-viewport .tn-probability-page>p{text-align:center;color:#ddd!important;font-size:12px;margin:0 12px 9px}
+#root .tn-viewport .tn-probability-page figure{display:flex;flex-direction:column;gap:4px;margin:0 12px 16px;align-items:stretch}
+#root .tn-viewport .tn-probability-page img{width:100%;height:auto;object-fit:contain;background:white}
+#root .tn-viewport .tn-probability-page figcaption{font-size:13px;color:#cacaca;text-align:center;margin-top:7px}
+#root .tn-viewport .tn-probability-loading{padding:36px 14px;color:#b9e4ff!important;text-align:center;font-size:14px;line-height:1.7}
+#root .tn-viewport .tn-longpress-save{-webkit-touch-callout:default;touch-action:auto;user-select:auto;-webkit-user-select:auto;pointer-events:auto;}
+#root .tn-viewport .tn-reference-error button{display:block;margin:12px auto;background:#383838!important;color:white!important;border:1px solid #bcbcbc!important;padding:8px 14px;border-radius:5px}
+@media(max-width:799px){#root .tn-viewport .tn-probability-page{top:46px!important}}

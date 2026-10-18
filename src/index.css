@@ -1387,13 +1387,13 @@ html, body, #root { background:#0a0a0b !important; }
   -webkit-backdrop-filter:blur(19px) saturate(115%) !important;
   box-shadow:0 14px 40px rgba(0,0,0,.40),inset 0 1px rgba(255,255,255,.07) !important;
 }
-#root :is(button,select,input,textarea,[role="button"]):not(.leaflet-control-zoom-in):not(.leaflet-control-zoom-out) {
+#root :is(button,select,input,textarea,[role="button"]):not(.leaflet-control-zoom-in):not(.leaflet-control-zoom-out):not(.tn-viewport button) {
   border-color:var(--aether-line) !important;
   background-color:var(--aether-inner) !important;
   color:#ededee !important;
 }
-#root :is(button,select,input,textarea,[role="button"]):hover { border-color:rgba(255,255,255,.35) !important; }
-#root :is(button,select,input,textarea,[role="button"]):focus-visible {outline:2px solid rgba(225,225,225,.8);outline-offset:2px;}
+#root :is(button,select,input,textarea,[role="button"]):not(.tn-viewport button):hover { border-color:rgba(255,255,255,.35) !important; }
+#root :is(button,select,input,textarea,[role="button"]):not(.tn-viewport button):focus-visible {outline:2px solid rgba(225,225,225,.8);outline-offset:2px;}
 #root :is([role="dialog"],.control-drawer,[class*="modal"],[class*="drawer"])
 :is([class*="bg-slate-9"],[class*="bg-blue-9"],[class*="bg-sky-9"],[class*="bg-\[\#0"],[class*="bg-\[\#1"]) {
   background-color:rgba(30,30,32,.70) !important;

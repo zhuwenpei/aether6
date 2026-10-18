@@ -13,8 +13,10 @@ import { cmaBoundedNetworkHistory, buildNetworkForecasts, networkPointColor, net
 import { createReferenceRasterLayer, referenceBasemapLocation, REFERENCE_RASTER_CREDIT } from '../utils/TyphoonNetworkReferenceRaster';
 import { downloadStandaloneNetworkHtml } from '../utils/TyphoonNetworkStandaloneExport';
 import './TyphoonNetworkSimulator.css';
+import type {NetworkChartSettings} from './NetworkEntrySettings';
+import {generateNetworkReferenceCharts,type NetworkReferenceImages} from '../utils/NetworkReferenceCharts';
 
-export type NetworkProps = { storm:Typhoon; startDate:Date; currentHour:number; config?:SimulationConfig; onClose:()=>void };
+export type NetworkProps = { storm:Typhoon; startDate:Date; currentHour:number; config?:SimulationConfig; chartSettings:NetworkChartSettings; onClose:()=>void };
 const fmtDate=(d:Date)=>{const bj=new Date(d.getTime()+8*3600000);return `${bj.getUTCFullYear()}年${bj.getUTCMonth()+1}月${bj.getUTCDate()}日${String(bj.getUTCHours()).padStart(2,'0')}时`;};
 const dateAt=(start:Date,h:number)=>new Date(start.getTime()+h*3600000);
 const num=(n:number,d=0)=>Number.isFinite(n)?n.toFixed(d):'—';
@@ -267,14 +269,19 @@ function geographicCyclone(map:L.Map,at:L.LatLngExpression,renderer:L.SVG,fix:Ne
   },{interactive:true,radius:NETWORK_CYCLONE_SIZE_PX/2});
 }
 
-export default function TyphoonNetworkSimulator({storm,startDate,currentHour,config,onClose}:NetworkProps){
-  const [stage,setStage]=useState<'loading'|'map'|'reference'>('loading');
+export default function TyphoonNetworkSimulator({storm,startDate,currentHour,config,chartSettings,onClose}:NetworkProps){
+  const [stage,setStage]=useState<'loading'|'map'|'reference'|'probability'>('loading');
   const [percent,setPercent]=useState(0);
   const [task,setTask]=useState('读取逐小时历史记录');
   const [error,setError]=useState('');
   const [product,setProduct]=useState<NetworkProduct|null>(null);
   const [reference,setReference]=useState<string|null>(null);
   const [referenceError,setReferenceError]=useState('');
+  const [gallery,setGallery]=useState<NetworkReferenceImages|null>(null);
+  const [galleryBusy,setGalleryBusy]=useState(false);
+  const [galleryError,setGalleryError]=useState('');
+  const [galleryProgress,setGalleryProgress]=useState('');
+  const galleryJobRef=useRef<Promise<void>|null>(null);
   const [mapMessage,setMapMessage]=useState('');
   const [frame,setFrame]=useState(0);
   const [playing,setPlaying]=useState(false);
@@ -326,9 +333,9 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
           const canvas=document.createElement('canvas');
           const forecast=forecasts[0]?.fixes||[];
           await drawNmcForecastProductCooperative({
-            canvas,width:930,typhoonName:stormName,typhoonNumber:String(ordinal),ordinalNumber:ordinal,
-            issueDate:dateAt(startDate,issue.simHour),forecastHours:120,issueHour:issue.simHour,startDate,
-            current:issue,history:storm.history||[],forecast:forecast.map(x=>({...x,simHour:x.simHour})),
+            canvas,width:chartSettings.nmcWidth,typhoonName:stormName,typhoonNumber:String(ordinal),ordinalNumber:ordinal,
+            issueDate:dateAt(startDate,issue.simHour),forecastHours:chartSettings.forecastHours,issueHour:issue.simHour,startDate,
+            current:issue,history,forecast:forecast.map(x=>({...x,simHour:x.simHour})),
             landGeoJson,countriesGeoJson,coastlineGeoJson:landGeoJson,
             provinceGeoJson:optional?.provinces,riversGeoJson:optional?.rivers,
             showInfoBoxes:true,showCenterBox:true,showForecastBox:true,
@@ -339,6 +346,15 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
           if(active)setReferenceError(`NMC 参考图未生成：${err instanceof Error?err.message:'未知错误'}`);
         }
         if(!active||controller.current.signal.aborted)return;
+        if(chartSettings.precalculate && config && active && !controller.current.signal.aborted){
+          // Optional heavy gallery generation finishes before entering the interactive map.
+          setTask('提前计算 8 机构中心路径和袭击概率');setPercent(94);await raf();
+          try{
+            const images=await generateNetworkReferenceCharts({storm,issue,startDate,config,settings:chartSettings,name:stormName,
+              signal:controller.current.signal,onProgress:text=>{if(active)setTask(text);}});
+            if(active)setGallery(images);
+          }catch(err){if(active && !controller.current.signal.aborted)setGalleryError(err instanceof Error?err.message:'集合图计算失败');}
+        }
         setPercent(100);setTask('计算完成，按CMA三小时公开档位回放');await raf();
         setStage('map');setFrame(0);setPlaying(history.length>1);
       }catch(err){if(active&&!controller.current.signal.aborted)setError(err instanceof Error?err.message:'模拟产品生成失败');}
@@ -469,19 +485,44 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
       const marker=L.circleMarker(displayPoint(p.lon,p.lat),{renderer:networkSvgRendererRef.current??undefined,radius:NETWORK_DOT_RADIUS_PX,stroke:true,color:NETWORK_DOT_OUTLINE_COLOR,opacity:NETWORK_DOT_OUTLINE_OPACITY,weight:NETWORK_HISTORY_DOT_STROKE_PX,fillColor:networkPointColor(p.vmax,p.category),fillOpacity:1}).addTo(map);
       marker.on('click',()=>openLeafletDetails(p));layersRef.current.push(marker);
     }
-    // Ordinary agency points first, larger CMA fixes last: visually clear hierarchy.
+    // R213: non-CMA dots and history stay BELOW CMA tap targets.
+    // CMA gets its own transparent 14px hit disk, drawn AFTER every foreign
+    // agency dot, so a tap in overlapping hit regions always selects CMA.
+    // The last layer remains the visible CMA-coloured circle (9px).
     for(const f of orderedForecasts){
-      if(!f.fixes.length)continue;
-      const visible=networkVisibleForecastFixes(f,product.issue);
-      for(let i=0;i<visible.length;i++){
-        const point=visible[i];
-        const mark=L.circleMarker(displayPoint(point.lon,point.lat),{renderer:networkSvgRendererRef.current??undefined,radius:f.agency==='中国'?NETWORK_CMA_DOT_RADIUS_PX:NETWORK_OTHER_AGENCY_DOT_RADIUS_PX,stroke:true,color:NETWORK_DOT_OUTLINE_COLOR,opacity:NETWORK_DOT_OUTLINE_OPACITY,weight:f.agency==='中国'?NETWORK_CMA_DOT_STROKE_PX:NETWORK_OTHER_DOT_STROKE_PX,fillColor:networkForecastDotColor(point),fillOpacity:1}).addTo(map);
+      if(f.agency==='中国'||!f.fixes.length)continue;
+      for(const point of networkVisibleForecastFixes(f,product.issue)){
+        const mark=L.circleMarker(displayPoint(point.lon,point.lat),{
+          renderer:networkSvgRendererRef.current??undefined,
+          radius:NETWORK_OTHER_AGENCY_DOT_RADIUS_PX,stroke:true,color:NETWORK_DOT_OUTLINE_COLOR,
+          opacity:NETWORK_DOT_OUTLINE_OPACITY,weight:NETWORK_OTHER_DOT_STROKE_PX,
+          fillColor:networkForecastDotColor(point),fillOpacity:1
+        }).addTo(map);
         mark.on('click',()=>openLeafletDetails(point,f.agency));layersRef.current.push(mark);
+      }
+    }
+    const cmaForecast=orderedForecasts.find(f=>f.agency==='中国');
+    if(cmaForecast){
+      for(const point of networkVisibleForecastFixes(cmaForecast,product.issue)){
+        const at=displayPoint(point.lon,point.lat);
+        const cmaHit=L.circleMarker(at,{
+          renderer:networkSvgRendererRef.current??undefined,
+          radius:NETWORK_OTHER_AGENCY_HIT_RADIUS_PX,stroke:false,fill:true,
+          fillColor:'#ffffff',fillOpacity:0.001,interactive:true
+        }).addTo(map);
+        cmaHit.on('click',()=>openLeafletDetails(point,'中国'));
+        layersRef.current.push(cmaHit);
+        const mark=L.circleMarker(at,{
+          renderer:networkSvgRendererRef.current??undefined,radius:NETWORK_CMA_DOT_RADIUS_PX,
+          stroke:true,color:NETWORK_DOT_OUTLINE_COLOR,opacity:NETWORK_DOT_OUTLINE_OPACITY,
+          weight:NETWORK_CMA_DOT_STROKE_PX,fillColor:networkForecastDotColor(point),fillOpacity:1
+        }).addTo(map);
+        mark.on('click',()=>openLeafletDetails(point,'中国'));
+        layersRef.current.push(mark);
         const lead=point.simHour-product.issue.simHour;
-        if(f.agency==='中国' && [6,12,24,36,48,60,72,96,120].includes(Math.round(lead)) && Math.abs(Math.round(lead)-lead)<.1){
+        if([6,12,24,36,48,60,72,96,120].includes(Math.round(lead)) && Math.abs(Math.round(lead)-lead)<.1){
           const force=getWindForceCategory(point.vmax);
-          // Shared map SVG root: prevents DOM divIcon lag and its grey glass tile.
-          const label=geographicLead(map,displayPoint(point.lon,point.lat),networkSvgRendererRef.current!,lead,force);
+          const label=geographicLead(map,at,networkSvgRendererRef.current!,lead,force);
           layersRef.current.push(label);
         }
       }
@@ -546,6 +587,20 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
     leafletRef.current?.remove();leafletRef.current=null;networkSvgRendererRef.current=null;
   },[]);
   const latest=product?.history[product.history.length-1]||null;
+  const openProbability=()=>{
+    setStage('probability');
+    if(gallery||galleryJobRef.current||!product||!config)return;
+    setGalleryBusy(true);setGalleryError('');setGalleryProgress('准备 8 机构集合预报');
+    const pending=(async()=>{
+      try{
+        const images=await generateNetworkReferenceCharts({storm,issue:product.issue,startDate,config,settings:chartSettings,
+          name:stormName,signal:controller.current.signal,onProgress:setGalleryProgress});
+        if(!controller.current.signal.aborted)setGallery(images);
+      }catch(err){if(!controller.current.signal.aborted)setGalleryError(err instanceof Error?err.message:'产品生成失败');}
+      finally{setGalleryBusy(false);galleryJobRef.current=null;}
+    })();
+    galleryJobRef.current=pending;
+  };
   const replayFromStart=()=>{
     if(!product?.history.length)return;
     leafletRef.current?.closePopup();
@@ -564,7 +619,16 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
     if(!product||exporting)return;
     setExporting(true);
     try{
-      await downloadStandaloneNetworkHtml({product,typhoonName:stormName,ordinal,startTimeISO:startDate.toISOString(),nmcImage:reference});
+      // R214: offline snapshot includes the same two probability/centre pictures.
+      let bundledGallery=gallery;
+      if(!bundledGallery&&config){
+        setMapMessage('正在为离线分享计算袭击概率和8机构中心路径，请稍候…');
+        bundledGallery=await generateNetworkReferenceCharts({storm,issue:product.issue,startDate,config,settings:chartSettings,
+          name:stormName,signal:controller.current.signal,onProgress:setMapMessage});
+        setGallery(bundledGallery);
+      }
+      await downloadStandaloneNetworkHtml({product,typhoonName:stormName,ordinal,startTimeISO:startDate.toISOString(),nmcImage:reference,galleryImages:bundledGallery});
+      setMapMessage('');
     }catch(err){setMapMessage(`HTML 导出失败：${err instanceof Error?err.message:String(err)}`);}
     finally{setExporting(false);}
   };
@@ -585,19 +649,19 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
       {error&&<div className="tn-error" role="alert">{error}</div>}
       <button onClick={onClose}>返回产品中心</button>
     </div>:<>
-      <header className={`tn-header${stage==='reference'?' tn-header-reference':''}`}>
-        <button id="tn-network-back" className="tn-back" type="button" aria-label="返回" onClick={()=>{setProviderMenuOpen(false);if(stage==='reference'){setStage('map');}else onClose();}}><svg viewBox="0 0 48 48"><path fill="white" d="M23 3 1 24l22 21v-12h24V16H23Z"/></svg></button>
+      <header className={`tn-header${stage!=='map'?' tn-header-reference':''}`}>
+        <button id="tn-network-back" className="tn-back" type="button" aria-label="返回" onClick={()=>{setProviderMenuOpen(false);if(stage==='probability'){setStage('reference');}else if(stage==='reference'){setStage('map');}else onClose();}}><svg viewBox="0 0 48 48"><path fill="white" d="M23 3 1 24l22 21v-12h24V16H23Z"/></svg></button>
         {stage==='map'&&<div className="tn-provider-wrapper">
           <button id="tn-network-switch" className="tn-switch" type="button" aria-label="切换地图商" aria-expanded={providerMenuOpen} aria-controls="tn-provider-menu" onClick={()=>setProviderMenuOpen(value=>!value)}><span className="tn-switch-first">切换</span><span className="tn-switch-second">地图商</span></button>
           {providerMenuOpen&&<div id="tn-provider-menu" className="tn-provider-menu" role="menu" aria-label="选择地图商">
             {([{id:'amap',label:'高德地图'},{id:'osm',label:'OSM 普通地图'},{id:'osm-night',label:'OSM Night 夜间地图'}] as const).map(option=><button key={option.id} type="button" role="menuitemradio" aria-checked={basemap===option.id} className={basemap===option.id?'is-selected':''} onClick={()=>{setBasemap(option.id);setProviderMenuOpen(false);}}>{option.label}{basemap===option.id?' ✓':''}</button>)}
           </div>}
         </div>}
-        <div className="tn-header-title">{stage==='reference'?'台风参考':'健茂台风路径'}</div>
+        <div className="tn-header-title">{stage==='probability'?'热带气旋概率':stage==='reference'?'台风参考':'健茂台风路径'}</div>
         {stage==='map'&&<>
-          <button className="tn-header-action tn-share-action" type="button" title="分享：下载完整离线HTML快照" aria-label="下载台风网独立HTML" disabled={exporting} onClick={exportSnapshot}><img src="/network-icons/network-share.png" alt=""/></button>
+          <button id="tn-network-share" className="tn-header-action tn-share-action" type="button" title="分享：下载完整离线HTML快照" aria-label="下载台风网独立HTML" disabled={exporting} onClick={exportSnapshot}><img src="/network-icons/network-share.png" alt=""/></button>
           <button id="tn-network-reference-icon" className="tn-reference-link tn-header-action" type="button" aria-label="台风参考" onClick={()=>{leafletRef.current?.closePopup();finishReplay();setStage('reference');}}><img src="/network-icons/network-reference-white.png" alt=""/></button>
-          <button className="tn-header-action tn-history-action" type="button" aria-label="历史图标（预留）" title="历史图标（预留）"><img src="/network-icons/network-history.png" alt=""/></button>
+          <button id="tn-network-history" className="tn-header-action tn-history-action" type="button" aria-label="历史图标（预留）" title="历史图标（预留）"><img src="/network-icons/network-history.png" alt=""/></button>
         </>}
       </header>
       {product&&<div className="tn-map" ref={rootMapRef} style={{visibility:stage==='map'?'visible':'hidden'}}/>}
@@ -618,8 +682,19 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
         {mapMessage&&<div className="tn-map-error" role="status" onClick={()=>setMapMessage('')}>{mapMessage}</div>}
       </>}
       {stage==='reference'&&<main className="tn-reference-page">
-        {reference?<img className="tn-nmc-img" src={reference} alt="Round184 NMC 风格台风路径概率模拟预报图"/>:
+        {reference?<img className="tn-nmc-img tn-longpress-save" src={reference} alt="NMC 风格路径模拟预报图，长按图片保存" title="长按图片保存"/>:
           <div className="tn-reference-error">{referenceError||'暂无预报图数据'}</div>}
+        <div className="tn-reference-actions"><button type="button" onClick={openProbability}>热带气旋概率</button></div>
+      </main>}
+      {stage==='probability'&&<main className="tn-probability-page">
+        <div className="tn-probability-caption">【AETHER 模拟】热带气旋概率与集合预报</div>
+        <p>以下两张图片仅为模拟气象信息，非任何机构官方预报；长按图片可保存。</p>
+        {galleryBusy&&<div className="tn-probability-loading" role="status">{galleryProgress||'生成气象图中，请稍候…'}</div>}
+        {galleryError&&<div className="tn-reference-error" role="alert">{galleryError}<button type="button" onClick={()=>{setGalleryError('');openProbability();}}>重新生成</button></div>}
+        {gallery&&<>
+          <figure><img className="tn-longpress-save" src={gallery.strike} alt="袭击概率模拟图，长按图片保存" title="长按图片保存"/><figcaption>袭击概率 · {chartSettings.strikeRadiusKm} km 半径</figcaption></figure>
+          <figure><img className="tn-longpress-save" src={gallery.centers} alt="八机构经典集合中心路径图，长按图片保存" title="长按图片保存"/><figcaption>8 机构中心路径 · 经典集合预报</figcaption></figure>
+        </>}
       </main>}
     </>}
   </div>;
