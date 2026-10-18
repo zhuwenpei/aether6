@@ -162,7 +162,7 @@ export function toCmaPublishedWindSpeed(vmax:number):number {
 }
 export const networkWindForce = (vmax:number) => getWindForceCategory(vmax);
 
-export function buildNetworkForecasts(issue:NetworkFix, storm:Typhoon, config?:SimulationConfig):NetworkForecast[]{
+export function buildNetworkForecasts(issue:NetworkFix, storm:Typhoon, config?:SimulationConfig, chinaOnly=false):NetworkForecast[]{
   if(!config||issue.dissipated)return [];
   const seed={...storm,...issue,history:(storm.history||[]).filter(x=>x.simHour<=issue.simHour),simHour:issue.simHour,forecastPath:[]} as Typhoon;
   const raw=materializeForecastPath(seed,config,120,undefined,false);
@@ -173,7 +173,7 @@ export function buildNetworkForecasts(issue:NetworkFix, storm:Typhoon, config?:S
     const byTime=[{...issue,simHour:0},...source].sort((a,b)=>a.simHour-b.simHour) as NetworkFix[];
     return sampleNetworkFix(byTime,h);
   });
-  return NETWORK_FORECAST_STYLE.map(style=>({agency:style.agency,color:style.color,fixes:sampled.map(p=>{
+  return NETWORK_FORECAST_STYLE.filter(style=>!chinaOnly||style.agency==='中国').map(style=>({agency:style.agency,color:style.color,fixes:sampled.map(p=>{
     const lead=p.simHour;
     // Agency-dependent, lead-time-growing *deterministic* guidance differences.
     // Forecast thermodynamics (including the entry peak aspiration) come from

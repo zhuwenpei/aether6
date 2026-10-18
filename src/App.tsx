@@ -4799,7 +4799,8 @@ export default function App() {
         )}
 
         {typhoonNetworkSetupOpen && (
-          <NetworkEntrySettings config={config}
+          <NetworkEntrySettings config={config} storm={typhoons[0]} currentHour={currentHour} startDate={startDate} mobileMode={useLegacyMobileUi}
+            onStartSynopticMapSelection={()=>{setTyphoonNetworkSetupOpen(false);setForecastModalOpen(true);startSynopticSelection();}}
             onCancel={() => {setTyphoonNetworkSetupOpen(false);setForecastModalOpen(true);}}
             onConfirm={(networkConfig,settings) => {
               setNetworkEntryOptions({config:networkConfig,settings});

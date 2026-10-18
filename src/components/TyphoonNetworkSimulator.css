@@ -762,3 +762,18 @@
 #root .tn-viewport .tn-longpress-save{-webkit-touch-callout:default;touch-action:auto;user-select:auto;-webkit-user-select:auto;pointer-events:auto;}
 #root .tn-viewport .tn-reference-error button{display:block;margin:12px auto;background:#383838!important;color:white!important;border:1px solid #bcbcbc!important;padding:8px 14px;border-radius:5px}
 @media(max-width:799px){#root .tn-viewport .tn-probability-page{top:46px!important}}
+
+/* R215: display native product PNGs unmodified, at the largest available width.
+   Preserve their intrinsic ratios; layout alone responds to the viewport. */
+#root .tn-viewport .tn-probability-page{min-width:0;max-width:100%;overflow-x:hidden;align-items:stretch!important}
+#root .tn-viewport .tn-probability-page figure{
+  box-sizing:border-box!important;width:min(calc(100% - 20px),2560px)!important;
+  max-width:calc(100% - 20px)!important;min-width:0!important;margin:0 auto 16px!important;
+  padding:0!important;flex:0 0 auto!important;align-self:center!important;overflow:visible!important;
+}
+#root .tn-viewport .tn-probability-page figure img{
+  display:block!important;width:100%!important;max-width:100%!important;height:auto!important;
+  min-height:0!important;max-height:none!important;aspect-ratio:auto!important;
+  object-fit:contain!important;object-position:center top!important;flex:0 0 auto!important;
+}
+@media(max-width:480px){#root .tn-viewport .tn-probability-page figure{width:calc(100% - 12px)!important;max-width:calc(100% - 12px)!important}}

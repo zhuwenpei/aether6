@@ -19,3 +19,11 @@
 #root .tn-entry-actions{display:flex;gap:10px;padding:12px 18px 15px;background:#fff;border-top:1px solid #e0e9e3}
 #root .tn-entry-actions button{flex:1;background:#e8edf1!important;color:#2c4251!important;border:1px solid #cbd7df!important;border-radius:9px;padding:12px 8px;font-weight:600;font-size:13px}
 #root .tn-entry-actions button.tn-entry-confirm{flex:2;background:#00b83a!important;color:#fff!important;border-color:#00a732!important}
+
+/* R215: Full original product settings open in a nested, full-height drawer.
+   The normal workstation owns every control; no copy of its selectors exists. */
+#root .tn-entry-product-drawer{position:fixed;inset:0;z-index:9800;isolation:isolate;background:#0d141c}
+#root .tn-entry-product-drawer #forecast-modal-overlay{z-index:1!important;inset:0!important}
+#root .tn-entry-drawer .tn-entry-original-settings{display:block;width:100%;border-radius:8px!important;
+  padding:13px 12px!important;background:#007f36!important;color:white!important;border:1px solid #008d40!important;
+  font-weight:700!important;font-size:14px!important;text-align:center!important}

@@ -25,6 +25,6 @@ export function createReferenceRasterLayer(leaflet:typeof L,provider:ReferenceRa
   return leaflet.tileLayer(REFERENCE_RASTER_TILE_URL,{
     subdomains:['1','2','3','4'],tileSize:256,maxZoom:18,minZoom:1,
     attribution:REFERENCE_RASTER_CREDIT,
-    updateWhenIdle:false,keepBuffer:3
+    updateWhenIdle:false,keepBuffer:6
   });
 }
