@@ -6,6 +6,6 @@ assert(start>=0 && end>start);
 const compiled=ts.transpileModule(code.slice(start,end),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText;
 const context={exports:{},Math,Number};vm.runInNewContext(compiled,context);
 const f=context.exports.nmcPreWesterliesConeFactor, track=(lat)=>[{lat,lon:120,simHour:0},{lat:lat+1,lon:125,simHour:120}];
-const rows=[[track(18),0,1],[track(18),48,1],[track(18),60,1],[track(18),90,.94],[track(18),120,.88],[track(29),120,1],[track(32),120,1]];
+const rows=[[track(18),0,1],[track(18),48,1],[track(18),60,1],[track(18),90,.90],[track(18),120,.80],[track(29),120,1],[track(32),120,1]];
 for(const [route,lead,expect] of rows) assert(Math.abs(f(route,lead)-expect)<1e-8,`${lead}: expected ${expect}`);
-console.log(`ROUND208 NMC cone factor ${rows.length}/${rows.length} real-source numeric checks passed`);
+console.log(`ROUND211 NMC cone factor ${rows.length}/${rows.length} real-source numeric checks passed`);

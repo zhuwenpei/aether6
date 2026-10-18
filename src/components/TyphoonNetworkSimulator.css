@@ -585,3 +585,131 @@
   color:#ffffff!important;opacity:.87!important;font-size:10px!important;
   text-shadow:0 1px 2px #001a27!important;max-width:210px!important;
 }
+
+/* R211: all artwork-only controls are chrome-free, even when this full-screen
+   product is mounted under a parent [role=dialog] and the global R126 glass
+   rules use :is([role=dialog]) ID specificity. The actual UI controls are
+   transparent; only the supplied PNG artwork (including its intended light
+   rounded traffic/daylight tiles) is visible. */
+#root .tn-viewport button.tn-header-action,
+#root .tn-viewport button.tn-floating-button,
+#root .tn-viewport button.tn-replay-button,
+#root .tn-viewport button.tn-back {
+  appearance:none!important;
+  background:transparent!important;background-color:transparent!important;background-image:none!important;
+  border:0!important;box-shadow:none!important;
+  outline:0!important;filter:none!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  opacity:1!important;mix-blend-mode:normal!important;
+  -webkit-tap-highlight-color:transparent!important;
+}
+#root .tn-viewport button.tn-header-action:is(:hover,:active,:focus-visible),
+#root .tn-viewport button.tn-floating-button:is(:hover,:active,:focus-visible),
+#root .tn-viewport button.tn-replay-button:is(:hover,:active,:focus-visible),
+#root .tn-viewport button.tn-back:is(:hover,:active,:focus-visible) {
+  background:transparent!important;background-color:transparent!important;background-image:none!important;
+  border:0!important;box-shadow:none!important;filter:none!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+#root .tn-viewport :is(.tn-header-action,.tn-floating-button,.tn-replay-button,.tn-back)::before,
+#root .tn-viewport :is(.tn-header-action,.tn-floating-button,.tn-replay-button,.tn-back)::after {
+  display:none!important;content:none!important;
+}
+#root .tn-viewport :is(.tn-header-action,.tn-floating-button,.tn-replay-button) > img {
+  background:transparent!important;background-image:none!important;box-shadow:none!important;
+  border:0!important;filter:none!important;opacity:1!important;
+}
+
+
+/* R212: restore the provider selector beside the back arrow. Day/night remains a
+   direct Amap <-> OSM Night shortcut; ordinary OSM is available only in this menu. */
+#root .tn-viewport .tn-header:not(.tn-header-reference){
+  grid-template-columns:45px 46px minmax(0,1fr) repeat(3,35px)!important;
+  gap:4px!important;padding:0 5px!important;
+}
+#root .tn-viewport .tn-header:not(.tn-header-reference) .tn-back{grid-column:1!important;grid-row:1!important}
+#root .tn-viewport .tn-header:not(.tn-header-reference) .tn-provider-wrapper{
+  position:relative!important;grid-column:2!important;grid-row:1!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  width:46px!important;height:46px!important;min-width:0!important;z-index:9540!important;
+}
+#root .tn-viewport .tn-header #tn-network-switch:not(#aether-default-dialog-button),
+#root .tn-viewport .tn-header #tn-network-switch:not(#aether-default-dialog-button):hover,
+#root .tn-viewport .tn-header #tn-network-switch:not(#aether-default-dialog-button):focus-visible{
+  appearance:none!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+  width:41px!important;height:41px!important;min-width:41px!important;min-height:41px!important;
+  max-width:41px!important;max-height:41px!important;padding:2px 0!important;margin:0!important;
+  border:1.5px solid #fff!important;border-radius:8px!important;
+  background:transparent!important;background-color:transparent!important;background-image:none!important;
+  box-shadow:none!important;filter:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  color:#fff!important;line-height:1!important;gap:0!important;white-space:nowrap!important;
+}
+#root .tn-viewport .tn-header #tn-network-switch .tn-switch-first,
+#root .tn-viewport .tn-header #tn-network-switch .tn-switch-second{
+  display:block!important;position:static!important;width:auto!important;height:auto!important;margin:0!important;padding:0!important;
+  color:#fff!important;background:transparent!important;border:0!important;box-shadow:none!important;
+  font-family:inherit!important;text-align:center!important;letter-spacing:0!important;white-space:nowrap!important;
+}
+#root .tn-viewport .tn-header #tn-network-switch .tn-switch-first{font-size:12.5px!important;font-weight:600!important;line-height:14px!important}
+#root .tn-viewport .tn-header #tn-network-switch .tn-switch-second{font-size:11px!important;font-weight:600!important;line-height:12px!important}
+#root .tn-viewport .tn-provider-menu{
+  position:absolute!important;top:calc(100% + 5px)!important;left:0!important;
+  display:flex!important;flex-direction:column!important;width:184px!important;max-width:calc(100vw - 58px)!important;
+  padding:3px!important;overflow:hidden!important;background:#fff!important;color:#174c31!important;
+  border:1px solid #329f60!important;border-radius:7px!important;box-shadow:0 3px 12px #1236!important;z-index:9545!important;
+}
+#root .tn-viewport .tn-provider-menu button{
+  appearance:none!important;display:flex!important;align-items:center!important;justify-content:space-between!important;
+  width:100%!important;min-height:36px!important;padding:8px 10px!important;margin:0!important;
+  color:#174c31!important;background:#fff!important;border:0!important;border-bottom:1px solid #e8eee9!important;
+  border-radius:0!important;box-shadow:none!important;font-size:13px!important;font-weight:500!important;line-height:1.25!important;
+  text-align:left!important;white-space:normal!important;
+}
+#root .tn-viewport .tn-provider-menu button:last-child{border-bottom:0!important}
+#root .tn-viewport .tn-provider-menu button:is(:hover,:focus-visible,.is-selected){background:#d9f8e5!important;outline:none!important}
+#root .tn-viewport .tn-header .tn-header-title{grid-column:3!important;grid-row:1!important;min-width:0!important}
+#root .tn-viewport .tn-header .tn-share-action{grid-column:4!important;grid-row:1!important}
+#root .tn-viewport .tn-header .tn-reference-link{grid-column:5!important;grid-row:1!important}
+#root .tn-viewport .tn-header .tn-history-action{grid-column:6!important;grid-row:1!important}
+#root .tn-viewport .tn-header.tn-header-reference{grid-template-columns:45px minmax(0,1fr) repeat(3,0px)!important}
+#root .tn-viewport .tn-header.tn-header-reference .tn-header-title{grid-column:2!important}
+@media(max-width:799px){
+  #root .tn-viewport .tn-header:not(.tn-header-reference){grid-template-columns:45px 46px minmax(0,1fr) repeat(3,32px)!important;gap:2px!important;padding:0 5px!important}
+  #root .tn-viewport .tn-header:not(.tn-header-reference) .tn-provider-wrapper{width:44px!important;height:44px!important}
+  #root .tn-viewport .tn-header #tn-network-switch:not(#aether-default-dialog-button),
+  #root .tn-viewport .tn-header #tn-network-switch:not(#aether-default-dialog-button):hover,
+  #root .tn-viewport .tn-header #tn-network-switch:not(#aether-default-dialog-button):focus-visible{
+    width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;max-width:40px!important;max-height:40px!important;
+  }
+  #root .tn-viewport .tn-header .tn-header-title{max-width:calc(100vw - 250px)!important}
+  #root .tn-viewport .tn-header .tn-header-action,
+  #root .tn-viewport .tn-header #tn-network-reference-icon:not(#aether-default-dialog-button){width:32px!important;height:40px!important}
+  #root .tn-viewport .tn-header .tn-header-action img{width:30px!important;height:30px!important}
+  #root .tn-viewport .tn-header.tn-header-reference{grid-template-columns:45px minmax(0,1fr) repeat(3,0px)!important}
+}
+/* R212 control calibration: slightly smaller buttons sit lower on the map. The
+   supplied frames are forced to a 1:1 square so different PNG canvas ratios do
+   not make the rounded-square controls look stretched or uneven. */
+#root .tn-viewport .tn-right-tools{
+  right:9px!important;top:67%!important;gap:5px!important;
+}
+#root .tn-viewport .tn-floating-button{
+  width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important;
+  max-width:38px!important;max-height:38px!important;overflow:hidden!important;border-radius:9px!important;
+}
+#root .tn-viewport .tn-floating-button img{
+  width:100%!important;height:100%!important;object-fit:fill!important;aspect-ratio:1/1!important;
+}
+#root .tn-viewport .tn-replay-button{
+  left:9px!important;bottom:calc(52px + env(safe-area-inset-bottom,0px))!important;
+  width:46px!important;height:46px!important;min-width:46px!important;min-height:46px!important;
+  max-width:46px!important;max-height:46px!important;overflow:hidden!important;border-radius:50%!important;
+}
+#root .tn-viewport .tn-replay-button img{width:100%!important;height:100%!important;object-fit:fill!important;aspect-ratio:1/1!important}
+/* Slightly stronger outline/weight for the forecast lead labels without bringing
+   back the old heavy black halo. */
+#root .tn-viewport .tn-map svg .tn-geo-lead{
+  stroke-width:.85px!important;font-weight:600!important;stroke-linejoin:round!important;
+}
+#root .tn-viewport .tn-ticker b.tn-status-active,
+#root .tn-viewport .tn-ticker b.tn-status-ended{font-weight:500!important}

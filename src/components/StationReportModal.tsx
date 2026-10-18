@@ -12,7 +12,7 @@ import {
 } from "../utils/StationReportRenderer";
 
 interface StationReportModalProps {
-  station: { id: string; name: string; lat: number; lon: number; temporary?: boolean; sourceName?: string };
+  station: { id: string; name: string; lat: number; lon: number; temporary?: boolean; sourceName?: string; displayTitle?: string };
   typhoons: Typhoon[];
   startDate?: Date;
   onClose: () => void;
@@ -41,7 +41,7 @@ export default function StationReportModal({ station, typhoons, startDate: propS
   const typhoon = typhoons[0];
   const savedStart = localStorage.getItem("typhoon_sim_start_date");
   const startDate = propStartDate || (savedStart ? new Date(savedStart) : new Date("2027-06-30T20:00:00"));
-  const dataset = useMemo(() => typhoons.length ? buildSeasonStationReportDataset(station, typhoons, startDate) : null, [station.id, station.name, station.lat, station.lon, station.temporary, station.sourceName, typhoons, startDate.getTime()]);
+  const dataset = useMemo(() => typhoons.length ? buildSeasonStationReportDataset(station, typhoons, startDate) : null, [station.id, station.name, station.displayTitle, station.lat, station.lon, station.temporary, station.sourceName, typhoons, startDate.getTime()]);
   const displayName = "整个风季";
   const [rangeMode, setRangeMode] = useState(false);
   const [rangeStart, setRangeStart] = useState(0);
@@ -112,7 +112,7 @@ export default function StationReportModal({ station, typhoons, startDate: propS
     const canvas = renderFull();
     if (!canvas) return;
     const a = document.createElement("a");
-    a.download = `${station.name}_风季气象站报告_${Math.round(rangeStart)}-${Math.round(rangeEnd)}h.png`;
+    a.download = `${station.displayTitle || station.name}_风季气象站报告_${Math.round(rangeStart)}-${Math.round(rangeEnd)}h.png`;
     a.href = canvas.toDataURL("image/png");
     a.click();
   };
@@ -130,7 +130,7 @@ export default function StationReportModal({ station, typhoons, startDate: propS
   return (
     <div className="fixed inset-0 z-[8200] bg-[#07111F] text-slate-100 flex flex-col overflow-hidden">
       <header className="h-14 shrink-0 border-b border-slate-800 bg-[#0b1420] px-4 sm:px-6 flex items-center justify-between">
-        <div className="flex items-center gap-3 min-w-0"><FileText className="w-5 h-5 text-sky-400 shrink-0"/><div className="min-w-0"><h2 className="font-bold text-sm sm:text-base truncate">气象站报告图制作</h2><p className="text-[10px] text-slate-500 truncate">{station.name} · {displayName}</p></div></div>
+        <div className="flex items-center gap-3 min-w-0"><FileText className="w-5 h-5 text-sky-400 shrink-0"/><div className="min-w-0"><h2 className="font-bold text-sm sm:text-base truncate">气象站报告图制作</h2><p className="text-[10px] text-slate-500 truncate">{station.displayTitle || station.name} · {displayName}</p></div></div>
         <button onClick={onClose} className="w-9 h-9 rounded-lg border border-slate-700 bg-slate-900 flex items-center justify-center"><X className="w-4 h-4"/></button>
       </header>
 

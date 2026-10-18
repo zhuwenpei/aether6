@@ -152,7 +152,8 @@
     "test:round189-preserve-radii": "node scripts/round189_preserve_wind_radii_regression.cjs",
     "test:round197-network": "node scripts/round197_network_enhancements_regression.cjs",
     "prebuild": "node scripts/prepare_nmc_provinces.mjs",
-    "test:round210-cloudflare": "node scripts/round210_cloudflare_missing_leaflet_dependency_regression.cjs"
+    "test:round210-cloudflare": "node scripts/round210_cloudflare_missing_leaflet_dependency_regression.cjs",
+    "test:round212": "node scripts/round212_regression.cjs"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

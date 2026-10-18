@@ -27,7 +27,7 @@ export interface StationReportPoint {
 }
 
 export interface StationReportDataset {
-  station: { id: string; name: string; lat: number; lon: number; temporary?: boolean; sourceName?: string };
+  station: { id: string; name: string; lat: number; lon: number; temporary?: boolean; sourceName?: string; displayTitle?: string };
   typhoonName: string;
   officialTyphoonName: string;
   namingHour: number | null;
@@ -438,7 +438,7 @@ export function drawStationReportCanvas(
   let curY = 48 * scale;
   ctx.fillStyle = "#0f172a"; ctx.textAlign = "center"; ctx.textBaseline = "top";
   ctx.font = `bold ${Math.round(40 * scale)}px ${serifFont}`;
-  ctx.fillText(`${station.name}气象站`, width / 2, curY);
+  ctx.fillText(station.displayTitle || `${station.name}气象站`, width / 2, curY);
   curY += 54 * scale;
   ctx.font = `${Math.round(19 * scale)}px ${serifFont}`; ctx.fillStyle = "#334155";
   const place = options.showCityName ? `Location: ${station.lon.toFixed(2)}°E, ${station.lat.toFixed(2)}°N` : "Location: hidden";

@@ -1,4 +1,4 @@
-import { X, Wind, Compass, Droplet, Users, AlertTriangle, CloudRain, FileSpreadsheet, Waves, ChevronDown, Anchor, Radio, MapPin, CircleAlert } from "lucide-react";
+import { X, Wind, Compass, Droplet, Users, AlertTriangle, CloudRain, FileSpreadsheet, Waves, ChevronDown, Anchor, Radio, MapPin, CircleAlert, Pencil, Check } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, AreaChart, Area } from "recharts";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -46,19 +46,38 @@ export default function StationHistory({
   station, typhoons, startDate, onClose, temporaryOcean = false,
   onTemporaryStationUpdate, onSnapTemporaryStationToNearestLand
 }: StationHistoryProps) {
+  const stationNameStorageKey = `typhoon_station_custom_name_${station.id}`;
+  const stationTitleStorageKey = `typhoon_station_custom_title_${station.id}`;
   const [showReportModal, setShowReportModal] = useState(false);
   const [showEmergencyDetail, setShowEmergencyDetail] = useState(false);
   const [showTempNameMenu, setShowTempNameMenu] = useState(false);
   const [snappingName, setSnappingName] = useState(false);
   const [adminArea, setAdminArea] = useState<StationAdministrativeArea | null>(null);
-  const stationNameStorageKey = `typhoon_station_custom_name_${station.id}`;
-  const [customStationName, setCustomStationName] = useState(() => stationCityName(localStorage.getItem(stationNameStorageKey) || station.name, station.lat, station.lon));
+  const [customStationName, setCustomStationName] = useState(() => {
+    try { return stationCityName(localStorage.getItem(stationNameStorageKey) || station.name, station.lat, station.lon); }
+    catch { return stationCityName(station.name, station.lat, station.lon); }
+  });
+  // The editable display title is separate from the canonical station key used by the model.
+  // It deliberately stores the complete text, including an optional “气象站/站点” suffix.
+  const [customStationTitle, setCustomStationTitle] = useState(() => {
+    try { return (localStorage.getItem(stationTitleStorageKey) || '').trim(); } catch { return ''; }
+  });
+  const [editingStationTitle, setEditingStationTitle] = useState(false);
+  const [stationTitleDraft, setStationTitleDraft] = useState('');
 
   useEffect(() => {
-    const saved = localStorage.getItem(`typhoon_station_custom_name_${station.id}`);
-    const next = stationCityName(saved || station.name, station.lat, station.lon);
+    let savedName = '';
+    let savedTitle = '';
+    try {
+      savedName = localStorage.getItem(stationNameStorageKey) || '';
+      savedTitle = (localStorage.getItem(stationTitleStorageKey) || '').trim();
+    } catch { /* Local naming remains usable for this open session if storage is blocked. */ }
+    const next = stationCityName(savedName || station.name, station.lat, station.lon);
     setCustomStationName(next);
-  }, [station.id, station.name, station.lat, station.lon]);
+    setCustomStationTitle(savedTitle);
+    setStationTitleDraft(savedTitle);
+    setEditingStationTitle(false);
+  }, [station.id, station.name, station.lat, station.lon, stationNameStorageKey, stationTitleStorageKey]);
 
   useEffect(() => {
     let cancelled = false;
@@ -172,10 +191,31 @@ export default function StationHistory({
   const displayCityName = station.temporary && (customStationName === "洋面站点" || customStationName === "浮标")
     ? customStationName
     : stationCityDisplayName(customStationName, station.lat, station.lon);
-  const stationTitle = station.temporary && (displayCityName === "洋面站点" || displayCityName === "浮标")
+  const defaultStationTitle = station.temporary && (displayCityName === "洋面站点" || displayCityName === "浮标")
     ? displayCityName
     : `${displayCityName}气象站`;
-  const displayStation = { ...station, name: displayCityName, sourceName: station.name };
+  const stationTitle = customStationTitle || defaultStationTitle;
+  const displayStation = { ...station, name: displayCityName, displayTitle: stationTitle, sourceName: station.name };
+  const saveStationTitle = () => {
+    const next = stationTitleDraft.trim();
+    if (!next) return;
+    setCustomStationTitle(next);
+    setEditingStationTitle(false);
+    try { localStorage.setItem(stationTitleStorageKey, next); } catch { /* In-session title still applies. */ }
+    window.dispatchEvent(new CustomEvent('aether:station-name-changed', { detail: { id: station.id, title: next } }));
+  };
+  const selectTemporaryTitle = (next: '洋面站点' | '浮标') => {
+    setCustomStationName(next);
+    setCustomStationTitle('');
+    setEditingStationTitle(false);
+    try {
+      localStorage.setItem(stationNameStorageKey, next);
+      localStorage.removeItem(stationTitleStorageKey);
+    } catch { /* The current view still updates without persistence. */ }
+    window.dispatchEvent(new CustomEvent('aether:station-name-changed', { detail: { id: station.id, title: next } }));
+    onTemporaryStationUpdate?.(next);
+    setShowTempNameMenu(false);
+  };
 
   // Generate historical data from 0 up to currentHour for the charts
   const historyData = ty.history
@@ -233,8 +273,33 @@ export default function StationHistory({
           <div className="flex items-center gap-3 min-w-0">
             <div className="relative min-w-0">
               <div className="flex items-center gap-1.5 min-w-0">
-                <h2 className="text-xl font-bold tracking-tight text-white truncate">{stationTitle}</h2>
-                {station.temporary && temporaryOcean && (
+                {editingStationTitle ? (
+                  <div className="flex items-center gap-1 min-w-0" role="group" aria-label="编辑气象站名称">
+                    <input
+                      autoFocus
+                      value={stationTitleDraft}
+                      onChange={(event) => setStationTitleDraft(event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter') { event.preventDefault(); saveStationTitle(); }
+                        if (event.key === 'Escape') { setEditingStationTitle(false); setStationTitleDraft(stationTitle); }
+                      }}
+                      aria-label="气象站完整显示名称"
+                      title="可以一起修改“气象站”或“站点”等后缀"
+                      className="min-w-0 w-56 max-w-[55vw] rounded-md border border-sky-400/70 bg-slate-950/90 px-2 py-1 text-base font-semibold text-white outline-none focus:border-sky-300 focus:ring-1 focus:ring-sky-400"
+                    />
+                    <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={saveStationTitle}
+                      className="shrink-0 rounded-md p-1 text-emerald-300 hover:bg-emerald-500/10" aria-label="保存站点名称" title="保存"><Check size={16}/></button>
+                    <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => { setEditingStationTitle(false); setStationTitleDraft(stationTitle); }}
+                      className="shrink-0 rounded-md p-1 text-slate-400 hover:bg-slate-700/50" aria-label="取消修改站点名称" title="取消"><X size={15}/></button>
+                  </div>
+                ) : (
+                  <button type="button" onClick={() => { setStationTitleDraft(stationTitle); setEditingStationTitle(true); }}
+                    className="group flex min-w-0 items-center gap-1.5 text-left text-xl font-bold tracking-tight text-white hover:text-sky-200"
+                    title="点击修改站点名称；可一起修改“气象站/站点”等后缀" aria-label={`修改站点名称：${stationTitle}`}>
+                    <span className="truncate">{stationTitle}</span><Pencil size={14} className="shrink-0 text-slate-400 opacity-70 group-hover:text-sky-300 group-hover:opacity-100"/>
+                  </button>
+                )}
+                {station.temporary && temporaryOcean && !editingStationTitle && (
                   <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => setShowTempNameMenu(v => !v)} className="p-1 text-slate-400 hover:text-sky-300" title="临时站点快捷命名">
                     <ChevronDown size={16} />
                   </button>
@@ -245,10 +310,10 @@ export default function StationHistory({
               </p>
               {station.temporary && temporaryOcean && showTempNameMenu && (
                 <div className="absolute left-0 top-full mt-2 z-30 w-56 overflow-hidden rounded-lg border border-slate-700 bg-[#0b1320] shadow-2xl">
-                  <button onClick={() => { setCustomStationName("洋面站点"); try { localStorage.setItem(stationNameStorageKey, "洋面站点"); } catch {} onTemporaryStationUpdate?.("洋面站点"); setShowTempNameMenu(false); }} className="w-full px-3 py-2.5 flex items-center gap-2 text-sm text-slate-200 hover:bg-slate-800 text-left">
+                  <button onClick={() => selectTemporaryTitle("洋面站点")} className="w-full px-3 py-2.5 flex items-center gap-2 text-sm text-slate-200 hover:bg-slate-800 text-left">
                     <Anchor size={15} className="text-sky-300" /> 洋面站点
                   </button>
-                  <button onClick={() => { setCustomStationName("浮标"); try { localStorage.setItem(stationNameStorageKey, "浮标"); } catch {} onTemporaryStationUpdate?.("浮标"); setShowTempNameMenu(false); }} className="w-full px-3 py-2.5 flex items-center gap-2 text-sm text-slate-200 hover:bg-slate-800 text-left">
+                  <button onClick={() => selectTemporaryTitle("浮标")} className="w-full px-3 py-2.5 flex items-center gap-2 text-sm text-slate-200 hover:bg-slate-800 text-left">
                     <Radio size={15} className="text-slate-300" /> 浮标
                   </button>
                   <button

@@ -22,13 +22,13 @@ check('Gaode day raster still present', "createReferenceRasterLayer(L,'amap')" i
 check('replay handler functional', 'setFrame(0);setPlaying(product.history.length>1)' in SRC)
 check('center handler functional', 'const centerLatest=()=>' in SRC and 'setView(displayPoint(fix.lon,fix.lat)' in SRC)
 check('share exporter in main screen', 'downloadStandaloneNetworkHtml' in SRC and 'onClick={exportSnapshot}' in SRC)
-check('NMC correction is prewest and >60h only', 'maxLatitude>=30' in NMC and 'lead<=60' in NMC and '0.12*Math.min' in NMC)
+check('NMC correction is prewest and >60h only', 'maxLatitude>=30' in NMC and 'lead<=60' in NMC and '0.20*Math.min' in NMC)
 # Check tapering numerically, not merely by searching for its source text.
 def nmc_factor(max_lat,lead):
  if lead<=60 or max_lat>=30:return 1
- return 1-0.12*min(1,(lead-60)/60)
+ return 1-0.20*min(1,(lead-60)/60)
 check('NMC cone 0h-60h unchanged',all(nmc_factor(19,h)==1 for h in [0,12,48,60]))
-check('NMC tropical late 120h cone radius mildly reduced',abs(nmc_factor(19,120)-0.88)<1e-8)
+check('NMC tropical late 120h cone radius mildly reduced',abs(nmc_factor(19,120)-0.80)<1e-8)
 check('NMC after entering westerlies unchanged',all(nmc_factor(35,h)==1 for h in [72,96,120]))
 check('reference image embedding included', 'nmcImage:reference' in SRC)
 check('control assets all exist', all((ROOT/'public/network-icons'/x).exists() for x in ['network-share.png','network-reference-white.png','network-history.png','network-daynight.png','network-traffic.png','network-locate.png','network-replay.png']))

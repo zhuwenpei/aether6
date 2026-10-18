@@ -3583,7 +3583,7 @@ html, body, #root, #typhoon-app-container { background-color: var(--aether-neutr
   .aether-product-workstation,
   .icwc-product-workstation,
   .video-export-workstation
-) :is(button, select, input:not([type="range"]):not([type="checkbox"]):not([type="radio"]), textarea, [role="button"]) {
+) :is(button, select, input:not([type="range"]):not([type="checkbox"]):not([type="radio"]), textarea, [role="button"]):not(.tn-viewport button):not(.tn-viewport [role="button"]) {
   background-color: var(--aether-glass-control) !important;
   background-image: none !important;
   border-color: var(--aether-glass-line) !important;
@@ -3600,7 +3600,7 @@ html, body, #root, #typhoon-app-container { background-color: var(--aether-neutr
   .aether-product-workstation,
   .icwc-product-workstation,
   .video-export-workstation
-) :is(button, [role="button"]):hover {
+) :is(button, [role="button"]):not(.tn-viewport button):not(.tn-viewport [role="button"]):hover {
   background-color: var(--aether-glass-control-hover) !important;
   border-color: var(--aether-glass-line-strong) !important;
 }
@@ -3614,7 +3614,7 @@ html, body, #root, #typhoon-app-container { background-color: var(--aether-neutr
   .aether-product-workstation,
   .icwc-product-workstation,
   .video-export-workstation
-) :is(button, [role="button"]):active {
+) :is(button, [role="button"]):not(.tn-viewport button):not(.tn-viewport [role="button"]):active {
   background-color: var(--aether-glass-control-active) !important;
 }
 

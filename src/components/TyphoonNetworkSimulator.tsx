@@ -235,9 +235,9 @@ function geographicLead(map:L.Map,at:L.LatLngExpression,renderer:L.SVG,lead:numb
     let text=group.firstElementChild as SVGTextElement|null;
     if(!text){
       text=svgElement('text',{'class':'tn-geo-lead', 'paint-order':'stroke fill',
-        'stroke-linejoin':'round','font-size':'9','font-weight':'500',
+        'stroke-linejoin':'round','font-size':'9','font-weight':'600',
         'font-family':"Arial,'Microsoft YaHei',sans-serif",'fill':'#fff',
-        'stroke':'#292929','stroke-width':'0.7', 'pointer-events':'none'});
+        'stroke':'#292929','stroke-width':'0.85', 'pointer-events':'none'});
       text.textContent=caption;
       group.appendChild(text);
     }
@@ -278,7 +278,8 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
   const [mapMessage,setMapMessage]=useState('');
   const [frame,setFrame]=useState(0);
   const [playing,setPlaying]=useState(false);
-  const [basemap,setBasemap]=useState<'amap'|'osm-night'>('amap');
+  const [basemap,setBasemap]=useState<'amap'|'osm'|'osm-night'>('amap');
+  const [providerMenuOpen,setProviderMenuOpen]=useState(false);
   const [exporting,setExporting]=useState(false);
   const rootMapRef=useRef<HTMLDivElement|null>(null);
   const leafletRef=useRef<L.Map|null>(null);
@@ -416,19 +417,20 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
     map.eachLayer(layer=>{if(layer instanceof L.TileLayer)map.removeLayer(layer);});
     const rasterLayer=basemap==='amap'?createReferenceRasterLayer(L,'amap'):
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
-        minZoom:1,maxZoom:19,tileSize:256,keepBuffer:3,className:'tn-osm-night-tiles',
+        minZoom:1,maxZoom:19,tileSize:256,keepBuffer:3,
+        className:basemap==='osm-night'?'tn-osm-night-tiles':'tn-osm-day-tiles',
         attribution:'© OpenStreetMap contributors'
       });
     let cancelled=false;let tileFailures=0;
     rasterLayer.on('tileerror',()=>{
       if(cancelled||++tileFailures<6)return;
-      setMapMessage(basemap==='amap'?'高德地图瓦片暂时无法加载，请检查网络或图源授权。':'OSM 夜间地图瓦片加载受限，请检查网络与图源服务。');
+      setMapMessage(basemap==='amap'?'高德地图瓦片暂时无法加载，请检查网络或图源授权。':basemap==='osm-night'?'OSM Night 瓦片加载受限，请检查网络与图源服务。':'OSM 地图瓦片加载受限，请检查网络与图源服务。');
     });
     rasterLayer.addTo(map);
-    map.getContainer().style.background=basemap==='amap'?'#f7f7f7':'#15222d';
+    map.getContainer().style.background=basemap==='amap'?'#f7f7f7':basemap==='osm-night'?'#15222d':'#e9e7e2';
     // Switching providers must also reproject the map centre. All geometries
     // below are drawn from immutable original WGS84 fixes.
-    if(basemap==='osm-night')map.setView([product.history[Math.min(frame,product.history.length-1)].lat,product.history[Math.min(frame,product.history.length-1)].lon],map.getZoom(),{animate:false});
+    if(basemap!=='amap')map.setView([product.history[Math.min(frame,product.history.length-1)].lat,product.history[Math.min(frame,product.history.length-1)].lon],map.getZoom(),{animate:false});
     else map.setView(referenceBasemapLocation('amap',product.history[Math.min(frame,product.history.length-1)].lon,product.history[Math.min(frame,product.history.length-1)].lat,toAmapPosition),map.getZoom(),{animate:false});
     window.setTimeout(()=>map.invalidateSize(),40);
     layersRef.current.forEach(x=>map.removeLayer(x));layersRef.current=[];
@@ -527,7 +529,7 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
       if(!visible){windRingsRef.current[i]?.remove();windRingsRef.current[i]=null;continue;}
       const vertices=windRing(fix,field).map(([lat,lon])=>displayPoint(lon,lat));
       if(windRingsRef.current[i])windRingsRef.current[i]!.setLatLngs(vertices);
-      else windRingsRef.current[i]=smoothWindPolygon(map,vertices,{renderer:networkSvgRendererRef.current??undefined,color:colors[i],weight:0.76,opacity:.94,lineJoin:'round',lineCap:'round',smoothFactor:0,fillColor:colors[i],fillOpacity:.10,interactive:false}).addTo(map);
+      else windRingsRef.current[i]=smoothWindPolygon(map,vertices,{renderer:networkSvgRendererRef.current??undefined,color:colors[i],weight:0.76,opacity:.94,lineJoin:'round',lineCap:'round',smoothFactor:0,fillColor:colors[i],fillOpacity:.13,interactive:false}).addTo(map);
     }
     // Keep the cyclone above rings; all SVG objects share the same transform.
     const foreground=focusRef.current?._networkGlyph;
@@ -568,7 +570,10 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
   };
   return <div className="tn-viewport" role="dialog" aria-modal="true" aria-label="台风网模拟"
     onClickCapture={event=>{
-      if(!(event.target instanceof Element)||!event.target.closest('.tn-detail-close'))return;
+      if(!(event.target instanceof Element))return;
+      if(event.target.closest('.tn-provider-wrapper'))return;
+      setProviderMenuOpen(false);
+      if(!event.target.closest('.tn-detail-close'))return;
       event.preventDefault();event.stopPropagation();
       leafletRef.current?.closePopup();
       }}>
@@ -581,7 +586,13 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
       <button onClick={onClose}>返回产品中心</button>
     </div>:<>
       <header className={`tn-header${stage==='reference'?' tn-header-reference':''}`}>
-        <button id="tn-network-back" className="tn-back" type="button" aria-label="返回" onClick={()=>{if(stage==='reference'){setStage('map');}else onClose();}}><svg viewBox="0 0 48 48"><path fill="white" d="M23 3 1 24l22 21v-12h24V16H23Z"/></svg></button>
+        <button id="tn-network-back" className="tn-back" type="button" aria-label="返回" onClick={()=>{setProviderMenuOpen(false);if(stage==='reference'){setStage('map');}else onClose();}}><svg viewBox="0 0 48 48"><path fill="white" d="M23 3 1 24l22 21v-12h24V16H23Z"/></svg></button>
+        {stage==='map'&&<div className="tn-provider-wrapper">
+          <button id="tn-network-switch" className="tn-switch" type="button" aria-label="切换地图商" aria-expanded={providerMenuOpen} aria-controls="tn-provider-menu" onClick={()=>setProviderMenuOpen(value=>!value)}><span className="tn-switch-first">切换</span><span className="tn-switch-second">地图商</span></button>
+          {providerMenuOpen&&<div id="tn-provider-menu" className="tn-provider-menu" role="menu" aria-label="选择地图商">
+            {([{id:'amap',label:'高德地图'},{id:'osm',label:'OSM 普通地图'},{id:'osm-night',label:'OSM Night 夜间地图'}] as const).map(option=><button key={option.id} type="button" role="menuitemradio" aria-checked={basemap===option.id} className={basemap===option.id?'is-selected':''} onClick={()=>{setBasemap(option.id);setProviderMenuOpen(false);}}>{option.label}{basemap===option.id?' ✓':''}</button>)}
+          </div>}
+        </div>}
         <div className="tn-header-title">{stage==='reference'?'台风参考':'健茂台风路径'}</div>
         {stage==='map'&&<>
           <button className="tn-header-action tn-share-action" type="button" title="分享：下载完整离线HTML快照" aria-label="下载台风网独立HTML" disabled={exporting} onClick={exportSnapshot}><img src="/network-icons/network-share.png" alt=""/></button>
@@ -599,7 +610,7 @@ export default function TyphoonNetworkSimulator({storm,startDate,currentHour,con
         </div>
         <a className={basemap==='osm-night'?'tn-osm-credit tn-credit-night':'tn-osm-credit'} href={basemap==='amap'?'https://www.amap.com/':'https://www.openstreetmap.org/copyright'} target="_blank" rel="noopener noreferrer" aria-label="地图版权信息">{basemap==='amap'?REFERENCE_RASTER_CREDIT:'© OpenStreetMap contributors'}</a>
         <div className="tn-right-tools">
-          <button className="tn-floating-button" title="高德 / OSM Night 昼夜切换" aria-label="切换昼夜底图" onClick={()=>setBasemap(value=>value==='amap'?'osm-night':'amap')}><img src="/network-icons/network-daynight.png" alt=""/></button>
+          <button className="tn-floating-button" title="快捷切换：高德地图 / OSM Night" aria-label="切换高德与 OSM Night" onClick={()=>setBasemap(value=>value==='amap'?'osm-night':'amap')}><img src="/network-icons/network-daynight.png" alt=""/></button>
           <button className="tn-floating-button" title="信号灯（暂未启用）" aria-label="信号灯（预留）"><img src="/network-icons/network-traffic.png" alt=""/></button>
           <button className="tn-floating-button" title="台风中心居中" aria-label="回正台风中心" onClick={centerLatest}><img src="/network-icons/network-locate.png" alt=""/></button>
         </div>

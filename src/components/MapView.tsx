@@ -56,6 +56,22 @@ const WEATHER_STATION_RENDER_META = WEATHER_STATIONS_DATA.map((station) => ({
 }));
 const WEATHER_STATION_NAME_SET = new Set(WEATHER_STATIONS_DATA.map((station) => station.name));
 
+function readStationPopupTitle(stationName: string, lat: number, lon: number): string {
+  try {
+    const customTitle = (localStorage.getItem(`typhoon_station_custom_title_${stationName}`) || "").trim();
+    if (customTitle) return customTitle;
+    const legacyName = (localStorage.getItem(`typhoon_station_custom_name_${stationName}`) || "").trim();
+    const displayName = stationCityDisplayName(legacyName || stationName, lat, lon);
+    return ["洋面站点", "浮标", "临时站点"].includes(displayName) ? displayName : `${displayName}气象站`;
+  } catch {
+    const displayName = stationCityDisplayName(stationName, lat, lon);
+    return ["洋面站点", "浮标", "临时站点"].includes(displayName) ? displayName : `${displayName}气象站`;
+  }
+}
+function escapeStationPopupText(value: string): string {
+  return value.replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch] || ch));
+}
+
 // Local vector basemap palettes are shared with video export in LocalVectorBasemaps.ts.
 
 function getWindRadiusAtBearing(
@@ -331,6 +347,8 @@ function getContinuousStationColor(wind: number): string {
   const [cursorCoords, setCursorCoords] = useState<{ lat: number; lon: number } | null>(null);
   const [cursorExpanded, setCursorExpanded] = useState(false);
   const [openStationName, setOpenStationName] = useState<string | null>(null);
+  const [stationNameRevision, setStationNameRevision] = useState(0);
+  const stationNameRevisionRef = useRef(0);
   const [activeHistoryStation, setActiveHistoryStation] = useState<{ id: string; name: string; lat: number; lon: number; temporary?: boolean } | null>(null);
   const [pendingGenesisPoint, setPendingGenesisPoint] = useState<{ lat: number; lon: number } | null>(null);
   const [pendingGenesisIntensity, setPendingGenesisIntensity] = useState<5 | 12 | 15 | 18>(15);
@@ -347,8 +365,11 @@ function getContinuousStationColor(wind: number): string {
     (window as any).showStationHistory = (name: string, lat: number, lon: number) => {
       setActiveHistoryStation({ id: name, name, lat, lon });
     };
+    const refreshStationNames = () => setStationNameRevision((value) => value + 1);
+    window.addEventListener("aether:station-name-changed", refreshStationNames);
     return () => {
       delete (window as any).showStationHistory;
+      window.removeEventListener("aether:station-name-changed", refreshStationNames);
     };
   }, []);
 
@@ -2614,10 +2635,12 @@ function getContinuousStationColor(wind: number): string {
     const now = Date.now();
     const stationBaseThrottleMs = speed > 20 ? 420 : speed > 8 ? 280 : 180;
     const stationThrottleMs = stationBaseThrottleMs * (touchFirst ? 1.4 : 1) * (renderBudgetRef.current.degraded ? 1.25 : 1);
-    if (!isForecastRouteDrawing && now - lastStationUpdateRef.current < stationThrottleMs) {
+    const stationNamesChanged = stationNameRevisionRef.current !== stationNameRevision;
+    if (!stationNamesChanged && !isForecastRouteDrawing && now - lastStationUpdateRef.current < stationThrottleMs) {
       return;
     }
     lastStationUpdateRef.current = now;
+    stationNameRevisionRef.current = stationNameRevision;
 
     const mainTy = typhoons[0];
     const currentReadingByName = new Map<string, NonNullable<Typhoon["stationReadings"]>[number]>();
@@ -2629,7 +2652,7 @@ function getContinuousStationColor(wind: number): string {
       windSpeed: number; gustSpeed: number; pressure: number; stormSurge: number; maxStormSurge: number; force: number;
     }) => `
       <div class="p-3 text-white bg-[#08121f]/95 rounded-xl border border-slate-700/60 font-sans text-xs min-w-[160px] shadow-2xl">
-        <div class="font-bold border-b border-slate-800 pb-1.5 mb-1.5 text-sm text-[#1E9CFF]">${data.stationDisplayName}气象站</div>
+        <div class="font-bold border-b border-slate-800 pb-1.5 mb-1.5 text-sm text-[#1E9CFF]">${escapeStationPopupText(data.stationDisplayName)}</div>
         <div class="space-y-1 font-mono text-[11px] text-slate-300">
           <div>实时风速: <b class="text-white">${data.windSpeed.toFixed(1)} m/s</b> (${data.force}级)</div>
           <div>实时阵风: <b class="text-red-300">${data.gustSpeed.toFixed(1)} m/s</b></div>
@@ -2646,7 +2669,7 @@ function getContinuousStationColor(wind: number): string {
       let windSpeed = 0;
       let pressure = 1013;
       const currentReading = currentReadingByName.get(station.name);
-      const stationDisplayName = stationCityDisplayName(station.name, station.lat, station.lon);
+      const stationDisplayName = readStationPopupTitle(station.name, station.lat, station.lon);
       let stormSurge = Number(currentReading?.stormSurge || 0);
       let maxStormSurge = Number(currentReading?.maxStormSurge || currentReading?.stormSurge || 0);
       let gustSpeed = Number(currentReading?.gustSpeed || 0);
@@ -2860,7 +2883,7 @@ function getContinuousStationColor(wind: number): string {
       if (group.hasLayer(marker)) group.removeLayer(marker);
       delete stationMarkersRef.current[id];
     });
-  }, [layers.weatherStations, typhoons, timelineSeekPreview, config.capsuleSize, isForecastRouteDrawing, speed]);
+  }, [layers.weatherStations, typhoons, timelineSeekPreview, config.capsuleSize, isForecastRouteDrawing, speed, stationNameRevision]);
 
   // Pending genesis / temporary diagnostic markers. These are transient and are
   // removed as soon as the user cancels/confirms or closes the station page.

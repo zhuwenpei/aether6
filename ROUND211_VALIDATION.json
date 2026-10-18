@@ -1,0 +1,32 @@
+{
+  "baseline": "R210",
+  "release": "R211",
+  "packageVersion": "6.0.49",
+  "modifications": {
+    "network_buttons": "exclude from global glass dialog controls + scoped transparent states",
+    "nmc_tropical_cone_factors": {
+      "60h": 1,
+      "90h": 0.9,
+      "120h": 0.8,
+      "max_lat_exclusion_degrees": 30
+    },
+    "standalone_html": "grid-matched header, SVG back, 42px side icons, 54px replay"
+  },
+  "passed": {
+    "round211_main_button_browser_widths": 3,
+    "round211_main_button_browser_states_per_width": 3,
+    "round211_main_button_count_per_state": 7,
+    "round211_export_html_widths": 3,
+    "round211_export_html_runtime_errors": 0,
+    "round211_export_html_interactions": "passed",
+    "nmc_factor": "7/7",
+    "round208_ui_export": "39/39",
+    "round209_memory_config": "10/10",
+    "round210_dependencies": "25/25",
+    "typescript_syntax": "3/3"
+  },
+  "limitations": [
+    "full Vite app build not executed: no project node_modules",
+    "mobile real-device validation pending"
+  ]
+}

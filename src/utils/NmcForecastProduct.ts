@@ -457,17 +457,29 @@ function nmcStraightFixes(track:NmcChartPoint[], issueHour:number):NmcChartPoint
   if(result.length && Math.abs(result[result.length-1].simHour-last.simHour)>1e-5)result.push(last);
   return result;
 }
-/** R208: narrow only the far end of low-latitude, pre-westerlies tracks.
+/** R212: retain the late narrowing while making the cone widen smoothly from T+0.
  * A weakly curved tropical path should not develop a bulbous 96-120h cap.
  * Keep 0-60h entirely unchanged and retain the original cone for paths
- * already reaching midlatitudes/the westerly flow. No physics is modified. */
+ * already reaching midlatitudes/the westerly flow. Centreline and intensity are unchanged. */
 export function nmcPreWesterliesConeFactor(track:readonly NmcChartPoint[],lead:number):number {
   if(!track.length || !Number.isFinite(lead) || lead<=60) return 1;
   const maxLatitude=Math.max(...track.map(p=>Math.abs(p.lat)));
   if(!Number.isFinite(maxLatitude) || maxLatitude>=30) return 1;
-  // 0% correction through 60h; maximum -12% at 120h. The change is
-  // applied to BOTH the canvas mask and the label collision envelope.
-  return 1-0.12*Math.min(1,(lead-60)/60);
+  // Taper the late-width correction with a smoothstep rather than a linear
+  // ramp. Both ends have zero slope, preventing a visible kink at 60/120h.
+  // The actual radius still grows monotonically at every forecast lead.
+  const t=Math.max(0,Math.min(1,(lead-60)/60));
+  const smooth=t*t*(3-2*t);
+  return 1-0.20*smooth;
+}
+/** Smooth, monotonic uncertainty radius in kilometres. The small early-width
+ * component approaches 30km asymptotically instead of jumping from 0 to 30km
+ * immediately after T+0; the later 360km term supplies the gradual broadening. */
+export function nmcUncertaintyRadiusKm(track:readonly NmcChartPoint[],lead:number):number {
+  const h=clamp(Number.isFinite(lead)?lead:0,0,120);
+  if(h<=0)return 0;
+  const base=30*(1-Math.exp(-h/8))+360*Math.pow(h/120,1.27);
+  return base*nmcPreWesterliesConeFactor(track,h);
 }
 function getNmcConeSections(track:NmcChartPoint[],project:(lat:number,lon:number)=>XY,wrap:(lon:number)=>number,issueHour:number):NmcCalloutCircle[] {
   return track.map((p,i)=>{
@@ -476,7 +488,7 @@ function getNmcConeSections(track:NmcChartPoint[],project:(lat:number,lon:number
     const a=project(prev.lat,wrap(prev.lon)),b=project(next.lat,wrap(next.lon));
     const len=Math.hypot(b.x-a.x,b.y-a.y)||1,nx=-(b.y-a.y)/len,ny=(b.x-a.x)/len;
     const lead=clamp(p.simHour-issueHour,0,120);
-    const km=(lead===0?0:30+360*Math.pow(lead/120,1.27))*nmcPreWesterliesConeFactor(track,lead);
+    const km=nmcUncertaintyRadiusKm(track,lead);
     const lonPx=Math.abs(project(p.lat,wrap(p.lon)+1).x-xy.x);
     const latPx=Math.abs(project(p.lat+1,wrap(p.lon)).y-xy.y);
     const latR=km/111.12*latPx;
